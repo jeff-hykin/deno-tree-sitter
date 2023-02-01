@@ -1,4 +1,4 @@
-import Parser as ParserClass from "./web_tree_sitter.js"
+import ParserClass from "./web_tree_sitter.js"
 
 let hasBeenInitilizedAtLeastOnce = false
 export const Parser = (...args)=>ParserClass.init(...args).then(_=>{

@@ -25,7 +25,7 @@ const Parser = require('web-tree-sitter');
 ### The New Way ✨
 
 ```js
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.2/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.3/main.js"
 
 const parser = await parserFromWasm('tree-sitter-javascript.wasm') // also accepts Uint8Array's
 parser.parse('let x = 1;')
