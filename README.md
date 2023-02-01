@@ -4,10 +4,10 @@ This is a patched version of the [web-tree-sitter](https://github.com/tree-sitte
 
 # Usage
 
-Thanks to Deno, some boilerplate was able to be removed.
+Thanks to Deno, some boilerplate was able to be removed!
 
 
-### The Old Way 🤢
+### The Old `web-tree-sitter` Way 🤢
 
 ```js
 const Parser = require('web-tree-sitter');
