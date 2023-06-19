@@ -267,7 +267,6 @@ It is surprisingly handy to be able to iterate over every node in order.
 
 ```js
 import { parserFromWasm, nodeToJsonObject, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
-import { parserFromWasm, nodeToJsonObject, flatNodeList } from "./main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 var parser = await parserFromWasm(javascript)
