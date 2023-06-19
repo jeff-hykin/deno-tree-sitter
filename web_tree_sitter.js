@@ -25088,6 +25088,9 @@ var en = Cn((Yt, Ze)=>{
                             }(t);
                             return u._free(t), r;
                         }
+                        get hasChildren(){
+                            return (this.children?.length||0) > 0
+                        }
                         toJSON() {
                             return {
                                 type: this.type,
@@ -25097,11 +25100,10 @@ var en = Cn((Yt, Ze)=>{
                                 endPosition: this.endPosition,
                                 startIndex: this.startIndex,
                                 endIndex: this.endIndex,
-                                children: `[ ...${this.children.length} ]`,
                             }
                         }
-                        [Deno.customInspect](inspect) {
-                            return Deno.inspect(this.toJSON())
+                        [Symbol.for("Deno.customInspect")](inspect, options) {
+                            return inspect({...this.toJSON(), hasChildren: this.hasChildren, children: [...(this.children||[])], }, options)
                         }
                     }
                     class bn {
