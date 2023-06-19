@@ -26,35 +26,57 @@ const Parser = require('web-tree-sitter');
 
 ```js
 import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
-
-// 
-// load a grammar.wasm file
-// (find language wasm files at: https://github.com/jeff-hykin/common_tree_sitter_languages )
-// 
-
-// you can give a path to a file
-var parser = await parserFromWasm('./tree-sitter-javascript.wasm')
-// or a Uint8Array of a wasm file:
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
-var parser = await parserFromWasm(javascript)
 
-// then just parse it
+const parser = await parserFromWasm(javascript) // argument is Uint8Array
 const tree = parser.parse('let x = 1;')
-console.log(tree.rootNode)
-// {
-//     type: "program",
-//     typeId: 125,
-//     startPosition: { row: 0, column: 0 },
-//     startIndex: 0,
-//     endPosition: { row: 0, column: 10 },
-//     endIndex: 10,
-//     children: [Array]
-// }
-console.log(tree.rootNode.toString())
-// (program (lexical_declaration (variable_declarator name: (identifier) value: (number))))
+
+// 
+// alternatively load a filepath
+// 
+const parserFromPath = await parserFromWasm('./path/to/javascript.wasm')
+const tree2 = parser.parse('let x = 1;')
 ```
 
-## Additional Handy API's
+
+### Data Structure
+
+```js
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
+import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/rust.js"
+
+const parser = await parserFromWasm(rust)
+const tree = parser.parse('fn main() { }')
+
+tree.language.types  // array 
+tree.language.fields // array 
+tree.rootNode.text == "fn main() { }" // true
+tree.rootNode = {
+  type: "source_file",
+  typeId: 139,
+  startPosition: { row: 0, column: 0 },
+  startIndex: 0,
+  endPosition: { row: 0, column: 13 },
+  endIndex: 13,
+  indent: undefined,
+  hasChildren: true,
+  children: [
+    {
+      type: "function_item",
+      typeId: 170,
+      startPosition: { row: 0, column: 0 },
+      startIndex: 0,
+      endPosition: { row: 0, column: 13 },
+      endIndex: 13,
+      indent: undefined,
+      hasChildren: true,
+      children: [ [Object], [Object], [Object], [Object] ]
+    }
+  ]
+}
+```
+
+## Handy Tools/Usage
 
 
 ### Whitespace Nodes
