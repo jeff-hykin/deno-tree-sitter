@@ -30,12 +30,17 @@ import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languag
 
 const parser = await parserFromWasm(javascript) // argument is Uint8Array
 const tree = parser.parse('let x = 1;')
+```
 
-// 
-// alternatively load a filepath
-// 
-const parserFromPath = await parserFromWasm('./path/to/javascript.wasm')
-const tree2 = parser.parse('let x = 1;')
+Alternatively load from a file:
+
+```js
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
+
+// see https://github.com/jeff-hykin/common_tree_sitter_languages
+// for getting wasm files for different languages
+const parser = await parserFromWasm('./path/to/javascript.wasm')
+const tree = parser.parse('let x = 1;')
 ```
 
 
