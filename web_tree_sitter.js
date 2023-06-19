@@ -11775,14 +11775,14 @@ var V = g((Jf, _n)=>{
     };
 });
 var Y = g((Qf, rt)=>{
-    var oe = __process$, { AbortError: Do , codes: Oo  } = O(), { ERR_INVALID_ARG_TYPE: qo , ERR_STREAM_PREMATURE_CLOSE: pn  } = Oo, { kEmptyObject: wn , once: yn  } = j(), { validateAbortSignal: xo , validateFunction: Lo , validateObject: Po  } = _e(), { Promise: ko  } = m(), { isClosed: Wo , isReadable: gn , isReadableNodeStream: nt , isReadableFinished: Sn , isReadableErrored: Co , isWritable: En , isWritableNodeStream: Rn , isWritableFinished: An , isWritableErrored: jo , isNodeStream: $o , willEmitClose: vo  } = V();
+    var oe = __process$, { AbortError: Do , codes: Oo  } = O(), { ERR_INVALID_ARG_TYPE: qo , ERR_STREAM_PREMATURE_CLOSE: pn  } = Oo, { kEmptyObject: wn , once: Node  } = j(), { validateAbortSignal: xo , validateFunction: Lo , validateObject: Po  } = _e(), { Promise: ko  } = m(), { isClosed: Wo , isReadable: gn , isReadableNodeStream: nt , isReadableFinished: Sn , isReadableErrored: Co , isWritable: En , isWritableNodeStream: Rn , isWritableFinished: An , isWritableErrored: jo , isNodeStream: $o , willEmitClose: vo  } = V();
     function Fo(e) {
         return e.setHeader && typeof e.abort == "function";
     }
     var Uo = ()=>{};
     function mn(e, t, n) {
         var r, i65;
-        arguments.length === 2 ? (n = t, t = wn) : t == null ? t = wn : Po(t, "options"), Lo(n, "callback"), xo(t.signal, "options.signal"), n = yn(n);
+        arguments.length === 2 ? (n = t, t = wn) : t == null ? t = wn : Po(t, "options"), Lo(n, "callback"), xo(t.signal, "options.signal"), n = Node(n);
         let o = (r = t.readable) !== null && r !== void 0 ? r : nt(e), l = (i65 = t.writable) !== null && i65 !== void 0 ? i65 : Rn(e);
         if (!$o(e)) throw new qo("stream", "Stream", e);
         let u = e._writableState, f = e._readableState, a = ()=>{
@@ -11817,7 +11817,7 @@ var Y = g((Qf, rt)=>{
             if (t.signal.aborted) oe.nextTick(M);
             else {
                 let F2 = n;
-                n = yn((...re)=>{
+                n = Node((...re)=>{
                     t.signal.removeEventListener("abort", M), F2.apply(e, re);
                 }), t.signal.addEventListener("abort", M);
             }
@@ -24930,7 +24930,7 @@ var en = Cn((Yt, Ze)=>{
                             return a;
                         }
                     }
-                    class yn {
+                    class Node {
                         constructor(t, r){
                             be(t), this.tree = r;
                         }
@@ -25092,18 +25092,60 @@ var en = Cn((Yt, Ze)=>{
                             return (this.children?.length||0) > 0
                         }
                         toJSON() {
-                            return {
-                                type: this.type,
-                                typeId: this.typeId,
-                                startPosition: this.startPosition,
-                                startIndex: this.startIndex,
-                                endPosition: this.endPosition,
-                                startIndex: this.startIndex,
-                                endIndex: this.endIndex,
+                            const optionalData = {}
+                            if (typeof this.rootLeadingWhitespace == 'string') {
+                                optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
+                            }
+                            if (this.children && this.children.length) {
+                                return {
+                                    type: this.type,
+                                    typeId: this.typeId,
+                                    startPosition: this.startPosition,
+                                    startIndex: this.startIndex,
+                                    endPosition: this.endPosition,
+                                    startIndex: this.startIndex,
+                                    endIndex: this.endIndex,
+                                    indent: this.indent,
+                                    ...optionalData,
+                                    children: this.children.map(each=>each.toJSON()),
+                                }
+                            } else {
+                                return {
+                                    type: this.type,
+                                    typeId: this.typeId,
+                                    startPosition: this.startPosition,
+                                    startIndex: this.startIndex,
+                                    endPosition: this.endPosition,
+                                    startIndex: this.startIndex,
+                                    endIndex: this.endIndex,
+                                    indent: this.indent,
+                                    ...optionalData,
+                                    text: this.text,
+                                    children: [],
+                                }
                             }
                         }
                         [Symbol.for("Deno.customInspect")](inspect, options) {
-                            return inspect({...this.toJSON(), hasChildren: this.hasChildren, children: [...(this.children||[])], }, options)
+                            const optional = {}
+                            if (typeof this.rootLeadingWhitespace == 'string') {
+                                optional.rootLeadingWhitespace = this.rootLeadingWhitespace
+                            }
+                            return inspect(
+                                {
+                                    type: this.type,
+                                    typeId: this.typeId,
+                                    startPosition: this.startPosition,
+                                    startIndex: this.startIndex,
+                                    endPosition: this.endPosition,
+                                    startIndex: this.startIndex,
+                                    endIndex: this.endIndex,
+                                    indent: this.indent,
+                                    ...optional,
+                                    hasChildren: this.hasChildren,
+                                    children: [...(this.children||[])], 
+                                },
+                                options
+                            )
                         }
                     }
                     class bn {
@@ -25458,7 +25500,7 @@ ${JSON.stringify(_, null, 2)}`);
                     function F5(n, t = f) {
                         let r = p(t, "i32");
                         if (r === 0) return null;
-                        let s = p(t += d, "i32"), a = p(t += d, "i32"), _ = p(t += d, "i32"), i183 = p(t += d, "i32"), o = new yn(re, n);
+                        let s = p(t += d, "i32"), a = p(t += d, "i32"), _ = p(t += d, "i32"), i183 = p(t += d, "i32"), o = new Node(re, n);
                         return o.id = r, o.startIndex = s, o.startPosition = {
                             row: a,
                             column: _

@@ -7,7 +7,7 @@ This is a patched version of the [web-tree-sitter](https://github.com/tree-sitte
 Thanks to Deno, some boilerplate was able to be removed!
 
 
-### The Old `web-tree-sitter` Way 🤢
+### The Legacy `web-tree-sitter` Way 🤢
 
 ```js
 const Parser = require('web-tree-sitter');
@@ -25,15 +25,261 @@ const Parser = require('web-tree-sitter');
 ### The New Way ✨
 
 ```js
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.3/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
 
-const parser = await parserFromWasm('tree-sitter-javascript.wasm') // also accepts Uint8Array's
-parser.parse('let x = 1;')
+// 
+// load a grammar.wasm file
+// (find language wasm files at: https://github.com/jeff-hykin/common_tree_sitter_languages )
+// 
+
+// you can give a path to a file
+var parser = await parserFromWasm('./tree-sitter-javascript.wasm')
+// or a Uint8Array of a wasm file:
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+var parser = await parserFromWasm(javascript)
+
+// then just parse it
+const tree = parser.parse('let x = 1;')
+console.log(tree.rootNode)
+// {
+//     type: "program",
+//     typeId: 125,
+//     startPosition: { row: 0, column: 0 },
+//     startIndex: 0,
+//     endPosition: { row: 0, column: 10 },
+//     endIndex: 10,
+//     children: [Array]
+// }
 console.log(tree.rootNode.toString())
+// (program (lexical_declaration (variable_declarator name: (identifier) value: (number))))
+```
+
+## Additional Handy API's
+
+
+### Whitespace Nodes
+
+Most tree sitter parsers don't have whitespace nodes, they just skip the whitespace. This means doing a .join("") on the code doesn't reproduce the original input. This tool `addWhitespaceNodes` solves that problem by auto-injecting whitespace nodes into any parsed output!
+
+```js
+import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+
+const parser = await parserFromWasm(javascript)
+const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
+// NOTE:
+    // 1. theres 1 edgecase: the root node will have a rootLeadingWhitespace attribute
+    //    because there isn't a practical way of inserting a whitespace node infront of the
+    //    root node. (But whitespace can appead infront of the root node)
+    // 2. the rest of the tree will contain whitespace nodes
+    // 3. existing nodes will have an "indent" attribute
+    //    Every node on an indented line has the non-empty indent value, not just the first node
+```
+
+### Code 2 JSON
+
+For quick analysis and debugging, its always nice to convert a parsed document to JSON.
+
+```js
+import { parserFromWasm, nodeToJsonObject } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+
+const parser = await parserFromWasm(javascript)
+const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
+
+// this used to not work! I added support for it
+console.log(
+    JSON.stringify(
+        tree,
+        0,
+        4, // indent=4
+    )
+)
+const outputLooksLike = {
+    "type": "program",
+    "typeId": 125,
+    "startPosition": {
+        "row": 0,
+        "column": 0
+    },
+    "startIndex": 0,
+    "endPosition": {
+        "row": 0,
+        "column": 10
+    },
+    "endIndex": 10,
+    "indent": "",
+    "rootLeadingWhitespace": "",
+    "children": [
+        {
+            "type": "lexical_declaration",
+            "typeId": 138,
+            "startPosition": {
+                "row": 0,
+                "column": 0
+            },
+            "startIndex": 0,
+            "endPosition": {
+                "row": 0,
+                "column": 10
+            },
+            "endIndex": 10,
+            "indent": "",
+            "children": [
+                {
+                    "type": "let",
+                    "typeId": 13,
+                    "startPosition": {
+                        "row": 0,
+                        "column": 0
+                    },
+                    "startIndex": 0,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 3
+                    },
+                    "endIndex": 3,
+                    "indent": "",
+                    "text": "let",
+                    "children": []
+                },
+                {
+                    "type": "whitespace",
+                    "typeId": -1,
+                    "startIndex": 3,
+                    "endIndex": 4,
+                    "indent": "",
+                    "text": " ",
+                    "children": []
+                },
+                {
+                    "type": "variable_declarator",
+                    "typeId": 139,
+                    "startPosition": {
+                        "row": 0,
+                        "column": 4
+                    },
+                    "startIndex": 4,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 9
+                    },
+                    "endIndex": 9,
+                    "indent": "",
+                    "children": [
+                        {
+                            "type": "identifier",
+                            "typeId": 1,
+                            "startPosition": {
+                                "row": 0,
+                                "column": 4
+                            },
+                            "startIndex": 4,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 5
+                            },
+                            "endIndex": 5,
+                            "indent": "",
+                            "text": "x",
+                            "children": []
+                        },
+                        {
+                            "type": "whitespace",
+                            "typeId": -1,
+                            "startIndex": 5,
+                            "endIndex": 6,
+                            "indent": "",
+                            "text": " ",
+                            "children": []
+                        },
+                        {
+                            "type": "=",
+                            "typeId": 39,
+                            "startPosition": {
+                                "row": 0,
+                                "column": 6
+                            },
+                            "startIndex": 6,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 7
+                            },
+                            "endIndex": 7,
+                            "indent": "",
+                            "text": "=",
+                            "children": []
+                        },
+                        {
+                            "type": "whitespace",
+                            "typeId": -1,
+                            "startIndex": 7,
+                            "endIndex": 8,
+                            "indent": "",
+                            "text": " ",
+                            "children": []
+                        },
+                        {
+                            "type": "number",
+                            "typeId": 109,
+                            "startPosition": {
+                                "row": 0,
+                                "column": 8
+                            },
+                            "startIndex": 8,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 9
+                            },
+                            "endIndex": 9,
+                            "indent": "",
+                            "text": "1",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "type": ";",
+                    "typeId": 33,
+                    "startPosition": {
+                        "row": 0,
+                        "column": 9
+                    },
+                    "startIndex": 9,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 10
+                    },
+                    "endIndex": 10,
+                    "indent": "",
+                    "text": ";",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
+```
+
+### Flatten 
+
+It is surprisingly handy to be able to iterate over every node in order.
+
+```js
+import { parserFromWasm, nodeToJsonObject, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.4/main.js"
+import { parserFromWasm, nodeToJsonObject, flatNodeList } from "./main.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+
+var parser = await parserFromWasm(javascript)
+var tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
+
+var allNodes = flatNodeList(tree.rootNode)
+
+var originalString = allNodes.map(each=>each.hasChildren ? "" : (each.text||"")).join("")
 ```
 
 
-## Original Documentation
+## Original Documentation (from web-tree-sitter)
 
 Now you can parse source code:
 
