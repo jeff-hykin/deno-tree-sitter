@@ -5589,14 +5589,14 @@ class NodeSystemError extends NodeErrorAbstraction {
             [kIsNodeError]: {
                 value: true,
                 enumerable: false,
-                writable: false,
+                writable: true,
                 configurable: true
             },
             info: {
                 value: context,
                 enumerable: true,
                 configurable: true,
-                writable: false
+                writable:true
             },
             errno: {
                 get () {
@@ -6034,13 +6034,13 @@ Object.defineProperties(EventEmitter, {
         value: kMaxEventTargetListeners,
         enumerable: false,
         configurable: false,
-        writable: false
+        writable: true
     },
     kMaxEventTargetListenersWarned: {
         value: kMaxEventTargetListenersWarned,
         enumerable: false,
         configurable: false,
-        writable: false
+        writable: true
     }
 });
 function setMaxListeners(n = defaultMaxListeners, ...eventTargets) {
@@ -8552,7 +8552,7 @@ function promisify(original) {
         return Object.defineProperty(fn, kCustomPromisifiedSymbol, {
             value: fn,
             enumerable: false,
-            writable: false,
+            writable: true,
             configurable: true
         });
     }
@@ -8580,7 +8580,7 @@ function promisify(original) {
     Object.defineProperty(fn, kCustomPromisifiedSymbol, {
         value: fn,
         enumerable: false,
-        writable: false,
+        writable: true,
         configurable: true
     });
     return Object.defineProperties(fn, Object.getOwnPropertyDescriptors(original));
@@ -12665,7 +12665,7 @@ var we = g((au, dr)=>{
         }
         e.on("readable", r);
         let i91, o = ta(e, {
-            writable: !1
+            writable: !0
         }, (l)=>{
             i91 = l ? Zn(i91, l) : null, n(), n = bt;
         });
@@ -16361,7 +16361,7 @@ function addReadOnlyProcessAlias(name51, option, enumerable = true) {
     const value = getOptionValue(option);
     if (value) {
         Object.defineProperty(process1, name51, {
-            writable: false,
+            writable: true,
             configurable: true,
             enumerable,
             value
@@ -25087,6 +25087,21 @@ var en = Cn((Yt, Ze)=>{
                                 }
                             }(t);
                             return u._free(t), r;
+                        }
+                        toJSON() {
+                            return {
+                                type: this.type,
+                                typeId: this.typeId,
+                                startPosition: this.startPosition,
+                                startIndex: this.startIndex,
+                                endPosition: this.endPosition,
+                                startIndex: this.startIndex,
+                                endIndex: this.endIndex,
+                                children: `[ ...${this.children.length} ]`,
+                            }
+                        }
+                        [Deno.customInspect](inspect) {
+                            return Deno.inspect(this.toJSON())
                         }
                     }
                     class bn {
