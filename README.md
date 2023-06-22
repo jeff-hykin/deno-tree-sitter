@@ -117,7 +117,7 @@ const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
 // this used to not work! I added support for it
 console.log(
     JSON.stringify(
-        tree,
+        tree.rootNode,
         0,
         4, // indent=4
     )
