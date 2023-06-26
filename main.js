@@ -102,11 +102,13 @@ class WhitespaceNode {
 export const addWhitespaceNodes = ({tree, string})=>{
     const rootNode = tree.rootNode
     Object.defineProperties(tree, {
+        writable: true,
+        configurable: true,
         rootNode: {
             get() {
                 return rootNode
             }
-        }
+        },
     })
     const allNodes = flatNodeList(tree.rootNode)
     rootNode.rootLeadingWhitespace = string.slice(0,tree.rootNode.startIndex)
@@ -167,10 +169,12 @@ export const addWhitespaceNodes = ({tree, string})=>{
             // 
             Object.defineProperties(eachNode, {
                 children: {
+                    writable: true,
+                    configurable: true,
                     get() {
                         return newChildren
-                    }
-                }
+                    },
+                },
             })
         }
     }

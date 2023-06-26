@@ -2828,7 +2828,9 @@ const { isDate: isDate1 , isArgumentsObject: isArgumentsObject1 , isBigIntObject
 function hideStackFrames(fn) {
     const hidden = "__node_internal_" + fn.name;
     Object.defineProperty(fn, "name", {
-        value: hidden
+        value: hidden,
+        writable: true,
+        configurable: true,
     });
     return fn;
 }
@@ -11388,7 +11390,9 @@ var O = g((zf, Kt)=>{
     function Yt(e) {
         let t = xi + e.name;
         return Object.defineProperty(e, "name", {
-            value: t
+            value: t,
+            writable: true,
+            configurable: true,
         }), e;
     }
     function Pi(e, t) {
@@ -25531,7 +25535,8 @@ ${JSON.stringify(_, null, 2)}`);
                     for (let n1 of Object.getOwnPropertyNames(it.prototype))Object.defineProperty(L.prototype, n1, {
                         value: it.prototype[n1],
                         enumerable: !1,
-                        writable: !1
+                        writable: !1,
+                        configurable: true,
                     });
                     L.Language = Le1, e.onRuntimeInitialized = ()=>{
                         it.init(), nn();
