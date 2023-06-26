@@ -103,7 +103,6 @@ export const addWhitespaceNodes = ({tree, string})=>{
     const rootNode = tree.rootNode
     Object.defineProperties(tree, {
         rootNode: {
-            writable: true,
             configurable: true,
             get() {
                 return rootNode
@@ -169,7 +168,6 @@ export const addWhitespaceNodes = ({tree, string})=>{
             // 
             Object.defineProperties(eachNode, {
                 children: {
-                    writable: true,
                     configurable: true,
                     get() {
                         return newChildren
