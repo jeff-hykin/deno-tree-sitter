@@ -102,9 +102,9 @@ class WhitespaceNode {
 export const addWhitespaceNodes = ({tree, string})=>{
     const rootNode = tree.rootNode
     Object.defineProperties(tree, {
-        writable: true,
-        configurable: true,
         rootNode: {
+            writable: true,
+            configurable: true,
             get() {
                 return rootNode
             }
