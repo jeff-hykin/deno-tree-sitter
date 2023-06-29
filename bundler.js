@@ -1,4 +1,4 @@
-// import { Parser, parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.7/main.js"
+// import { Parser, parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.8/main.js"
 import { Parser, parserFromWasm, flatNodeList } from "./main.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.33/main/file_system.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
@@ -8,15 +8,6 @@ import { iter, next, Stop, Iterable, zip, count, enumerate, permute, combination
 import { indent, isValidIdentifier, toRepresentation } from "https://deno.land/x/good@1.3.0.4/string.js"
 
 const parser = await parserFromWasm(javascript) // path or Uint8Array
-// const output = await import(`data:text/javascript;base64, ${btoa(`"use strict"; export const thing = 10`)}`)
-// console.debug(`thing is:`,output)
-
-// console.debug(`import.meta is:`,import.meta)
-// import.meta is: {
-//   url: "file:///Users/jeffhykin/repos/deno-tree-sitter/bundler.js",
-//   main: true,
-//   resolve: [Function (anonymous)]
-// }
 
 const curl = (url) => {
     return new Promise((resolve) =>
@@ -87,7 +78,7 @@ const generateAsboluteImportUrl = ({urlBase, importPath})=>{
     } else if (urlImport || fileUriImport) {
         url = importPath
     } else {
-        throw Error(`Unsupported import, probably a node import: ${toRepresentation(importPath)}`)
+        throw Error(`Unsupported import, probably a node import: ${toRepresentation(importPath)}, urlBase:${urlBase}`)
     }
 
     const urlObject = new URL(url)
@@ -130,9 +121,11 @@ const bundle = async ({ path })=> {
             const url = generateAsboluteImportUrl({ urlBase, importPath: relativePath })
             // intentionally don't save tree or sourceCode in a variable (otherwise memory usage will explode; all source code of all files)
             const importStatements = parser.parse((await readAbsoluteUrl(url)).sourceCode).rootNode.descendantsOfType("import_statement")
+            const exportImportStatements = parser.parse((await readAbsoluteUrl(url)).sourceCode).rootNode.descendantsOfType("export_statement").filter(each=>each.descendantsOfType("from").length > 0)
             let childCalls = []
-            for (const eachImport of importStatements) {
+            for (const eachImport of importStatements.concat(exportImportStatements)) {
                 const importString = eachImport.descendantsOfType("string")[0].text
+                console.warn(`eachImport is:`,eachImport.text)
                 if (!importString) {
                     continue
                 }
@@ -232,7 +225,7 @@ const bundle = async ({ path })=> {
                     const hasFrom = each.descendantsOfType("from").length > 0
 
 
-                    const importValue = `await ${sharedInfo.globalImportName}[${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}]`
+                    const importValue = `(await ${sharedInfo.globalImportName}[${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])`
                     // 
                     // import Name from "./something"
                     // 
@@ -273,7 +266,7 @@ const bundle = async ({ path })=> {
                         const importArea = flatNodeList(namedImportsNodes[0]).filter(each=>!each.hasChildren).map(each=>each.text).join(" ")
                         
                         replacement += `
-                            const ${importArea} = ${importValue};
+                            const ${importArea.replace(/ as /g,": ")} = ${importValue};
                         `
                     }
                     // delete children to prevent recursing next time
@@ -294,6 +287,81 @@ const bundle = async ({ path })=> {
                             }
                         },
                     })
+                } else if (each.type == 'export_statement') {
+                    const importSource = each.descendantsOfType("from")
+                    if (importSource.length >= 1) {
+                        let replacement = ``
+                        const isNamespaceExport = each.descendantsOfType("*").length > 0
+                        const isNamedExport = each.descendantsOfType("export_clause").length > 0
+                        
+                        const importValue = `(await ${sharedInfo.globalImportName}[${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])`
+                        // 
+                        // export * from "./something"
+                        // 
+                        if (isNamespaceExport) {
+                            // TODO: create extraImports for each module, then, upon import, merge the extra imports before pulling named imports out
+                            replacement += `
+                                ${sharedInfo.helperName}.extra [${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}]
+                                Object.assign(${sharedInfo.helperName}.defaultAggregate, ${importValue});
+                            `
+                        
+                        // 
+                        // import { thing as otherThing } from "./something"
+                        // 
+                        } else if (isNamedExport) {
+                            const exportNameSection = each.descendantsOfType("export_clause")[0]
+                            // FIXME: probably missing the export { thing as otherThing } from "./blah.js"
+                            // FIXME: export * as name1 from "module-name";
+                            // FIXME: export * as default from "module-name";
+                            const names = exportNameSection.descendantsOfType("export_specifier").map(each=>each.text)
+                            const withDetails = names.map(each=>`${each}: ${sharedInfo.helperName}.temp.${each}`)
+                            replacement += `
+                                ${sharedInfo.helperName}.temp = ${importValue};
+                                export { ${withDetails.join(", ")} };
+                            `
+                            // const namedSpecifiers = namedImportsNodes[0].descendantsOfType("import_specifier")
+                            // for (const eachSpecifier of namedSpecifiers) {
+                            //     for (const eachChild of eachSpecifier.children) {
+                            //         if (eachChild.type == "as") {
+                            //             Object.defineProperties(eachChild, {
+                            //                 text: {
+                            //                     get() {
+                            //                         return ":"
+                            //                     }
+                            //                 },
+                            //             })
+                            //         }
+                            //     }
+                            // }
+                            // const importArea = flatNodeList(namedImportsNodes[0]).filter(each=>!each.hasChildren).map(each=>each.text).join(" ")
+                            
+                            // replacement += `
+                            //     const ${importArea} = ${importValue};
+                            // `
+                        } else {
+                            continue
+                        }
+
+                        // delete children to prevent recursing next time
+                        Object.defineProperties(each, {
+                            text: {
+                                get() {
+                                    return replacement
+                                }
+                            },
+                            children: {
+                                get() {
+                                    return []
+                                }
+                            },
+                            hasChildren: {
+                                get() {
+                                    return false
+                                }
+                            },
+                        })
+                        // export_specifier
+                    }
                 }
 
             }
@@ -341,7 +409,7 @@ const bundle = async ({ path })=> {
                 Object.defineProperty(${sharedInfo.globalImportName}, ${JSON.stringify(url)}, {
                     get() {
                         const source = js${stringToBacktickRepresentation(indent({string: moduleWithNoImportsOrImportMeta, by: "                        "}))}
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             `

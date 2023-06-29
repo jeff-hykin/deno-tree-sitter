@@ -12,39 +12,30 @@
                                             main: true,
                                             resolve: (relative)=>"file:///Users/jeffhykin/repos/deno-tree-sitter"+\`/\${relative}\`,
                                         });
-                                    // import { Parser, parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.7/main.js"
+                                    // import { Parser, parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.8/main.js"
                         
-                                                    const { Parser , parserFromWasm , flatNodeList } = await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"];
+                                                    const { Parser , parserFromWasm , flatNodeList } = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"]);
                                                 
                         
-                                                    const { FileSystem , glob } = await globalImports["https://deno.land/x/quickr@0.6.33/main/file_system.js"];
+                                                    const { FileSystem , glob } = (await globalImports["https://deno.land/x/quickr@0.6.33/main/file_system.js"]);
                                                 
                         
-                                                    const javascript = await globalImports["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"].default;
+                                                    const javascript = (await globalImports["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"]).default;
                                                 
                         
-                                                    const { toFileUrl } = await globalImports["https://deno.land/std@0.186.0/path/posix.ts"];
+                                                    const { toFileUrl } = (await globalImports["https://deno.land/std@0.186.0/path/posix.ts"]);
                                                 
                         
-                                                    const Path = await globalImports["https://deno.land/std@0.128.0/path/mod.ts"];
+                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
                                                 
                         
-                                                    const { iter , next , Stop , Iterable , zip , count , enumerate , permute , combinations , slices , asyncIteratorToList , concurrentlyTransform , forkAndFilter } = await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"];
+                                                    const { iter , next , Stop , Iterable , zip , count , enumerate , permute , combinations , slices , asyncIteratorToList , concurrentlyTransform , forkAndFilter } = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"]);
                                                 
                         
-                                                    const { indent , isValidIdentifier , toRepresentation } = await globalImports["https://deno.land/x/good@1.3.0.4/string.js"];
+                                                    const { indent , isValidIdentifier , toRepresentation } = (await globalImports["https://deno.land/x/good@1.3.0.4/string.js"]);
                                                 
                         
                         const parser = await parserFromWasm(javascript) // path or Uint8Array
-                        // const output = await import(\`data:text/javascript;base64, \${btoa(\`"use strict"; export const thing = 10\`)}\`)
-                        // console.debug(\`thing is:\`,output)
-                        
-                        // console.debug(\`import.meta is:\`,import.meta)
-                        // import.meta is: {
-                        //   url: "file:///Users/jeffhykin/repos/deno-tree-sitter/bundler.js",
-                        //   main: true,
-                        //   resolve: [Function (anonymous)]
-                        // }
                         
                         const curl = (url) => {
                             return new Promise((resolve) =>
@@ -115,7 +106,7 @@
                             } else if (urlImport || fileUriImport) {
                                 url = importPath
                             } else {
-                                throw Error(\`Unsupported import, probably a node import: \${toRepresentation(importPath)}\`)
+                                throw Error(\`Unsupported import, probably a node import: \${toRepresentation(importPath)}, urlBase:\${urlBase}\`)
                             }
                         
                             const urlObject = new URL(url)
@@ -158,9 +149,11 @@
                                     const url = generateAsboluteImportUrl({ urlBase, importPath: relativePath })
                                     // intentionally don't save tree or sourceCode in a variable (otherwise memory usage will explode; all source code of all files)
                                     const importStatements = parser.parse((await readAbsoluteUrl(url)).sourceCode).rootNode.descendantsOfType("import_statement")
+                                    const exportImportStatements = parser.parse((await readAbsoluteUrl(url)).sourceCode).rootNode.descendantsOfType("export_statement").filter(each=>each.descendantsOfType("from").length > 0)
                                     let childCalls = []
-                                    for (const eachImport of importStatements) {
+                                    for (const eachImport of importStatements.concat(exportImportStatements)) {
                                         const importString = eachImport.descendantsOfType("string")[0].text
+                                        console.warn(\`eachImport is:\`,eachImport.text)
                                         if (!importString) {
                                             continue
                                         }
@@ -234,6 +227,7 @@
                                     // 
                                     // 2. modify imports
                                     // 
+                                    // FIXME: doesn't handle the \`export * from "./empty_dir.ts";\` case yet
                                     const rootNode = (
                                         (
                                             parser.parse({
@@ -259,7 +253,7 @@
                                             const hasFrom = each.descendantsOfType("from").length > 0
                         
                         
-                                            const importValue = \`await \${sharedInfo.globalImportName}[\${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}]\`
+                                            const importValue = \`(await \${sharedInfo.globalImportName}[\${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])\`
                                             // 
                                             // import Name from "./something"
                                             // 
@@ -284,7 +278,6 @@
                                             // 
                                             if (namedImportsNodes.length > 0) {
                                                 const namedSpecifiers = namedImportsNodes[0].descendantsOfType("import_specifier")
-                                                console.warn(\`namedSpecifiers is:\`,namedSpecifiers)
                                                 for (const eachSpecifier of namedSpecifiers) {
                                                     for (const eachChild of eachSpecifier.children) {
                                                         if (eachChild.type == "as") {
@@ -301,7 +294,7 @@
                                                 const importArea = flatNodeList(namedImportsNodes[0]).filter(each=>!each.hasChildren).map(each=>each.text).join(" ")
                                                 
                                                 replacement += \`
-                                                    const \${importArea} = \${importValue};
+                                                    const \${importArea.replace(/ as /g,": ")} = \${importValue};
                                                 \`
                                             }
                                             // delete children to prevent recursing next time
@@ -322,6 +315,77 @@
                                                     }
                                                 },
                                             })
+                                        } else if (each.type == 'export_statement') {
+                                            const importSource = each.descendantsOfType("from")
+                                            if (importSource.length >= 1) {
+                                                let replacement = \`\`
+                                                const isNamespaceExport = each.descendantsOfType("*").length > 0
+                                                const isNamedExport = each.descendantsOfType("export_clause").length > 0
+                                                
+                                                const importValue = \`(await \${sharedInfo.globalImportName}[\${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])\`
+                                                // 
+                                                // export * from "./something"
+                                                // 
+                                                if (isNamespaceExport) {
+                                                    replacement += \`
+                                                        export { \${importValue} };
+                                                    \`
+                                                
+                                                // 
+                                                // import { thing as otherThing } from "./something"
+                                                // 
+                                                } else if (isNamedExport) {
+                                                    const exportNameSection = each.descendantsOfType("export_clause")[0]
+                                                    // FIXME: probably missing the export { thing as otherThing } from "./blah.js"
+                                                    const names = exportNameSection.descendantsOfType("export_specifier").map(each=>each.text)
+                                                    const withDetails = names.map(each=>\`\${each}: \${sharedInfo.helperName}.temp.\${each}\`)
+                                                    replacement += \`
+                                                        \${sharedInfo.helperName}.temp = \${importValue};
+                                                        export { \${withDetails.join(", ")} };
+                                                    \`
+                                                    // const namedSpecifiers = namedImportsNodes[0].descendantsOfType("import_specifier")
+                                                    // for (const eachSpecifier of namedSpecifiers) {
+                                                    //     for (const eachChild of eachSpecifier.children) {
+                                                    //         if (eachChild.type == "as") {
+                                                    //             Object.defineProperties(eachChild, {
+                                                    //                 text: {
+                                                    //                     get() {
+                                                    //                         return ":"
+                                                    //                     }
+                                                    //                 },
+                                                    //             })
+                                                    //         }
+                                                    //     }
+                                                    // }
+                                                    // const importArea = flatNodeList(namedImportsNodes[0]).filter(each=>!each.hasChildren).map(each=>each.text).join(" ")
+                                                    
+                                                    // replacement += \`
+                                                    //     const \${importArea} = \${importValue};
+                                                    // \`
+                                                } else {
+                                                    continue
+                                                }
+                        
+                                                // delete children to prevent recursing next time
+                                                Object.defineProperties(each, {
+                                                    text: {
+                                                        get() {
+                                                            return replacement
+                                                        }
+                                                    },
+                                                    children: {
+                                                        get() {
+                                                            return []
+                                                        }
+                                                    },
+                                                    hasChildren: {
+                                                        get() {
+                                                            return false
+                                                        }
+                                                    },
+                                                })
+                                                // export_specifier
+                                            }
                                         }
                         
                                     }
@@ -369,7 +433,7 @@
                                         Object.defineProperty(\${sharedInfo.globalImportName}, \${JSON.stringify(url)}, {
                                             get() {
                                                 const source = js\${stringToBacktickRepresentation(indent({string: moduleWithNoImportsOrImportMeta, by: "                        "}))}
-                                                return import("data:text/javascript;base64, "+btoa(source))
+                                                return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                                             }
                                         })
                                     \`
@@ -405,7 +469,6 @@
                             }
                             
                             const rootUrl = toFileUrl(await FileSystem.makeAbsolutePath(path)).href
-                            console.warn(\`rootUrl is:\`,rootUrl)
                             return await next(iter(innerBundle({
                                 urlBase: rootUrl.split(/\\//).slice(0, -1).join("/"),
                                 relativePath: "./"+rootUrl.split(/\\//).slice(-1)[0],
@@ -413,7 +476,7 @@
                         }
                         
                         console.log(await bundle({path: Deno.args[0]}))`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -429,7 +492,7 @@
                                             resolve: (relative)=>"file:///Users/jeffhykin/repos/deno-tree-sitter"+\`/\${relative}\`,
                                         });
                                     
-                                                    const ParserClass = await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"].default;
+                                                    const ParserClass = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"]).default;
                                                 
                         
                         // this is to get around .parse being unwritable by default
@@ -610,7 +673,7 @@
                             }
                             return tree
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -628,11 +691,11 @@
                                     // This code was bundled using \`deno bundle\` and it's not recommended to edit it manually
                         // BUT I EDITED IT MANUALLY ANYWAYS 😎 (because web-tree-sitter doesnt work without modifications)
                         
-                                                    const { stringToBytes } = await globalImports["https://deno.land/x/binaryify@0.0.6/tools.js"];
+                                                    const { stringToBytes } = (await globalImports["https://deno.land/x/binaryify@0.0.6/tools.js"]);
                                                 
                         
                         
-                                                    const wasmJson = await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"].default;
+                                                    const wasmJson = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"]).default;
                                                 
                         const wasmBytes = stringToBytes(wasmJson)
                         
@@ -26182,7 +26245,7 @@
                         var Tn = qn(en()), { default: tn , ...Wn } = Tn, On = tn !== void 0 ? tn : Wn;
                         
                         export default On`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -26296,7 +26359,7 @@
                             }
                             return array.slice(0,sliceEnd)
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -27382,7 +27445,7 @@
                         Q[S] U_W <3LCUle|*s:e,;<= >f,AB C D	EtQ8yr*}{~|}@"O&!I*!k +!e  2!N!!P!\\\`,a,b, kc,}d ,}m,Q n,qo,P p,Rr, s,u,v,~ ,?,@ r,s,}'y%''\\r'~e*'fGL'-M--vw5P P*Q&U UVp*!quUOW  
                                  	    
                                         \\r                                 <@                                |                                                                         X                                                                                                                                                                                                                                                                                                                                                                         h                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \``
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -27398,28 +27461,28 @@
                                             resolve: (relative)=>"https://deno.land/x/quickr@0.6.33/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { ensure } = await globalImports["https://deno.land/x/ensure/mod.ts"];
+                                                    const { ensure } = (await globalImports["https://deno.land/x/ensure/mod.ts"]);
                                                  ensure({ denoVersion: "1.17.1", })
                         
-                                                    const Path = await globalImports["https://deno.land/std@0.128.0/path/mod.ts"];
+                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
                                                 
                         
-                                                    const { move as moveAndRename , moveSync as moveAndRenameSync , copy as basicCopy } = await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"];
+                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"]);
                                                 
                         
-                                                    const { findAll } = await globalImports["https://deno.land/x/good@1.1.1.2/string.js"];
+                                                    const { findAll } = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"]);
                                                 
                         
-                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"];
+                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"]);
                                                 
                         
-                                                    const { globToRegExp } = await globalImports["https://deno.land/std@0.191.0/path/glob.ts"];
+                                                    const { globToRegExp } = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"]);
                                                 
                         
-                                                    const { readLines } = await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"];
+                                                    const { readLines } = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"]);
                                                 
                         
-                                                    const { isGeneratorType } = await globalImports["https://deno.land/x/good@1.1.1.2/value.js"];
+                                                    const { isGeneratorType } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
                                                 
                         
                         // TODO:
@@ -28844,7 +28907,7 @@
                         }
                         
                         export const glob = FileSystem.glob`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -28859,8 +28922,114 @@
                                             main: false,
                                             resolve: (relative)=>"https://deno.land/x/ensure"+\`/\${relative}\`,
                                         });
-                                    export * from "./src/main.ts"`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                                    
+                                                        export { (await globalImports["https://deno.land/x/ensure/src/main.ts"]) };
+                                                    `
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/x/ensure/src/main.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/x/ensure/src/main.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/x/ensure/src"+\`/\${relative}\`,
+                                        });
+                                    
+                                                    const { isOutdated } = (await globalImports["https://deno.land/x/ensure/src/compare.ts"]);
+                                                
+                        
+                        const warn = (type: string, current: string, expected: string) =>
+                          \`Your \${type} version is \${current}, but at least version \${expected} is required. Please update to a later version of Deno. Thankies!\`;
+                        
+                        interface ensureOptions {
+                          denoVersion?: string;
+                          v8Version?: string;
+                          typescriptVersion?: string;
+                        }
+                        
+                        export function ensure(
+                          ensureOptions: ensureOptions,
+                        ) {
+                          const { deno: currentDeno, v8: currentV8, typescript: currentTypescript } =
+                            Deno.version;
+                        
+                          const {
+                            denoVersion: expectedDeno,
+                            v8Version: expectedV8,
+                            typescriptVersion: expectedTypescript,
+                          } = ensureOptions;
+                        
+                        
+                          let atLeastOneOutdated = false;
+                          const ensureCategories: ReadonlyArray<[string, string, string | undefined]> = [
+                            ["Deno", currentDeno, expectedDeno],
+                            ["V8", currentV8, expectedV8],
+                            ["Typescript", currentTypescript, expectedTypescript],
+                          ];
+                          for (
+                            const [categoryName, currentVersion, expectedVersion] of ensureCategories
+                          ) {
+                            if (!expectedVersion) continue
+                        
+                            const isCategoryOutdated = isOutdated(expectedVersion, currentVersion);
+                        
+                            if (isCategoryOutdated) {
+                              console.info(warn(categoryName, currentVersion, expectedVersion));
+                              atLeastOneOutdated = true;
+                            }
+                          }
+                        
+                          if (atLeastOneOutdated) {
+                            Deno.exit(1);
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/x/ensure/src/compare.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/x/ensure/src/compare.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/x/ensure/src"+\`/\${relative}\`,
+                                        });
+                                    export function isOutdated(
+                          minimumVersion: string,
+                          actualVersion: string,
+                        ): boolean {
+                          const minimumVersionArr = minimumVersion.split(".");
+                          const actualVersionArr = actualVersion.split(".");
+                        
+                          // versionCategory includes 'major', 'minor', 'patch', ex. if semvar
+                          versionCategoryEnumeration:
+                          for (let i = 0; i < minimumVersionArr.length; ++i) {
+                            const minimumVersionCategoryNum = parseInt(minimumVersionArr[i]);
+                            const actualVersionCategoryNum = parseInt(actualVersionArr[i]);
+                        
+                            // if this is true for any versionCategory, then whole version is out of date
+                            if (minimumVersionCategoryNum > actualVersionCategoryNum) {
+                              return true;
+                            } else if (minimumVersionCategoryNum === actualVersionCategoryNum) {
+                              continue versionCategoryEnumeration;
+                            } else {
+                              break versionCategoryEnumeration;
+                            }
+                          }
+                        
+                          return false;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -28876,18 +29045,4161 @@
                                             resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
-                        export * from "./empty_dir.ts";
-                        export * from "./ensure_dir.ts";
-                        export * from "./ensure_file.ts";
-                        export * from "./ensure_link.ts";
-                        export * from "./ensure_symlink.ts";
-                        export * from "./exists.ts";
-                        export * from "./expand_glob.ts";
-                        export * from "./move.ts";
-                        export * from "./copy.ts";
-                        export * from "./walk.ts";
-                        export * from "./eol.ts";`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/empty_dir.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_file.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_link.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/expand_glob.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/move.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/copy.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/eol.ts"]) };
+                                                    `
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/empty_dir.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/empty_dir.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const { join } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                        /**
+                         * Ensures that a directory is empty.
+                         * Deletes directory contents if the directory is not empty.
+                         * If the directory does not exist, it is created.
+                         * The directory itself is not deleted.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export async function emptyDir(dir: string) {
+                          try {
+                            const items = [];
+                            for await (const dirEntry of Deno.readDir(dir)) {
+                              items.push(dirEntry);
+                            }
+                        
+                            while (items.length) {
+                              const item = items.shift();
+                              if (item && item.name) {
+                                const filepath = join(dir, item.name);
+                                await Deno.remove(filepath, { recursive: true });
+                              }
+                            }
+                          } catch (err) {
+                            if (!(err instanceof Deno.errors.NotFound)) {
+                              throw err;
+                            }
+                        
+                            // if not exist. then create it
+                            await Deno.mkdir(dir, { recursive: true });
+                          }
+                        }
+                        
+                        /**
+                         * Ensures that a directory is empty.
+                         * Deletes directory contents if the directory is not empty.
+                         * If the directory does not exist, it is created.
+                         * The directory itself is not deleted.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export function emptyDirSync(dir: string): void {
+                          try {
+                            const items = [...Deno.readDirSync(dir)];
+                        
+                            // If the directory exists, remove all entries inside it.
+                            while (items.length) {
+                              const item = items.shift();
+                              if (item && item.name) {
+                                const filepath = join(dir, item.name);
+                                Deno.removeSync(filepath, { recursive: true });
+                              }
+                            }
+                          } catch (err) {
+                            if (!(err instanceof Deno.errors.NotFound)) {
+                              throw err;
+                            }
+                            // if not exist. then create it
+                            Deno.mkdirSync(dir, { recursive: true });
+                            return;
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/mod.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/mod.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Copyright the Browserify authors. MIT License.
+                        // Ported mostly from https://github.com/browserify/path-browserify/
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                                                    const _win32 = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"]);
+                                                
+                        
+                                                    const _posix = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"]);
+                                                
+                        
+                        const path = isWindows ? _win32 : _posix;
+                        
+                        export const win32 = _win32;
+                        export const posix = _posix;
+                        export const {
+                          basename,
+                          delimiter,
+                          dirname,
+                          extname,
+                          format,
+                          fromFileUrl,
+                          isAbsolute,
+                          join,
+                          normalize,
+                          parse,
+                          relative,
+                          resolve,
+                          sep,
+                          toFileUrl,
+                          toNamespacedPath,
+                        } = path;
+                        
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/common.ts"]) };
+                                                    
+                        
+                                                        globalImportsHelper.temp = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
+                                                        export { SEP: globalImportsHelper.temp.SEP, SEP_PATTERN: globalImportsHelper.temp.SEP_PATTERN };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/glob.ts"]) };
+                                                    `
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/_util/os.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/_util/os.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/_util"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        export type OSType = "windows" | "linux" | "darwin";
+                        
+                        export const osType: OSType = (() => {
+                          // deno-lint-ignore no-explicit-any
+                          const { Deno } = globalThis as any;
+                          if (typeof Deno?.build?.os === "string") {
+                            return Deno.build.os;
+                          }
+                        
+                          // deno-lint-ignore no-explicit-any
+                          const { navigator } = globalThis as any;
+                          if (navigator?.appVersion?.includes?.("Win") ?? false) {
+                            return "windows";
+                          }
+                        
+                          return "linux";
+                        })();
+                        
+                        export const isWindows = osType === "windows";`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/win32.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/win32.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Copyright the Browserify authors. MIT License.
+                        // Ported from https://github.com/browserify/path-browserify/
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                
+                        
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                
+                        
+                        
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"]);
+                                                
+                        
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                
+                        
+                        export const sep = "\\\\";
+                        export const delimiter = ";";
+                        
+                        /**
+                         * Resolves path segments into a \`path\`
+                         * @param pathSegments to process to path
+                         */
+                        export function resolve(...pathSegments: string[]): string {
+                          let resolvedDevice = "";
+                          let resolvedTail = "";
+                          let resolvedAbsolute = false;
+                        
+                          for (let i = pathSegments.length - 1; i >= -1; i--) {
+                            let path: string;
+                            // deno-lint-ignore no-explicit-any
+                            const { Deno } = globalThis as any;
+                            if (i >= 0) {
+                              path = pathSegments[i];
+                            } else if (!resolvedDevice) {
+                              if (typeof Deno?.cwd !== "function") {
+                                throw new TypeError("Resolved a drive-letter-less path without a CWD.");
+                              }
+                              path = Deno.cwd();
+                            } else {
+                              if (
+                                typeof Deno?.env?.get !== "function" || typeof Deno?.cwd !== "function"
+                              ) {
+                                throw new TypeError("Resolved a relative path without a CWD.");
+                              }
+                              path = Deno.cwd();
+                        
+                              // Verify that a cwd was found and that it actually points
+                              // to our drive. If not, default to the drive's root.
+                              if (
+                                path === undefined ||
+                                path.slice(0, 3).toLowerCase() !== \`\${resolvedDevice.toLowerCase()}\\\\\`
+                              ) {
+                                path = \`\${resolvedDevice}\\\\\`;
+                              }
+                            }
+                        
+                            assertPath(path);
+                        
+                            const len = path.length;
+                        
+                            // Skip empty entries
+                            if (len === 0) continue;
+                        
+                            let rootEnd = 0;
+                            let device = "";
+                            let isAbsolute = false;
+                            const code = path.charCodeAt(0);
+                        
+                            // Try to match a root
+                            if (len > 1) {
+                              if (isPathSeparator(code)) {
+                                // Possible UNC root
+                        
+                                // If we started with a separator, we know we at least have an
+                                // absolute path of some kind (UNC or otherwise)
+                                isAbsolute = true;
+                        
+                                if (isPathSeparator(path.charCodeAt(1))) {
+                                  // Matched double path separator at beginning
+                                  let j = 2;
+                                  let last = j;
+                                  // Match 1 or more non-path separators
+                                  for (; j < len; ++j) {
+                                    if (isPathSeparator(path.charCodeAt(j))) break;
+                                  }
+                                  if (j < len && j !== last) {
+                                    const firstPart = path.slice(last, j);
+                                    // Matched!
+                                    last = j;
+                                    // Match 1 or more path separators
+                                    for (; j < len; ++j) {
+                                      if (!isPathSeparator(path.charCodeAt(j))) break;
+                                    }
+                                    if (j < len && j !== last) {
+                                      // Matched!
+                                      last = j;
+                                      // Match 1 or more non-path separators
+                                      for (; j < len; ++j) {
+                                        if (isPathSeparator(path.charCodeAt(j))) break;
+                                      }
+                                      if (j === len) {
+                                        // We matched a UNC root only
+                                        device = \`\\\\\\\\\${firstPart}\\\\\${path.slice(last)}\`;
+                                        rootEnd = j;
+                                      } else if (j !== last) {
+                                        // We matched a UNC root with leftovers
+                        
+                                        device = \`\\\\\\\\\${firstPart}\\\\\${path.slice(last, j)}\`;
+                                        rootEnd = j;
+                                      }
+                                    }
+                                  }
+                                } else {
+                                  rootEnd = 1;
+                                }
+                              } else if (isWindowsDeviceRoot(code)) {
+                                // Possible device root
+                        
+                                if (path.charCodeAt(1) === CHAR_COLON) {
+                                  device = path.slice(0, 2);
+                                  rootEnd = 2;
+                                  if (len > 2) {
+                                    if (isPathSeparator(path.charCodeAt(2))) {
+                                      // Treat separator following drive name as an absolute path
+                                      // indicator
+                                      isAbsolute = true;
+                                      rootEnd = 3;
+                                    }
+                                  }
+                                }
+                              }
+                            } else if (isPathSeparator(code)) {
+                              // \`path\` contains just a path separator
+                              rootEnd = 1;
+                              isAbsolute = true;
+                            }
+                        
+                            if (
+                              device.length > 0 &&
+                              resolvedDevice.length > 0 &&
+                              device.toLowerCase() !== resolvedDevice.toLowerCase()
+                            ) {
+                              // This path points to another device so it is not applicable
+                              continue;
+                            }
+                        
+                            if (resolvedDevice.length === 0 && device.length > 0) {
+                              resolvedDevice = device;
+                            }
+                            if (!resolvedAbsolute) {
+                              resolvedTail = \`\${path.slice(rootEnd)}\\\\\${resolvedTail}\`;
+                              resolvedAbsolute = isAbsolute;
+                            }
+                        
+                            if (resolvedAbsolute && resolvedDevice.length > 0) break;
+                          }
+                        
+                          // At this point the path should be resolved to a full absolute path,
+                          // but handle relative paths to be safe (might happen when process.cwd()
+                          // fails)
+                        
+                          // Normalize the tail path
+                          resolvedTail = normalizeString(
+                            resolvedTail,
+                            !resolvedAbsolute,
+                            "\\\\",
+                            isPathSeparator,
+                          );
+                        
+                          return resolvedDevice + (resolvedAbsolute ? "\\\\" : "") + resolvedTail || ".";
+                        }
+                        
+                        /**
+                         * Normalizes a \`path\`
+                         * @param path to normalize
+                         */
+                        export function normalize(path: string): string {
+                          assertPath(path);
+                          const len = path.length;
+                          if (len === 0) return ".";
+                          let rootEnd = 0;
+                          let device: string | undefined;
+                          let isAbsolute = false;
+                          const code = path.charCodeAt(0);
+                        
+                          // Try to match a root
+                          if (len > 1) {
+                            if (isPathSeparator(code)) {
+                              // Possible UNC root
+                        
+                              // If we started with a separator, we know we at least have an absolute
+                              // path of some kind (UNC or otherwise)
+                              isAbsolute = true;
+                        
+                              if (isPathSeparator(path.charCodeAt(1))) {
+                                // Matched double path separator at beginning
+                                let j = 2;
+                                let last = j;
+                                // Match 1 or more non-path separators
+                                for (; j < len; ++j) {
+                                  if (isPathSeparator(path.charCodeAt(j))) break;
+                                }
+                                if (j < len && j !== last) {
+                                  const firstPart = path.slice(last, j);
+                                  // Matched!
+                                  last = j;
+                                  // Match 1 or more path separators
+                                  for (; j < len; ++j) {
+                                    if (!isPathSeparator(path.charCodeAt(j))) break;
+                                  }
+                                  if (j < len && j !== last) {
+                                    // Matched!
+                                    last = j;
+                                    // Match 1 or more non-path separators
+                                    for (; j < len; ++j) {
+                                      if (isPathSeparator(path.charCodeAt(j))) break;
+                                    }
+                                    if (j === len) {
+                                      // We matched a UNC root only
+                                      // Return the normalized version of the UNC root since there
+                                      // is nothing left to process
+                        
+                                      return \`\\\\\\\\\${firstPart}\\\\\${path.slice(last)}\\\\\`;
+                                    } else if (j !== last) {
+                                      // We matched a UNC root with leftovers
+                        
+                                      device = \`\\\\\\\\\${firstPart}\\\\\${path.slice(last, j)}\`;
+                                      rootEnd = j;
+                                    }
+                                  }
+                                }
+                              } else {
+                                rootEnd = 1;
+                              }
+                            } else if (isWindowsDeviceRoot(code)) {
+                              // Possible device root
+                        
+                              if (path.charCodeAt(1) === CHAR_COLON) {
+                                device = path.slice(0, 2);
+                                rootEnd = 2;
+                                if (len > 2) {
+                                  if (isPathSeparator(path.charCodeAt(2))) {
+                                    // Treat separator following drive name as an absolute path
+                                    // indicator
+                                    isAbsolute = true;
+                                    rootEnd = 3;
+                                  }
+                                }
+                              }
+                            }
+                          } else if (isPathSeparator(code)) {
+                            // \`path\` contains just a path separator, exit early to avoid unnecessary
+                            // work
+                            return "\\\\";
+                          }
+                        
+                          let tail: string;
+                          if (rootEnd < len) {
+                            tail = normalizeString(
+                              path.slice(rootEnd),
+                              !isAbsolute,
+                              "\\\\",
+                              isPathSeparator,
+                            );
+                          } else {
+                            tail = "";
+                          }
+                          if (tail.length === 0 && !isAbsolute) tail = ".";
+                          if (tail.length > 0 && isPathSeparator(path.charCodeAt(len - 1))) {
+                            tail += "\\\\";
+                          }
+                          if (device === undefined) {
+                            if (isAbsolute) {
+                              if (tail.length > 0) return \`\\\\\${tail}\`;
+                              else return "\\\\";
+                            } else if (tail.length > 0) {
+                              return tail;
+                            } else {
+                              return "";
+                            }
+                          } else if (isAbsolute) {
+                            if (tail.length > 0) return \`\${device}\\\\\${tail}\`;
+                            else return \`\${device}\\\\\`;
+                          } else if (tail.length > 0) {
+                            return device + tail;
+                          } else {
+                            return device;
+                          }
+                        }
+                        
+                        /**
+                         * Verifies whether path is absolute
+                         * @param path to verify
+                         */
+                        export function isAbsolute(path: string): boolean {
+                          assertPath(path);
+                          const len = path.length;
+                          if (len === 0) return false;
+                        
+                          const code = path.charCodeAt(0);
+                          if (isPathSeparator(code)) {
+                            return true;
+                          } else if (isWindowsDeviceRoot(code)) {
+                            // Possible device root
+                        
+                            if (len > 2 && path.charCodeAt(1) === CHAR_COLON) {
+                              if (isPathSeparator(path.charCodeAt(2))) return true;
+                            }
+                          }
+                          return false;
+                        }
+                        
+                        /**
+                         * Join all given a sequence of \`paths\`,then normalizes the resulting path.
+                         * @param paths to be joined and normalized
+                         */
+                        export function join(...paths: string[]): string {
+                          const pathsCount = paths.length;
+                          if (pathsCount === 0) return ".";
+                        
+                          let joined: string | undefined;
+                          let firstPart: string | null = null;
+                          for (let i = 0; i < pathsCount; ++i) {
+                            const path = paths[i];
+                            assertPath(path);
+                            if (path.length > 0) {
+                              if (joined === undefined) joined = firstPart = path;
+                              else joined += \`\\\\\${path}\`;
+                            }
+                          }
+                        
+                          if (joined === undefined) return ".";
+                        
+                          // Make sure that the joined path doesn't start with two slashes, because
+                          // normalize() will mistake it for an UNC path then.
+                          //
+                          // This step is skipped when it is very clear that the user actually
+                          // intended to point at an UNC path. This is assumed when the first
+                          // non-empty string arguments starts with exactly two slashes followed by
+                          // at least one more non-slash character.
+                          //
+                          // Note that for normalize() to treat a path as an UNC path it needs to
+                          // have at least 2 components, so we don't filter for that here.
+                          // This means that the user can use join to construct UNC paths from
+                          // a server name and a share name; for example:
+                          //   path.join('//server', 'share') -> '\\\\\\\\server\\\\share\\\\')
+                          let needsReplace = true;
+                          let slashCount = 0;
+                          assert(firstPart != null);
+                          if (isPathSeparator(firstPart.charCodeAt(0))) {
+                            ++slashCount;
+                            const firstLen = firstPart.length;
+                            if (firstLen > 1) {
+                              if (isPathSeparator(firstPart.charCodeAt(1))) {
+                                ++slashCount;
+                                if (firstLen > 2) {
+                                  if (isPathSeparator(firstPart.charCodeAt(2))) ++slashCount;
+                                  else {
+                                    // We matched a UNC path in the first part
+                                    needsReplace = false;
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          if (needsReplace) {
+                            // Find any more consecutive slashes we need to replace
+                            for (; slashCount < joined.length; ++slashCount) {
+                              if (!isPathSeparator(joined.charCodeAt(slashCount))) break;
+                            }
+                        
+                            // Replace the slashes if needed
+                            if (slashCount >= 2) joined = \`\\\\\${joined.slice(slashCount)}\`;
+                          }
+                        
+                          return normalize(joined);
+                        }
+                        
+                        /**
+                         * It will solve the relative path from \`from\` to \`to\`, for instance:
+                         *  from = 'C:\\\\orandea\\\\test\\\\aaa'
+                         *  to = 'C:\\\\orandea\\\\impl\\\\bbb'
+                         * The output of the function should be: '..\\\\..\\\\impl\\\\bbb'
+                         * @param from relative path
+                         * @param to relative path
+                         */
+                        export function relative(from: string, to: string): string {
+                          assertPath(from);
+                          assertPath(to);
+                        
+                          if (from === to) return "";
+                        
+                          const fromOrig = resolve(from);
+                          const toOrig = resolve(to);
+                        
+                          if (fromOrig === toOrig) return "";
+                        
+                          from = fromOrig.toLowerCase();
+                          to = toOrig.toLowerCase();
+                        
+                          if (from === to) return "";
+                        
+                          // Trim any leading backslashes
+                          let fromStart = 0;
+                          let fromEnd = from.length;
+                          for (; fromStart < fromEnd; ++fromStart) {
+                            if (from.charCodeAt(fromStart) !== CHAR_BACKWARD_SLASH) break;
+                          }
+                          // Trim trailing backslashes (applicable to UNC paths only)
+                          for (; fromEnd - 1 > fromStart; --fromEnd) {
+                            if (from.charCodeAt(fromEnd - 1) !== CHAR_BACKWARD_SLASH) break;
+                          }
+                          const fromLen = fromEnd - fromStart;
+                        
+                          // Trim any leading backslashes
+                          let toStart = 0;
+                          let toEnd = to.length;
+                          for (; toStart < toEnd; ++toStart) {
+                            if (to.charCodeAt(toStart) !== CHAR_BACKWARD_SLASH) break;
+                          }
+                          // Trim trailing backslashes (applicable to UNC paths only)
+                          for (; toEnd - 1 > toStart; --toEnd) {
+                            if (to.charCodeAt(toEnd - 1) !== CHAR_BACKWARD_SLASH) break;
+                          }
+                          const toLen = toEnd - toStart;
+                        
+                          // Compare paths to find the longest common path from root
+                          const length = fromLen < toLen ? fromLen : toLen;
+                          let lastCommonSep = -1;
+                          let i = 0;
+                          for (; i <= length; ++i) {
+                            if (i === length) {
+                              if (toLen > length) {
+                                if (to.charCodeAt(toStart + i) === CHAR_BACKWARD_SLASH) {
+                                  // We get here if \`from\` is the exact base path for \`to\`.
+                                  // For example: from='C:\\\\foo\\\\bar'; to='C:\\\\foo\\\\bar\\\\baz'
+                                  return toOrig.slice(toStart + i + 1);
+                                } else if (i === 2) {
+                                  // We get here if \`from\` is the device root.
+                                  // For example: from='C:\\\\'; to='C:\\\\foo'
+                                  return toOrig.slice(toStart + i);
+                                }
+                              }
+                              if (fromLen > length) {
+                                if (from.charCodeAt(fromStart + i) === CHAR_BACKWARD_SLASH) {
+                                  // We get here if \`to\` is the exact base path for \`from\`.
+                                  // For example: from='C:\\\\foo\\\\bar'; to='C:\\\\foo'
+                                  lastCommonSep = i;
+                                } else if (i === 2) {
+                                  // We get here if \`to\` is the device root.
+                                  // For example: from='C:\\\\foo\\\\bar'; to='C:\\\\'
+                                  lastCommonSep = 3;
+                                }
+                              }
+                              break;
+                            }
+                            const fromCode = from.charCodeAt(fromStart + i);
+                            const toCode = to.charCodeAt(toStart + i);
+                            if (fromCode !== toCode) break;
+                            else if (fromCode === CHAR_BACKWARD_SLASH) lastCommonSep = i;
+                          }
+                        
+                          // We found a mismatch before the first common path separator was seen, so
+                          // return the original \`to\`.
+                          if (i !== length && lastCommonSep === -1) {
+                            return toOrig;
+                          }
+                        
+                          let out = "";
+                          if (lastCommonSep === -1) lastCommonSep = 0;
+                          // Generate the relative path based on the path difference between \`to\` and
+                          // \`from\`
+                          for (i = fromStart + lastCommonSep + 1; i <= fromEnd; ++i) {
+                            if (i === fromEnd || from.charCodeAt(i) === CHAR_BACKWARD_SLASH) {
+                              if (out.length === 0) out += "..";
+                              else out += "\\\\..";
+                            }
+                          }
+                        
+                          // Lastly, append the rest of the destination (\`to\`) path that comes after
+                          // the common path parts
+                          if (out.length > 0) {
+                            return out + toOrig.slice(toStart + lastCommonSep, toEnd);
+                          } else {
+                            toStart += lastCommonSep;
+                            if (toOrig.charCodeAt(toStart) === CHAR_BACKWARD_SLASH) ++toStart;
+                            return toOrig.slice(toStart, toEnd);
+                          }
+                        }
+                        
+                        /**
+                         * Resolves path to a namespace path
+                         * @param path to resolve to namespace
+                         */
+                        export function toNamespacedPath(path: string): string {
+                          // Note: this will *probably* throw somewhere.
+                          if (typeof path !== "string") return path;
+                          if (path.length === 0) return "";
+                        
+                          const resolvedPath = resolve(path);
+                        
+                          if (resolvedPath.length >= 3) {
+                            if (resolvedPath.charCodeAt(0) === CHAR_BACKWARD_SLASH) {
+                              // Possible UNC root
+                        
+                              if (resolvedPath.charCodeAt(1) === CHAR_BACKWARD_SLASH) {
+                                const code = resolvedPath.charCodeAt(2);
+                                if (code !== CHAR_QUESTION_MARK && code !== CHAR_DOT) {
+                                  // Matched non-long UNC root, convert the path to a long UNC path
+                                  return \`\\\\\\\\?\\\\UNC\\\\\${resolvedPath.slice(2)}\`;
+                                }
+                              }
+                            } else if (isWindowsDeviceRoot(resolvedPath.charCodeAt(0))) {
+                              // Possible device root
+                        
+                              if (
+                                resolvedPath.charCodeAt(1) === CHAR_COLON &&
+                                resolvedPath.charCodeAt(2) === CHAR_BACKWARD_SLASH
+                              ) {
+                                // Matched device root, convert the path to a long UNC path
+                                return \`\\\\\\\\?\\\\\${resolvedPath}\`;
+                              }
+                            }
+                          }
+                        
+                          return path;
+                        }
+                        
+                        /**
+                         * Return the directory name of a \`path\`.
+                         * @param path to determine name for
+                         */
+                        export function dirname(path: string): string {
+                          assertPath(path);
+                          const len = path.length;
+                          if (len === 0) return ".";
+                          let rootEnd = -1;
+                          let end = -1;
+                          let matchedSlash = true;
+                          let offset = 0;
+                          const code = path.charCodeAt(0);
+                        
+                          // Try to match a root
+                          if (len > 1) {
+                            if (isPathSeparator(code)) {
+                              // Possible UNC root
+                        
+                              rootEnd = offset = 1;
+                        
+                              if (isPathSeparator(path.charCodeAt(1))) {
+                                // Matched double path separator at beginning
+                                let j = 2;
+                                let last = j;
+                                // Match 1 or more non-path separators
+                                for (; j < len; ++j) {
+                                  if (isPathSeparator(path.charCodeAt(j))) break;
+                                }
+                                if (j < len && j !== last) {
+                                  // Matched!
+                                  last = j;
+                                  // Match 1 or more path separators
+                                  for (; j < len; ++j) {
+                                    if (!isPathSeparator(path.charCodeAt(j))) break;
+                                  }
+                                  if (j < len && j !== last) {
+                                    // Matched!
+                                    last = j;
+                                    // Match 1 or more non-path separators
+                                    for (; j < len; ++j) {
+                                      if (isPathSeparator(path.charCodeAt(j))) break;
+                                    }
+                                    if (j === len) {
+                                      // We matched a UNC root only
+                                      return path;
+                                    }
+                                    if (j !== last) {
+                                      // We matched a UNC root with leftovers
+                        
+                                      // Offset by 1 to include the separator after the UNC root to
+                                      // treat it as a "normal root" on top of a (UNC) root
+                                      rootEnd = offset = j + 1;
+                                    }
+                                  }
+                                }
+                              }
+                            } else if (isWindowsDeviceRoot(code)) {
+                              // Possible device root
+                        
+                              if (path.charCodeAt(1) === CHAR_COLON) {
+                                rootEnd = offset = 2;
+                                if (len > 2) {
+                                  if (isPathSeparator(path.charCodeAt(2))) rootEnd = offset = 3;
+                                }
+                              }
+                            }
+                          } else if (isPathSeparator(code)) {
+                            // \`path\` contains just a path separator, exit early to avoid
+                            // unnecessary work
+                            return path;
+                          }
+                        
+                          for (let i = len - 1; i >= offset; --i) {
+                            if (isPathSeparator(path.charCodeAt(i))) {
+                              if (!matchedSlash) {
+                                end = i;
+                                break;
+                              }
+                            } else {
+                              // We saw the first non-path separator
+                              matchedSlash = false;
+                            }
+                          }
+                        
+                          if (end === -1) {
+                            if (rootEnd === -1) return ".";
+                            else end = rootEnd;
+                          }
+                          return path.slice(0, end);
+                        }
+                        
+                        /**
+                         * Return the last portion of a \`path\`. Trailing directory separators are ignored.
+                         * @param path to process
+                         * @param ext of path directory
+                         */
+                        export function basename(path: string, ext = ""): string {
+                          if (ext !== undefined && typeof ext !== "string") {
+                            throw new TypeError('"ext" argument must be a string');
+                          }
+                        
+                          assertPath(path);
+                        
+                          let start = 0;
+                          let end = -1;
+                          let matchedSlash = true;
+                          let i: number;
+                        
+                          // Check for a drive letter prefix so as not to mistake the following
+                          // path separator as an extra separator at the end of the path that can be
+                          // disregarded
+                          if (path.length >= 2) {
+                            const drive = path.charCodeAt(0);
+                            if (isWindowsDeviceRoot(drive)) {
+                              if (path.charCodeAt(1) === CHAR_COLON) start = 2;
+                            }
+                          }
+                        
+                          if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
+                            if (ext.length === path.length && ext === path) return "";
+                            let extIdx = ext.length - 1;
+                            let firstNonSlashEnd = -1;
+                            for (i = path.length - 1; i >= start; --i) {
+                              const code = path.charCodeAt(i);
+                              if (isPathSeparator(code)) {
+                                // If we reached a path separator that was not part of a set of path
+                                // separators at the end of the string, stop now
+                                if (!matchedSlash) {
+                                  start = i + 1;
+                                  break;
+                                }
+                              } else {
+                                if (firstNonSlashEnd === -1) {
+                                  // We saw the first non-path separator, remember this index in case
+                                  // we need it if the extension ends up not matching
+                                  matchedSlash = false;
+                                  firstNonSlashEnd = i + 1;
+                                }
+                                if (extIdx >= 0) {
+                                  // Try to match the explicit extension
+                                  if (code === ext.charCodeAt(extIdx)) {
+                                    if (--extIdx === -1) {
+                                      // We matched the extension, so mark this as the end of our path
+                                      // component
+                                      end = i;
+                                    }
+                                  } else {
+                                    // Extension does not match, so our result is the entire path
+                                    // component
+                                    extIdx = -1;
+                                    end = firstNonSlashEnd;
+                                  }
+                                }
+                              }
+                            }
+                        
+                            if (start === end) end = firstNonSlashEnd;
+                            else if (end === -1) end = path.length;
+                            return path.slice(start, end);
+                          } else {
+                            for (i = path.length - 1; i >= start; --i) {
+                              if (isPathSeparator(path.charCodeAt(i))) {
+                                // If we reached a path separator that was not part of a set of path
+                                // separators at the end of the string, stop now
+                                if (!matchedSlash) {
+                                  start = i + 1;
+                                  break;
+                                }
+                              } else if (end === -1) {
+                                // We saw the first non-path separator, mark this as the end of our
+                                // path component
+                                matchedSlash = false;
+                                end = i + 1;
+                              }
+                            }
+                        
+                            if (end === -1) return "";
+                            return path.slice(start, end);
+                          }
+                        }
+                        
+                        /**
+                         * Return the extension of the \`path\`.
+                         * @param path with extension
+                         */
+                        export function extname(path: string): string {
+                          assertPath(path);
+                          let start = 0;
+                          let startDot = -1;
+                          let startPart = 0;
+                          let end = -1;
+                          let matchedSlash = true;
+                          // Track the state of characters (if any) we see before our first dot and
+                          // after any path separator we find
+                          let preDotState = 0;
+                        
+                          // Check for a drive letter prefix so as not to mistake the following
+                          // path separator as an extra separator at the end of the path that can be
+                          // disregarded
+                        
+                          if (
+                            path.length >= 2 &&
+                            path.charCodeAt(1) === CHAR_COLON &&
+                            isWindowsDeviceRoot(path.charCodeAt(0))
+                          ) {
+                            start = startPart = 2;
+                          }
+                        
+                          for (let i = path.length - 1; i >= start; --i) {
+                            const code = path.charCodeAt(i);
+                            if (isPathSeparator(code)) {
+                              // If we reached a path separator that was not part of a set of path
+                              // separators at the end of the string, stop now
+                              if (!matchedSlash) {
+                                startPart = i + 1;
+                                break;
+                              }
+                              continue;
+                            }
+                            if (end === -1) {
+                              // We saw the first non-path separator, mark this as the end of our
+                              // extension
+                              matchedSlash = false;
+                              end = i + 1;
+                            }
+                            if (code === CHAR_DOT) {
+                              // If this is our first dot, mark it as the start of our extension
+                              if (startDot === -1) startDot = i;
+                              else if (preDotState !== 1) preDotState = 1;
+                            } else if (startDot !== -1) {
+                              // We saw a non-dot and non-path separator before our dot, so we should
+                              // have a good chance at having a non-empty extension
+                              preDotState = -1;
+                            }
+                          }
+                        
+                          if (
+                            startDot === -1 ||
+                            end === -1 ||
+                            // We saw a non-dot character immediately before the dot
+                            preDotState === 0 ||
+                            // The (right-most) trimmed path component is exactly '..'
+                            (preDotState === 1 && startDot === end - 1 && startDot === startPart + 1)
+                          ) {
+                            return "";
+                          }
+                          return path.slice(startDot, end);
+                        }
+                        
+                        /**
+                         * Generate a path from \`FormatInputPathObject\` object.
+                         * @param pathObject with path
+                         */
+                        export function format(pathObject: FormatInputPathObject): string {
+                          if (pathObject === null || typeof pathObject !== "object") {
+                            throw new TypeError(
+                              \`The "pathObject" argument must be of type Object. Received type \${typeof pathObject}\`,
+                            );
+                          }
+                          return _format("\\\\", pathObject);
+                        }
+                        
+                        /**
+                         * Return a \`ParsedPath\` object of the \`path\`.
+                         * @param path to process
+                         */
+                        export function parse(path: string): ParsedPath {
+                          assertPath(path);
+                        
+                          const ret: ParsedPath = { root: "", dir: "", base: "", ext: "", name: "" };
+                        
+                          const len = path.length;
+                          if (len === 0) return ret;
+                        
+                          let rootEnd = 0;
+                          let code = path.charCodeAt(0);
+                        
+                          // Try to match a root
+                          if (len > 1) {
+                            if (isPathSeparator(code)) {
+                              // Possible UNC root
+                        
+                              rootEnd = 1;
+                              if (isPathSeparator(path.charCodeAt(1))) {
+                                // Matched double path separator at beginning
+                                let j = 2;
+                                let last = j;
+                                // Match 1 or more non-path separators
+                                for (; j < len; ++j) {
+                                  if (isPathSeparator(path.charCodeAt(j))) break;
+                                }
+                                if (j < len && j !== last) {
+                                  // Matched!
+                                  last = j;
+                                  // Match 1 or more path separators
+                                  for (; j < len; ++j) {
+                                    if (!isPathSeparator(path.charCodeAt(j))) break;
+                                  }
+                                  if (j < len && j !== last) {
+                                    // Matched!
+                                    last = j;
+                                    // Match 1 or more non-path separators
+                                    for (; j < len; ++j) {
+                                      if (isPathSeparator(path.charCodeAt(j))) break;
+                                    }
+                                    if (j === len) {
+                                      // We matched a UNC root only
+                        
+                                      rootEnd = j;
+                                    } else if (j !== last) {
+                                      // We matched a UNC root with leftovers
+                        
+                                      rootEnd = j + 1;
+                                    }
+                                  }
+                                }
+                              }
+                            } else if (isWindowsDeviceRoot(code)) {
+                              // Possible device root
+                        
+                              if (path.charCodeAt(1) === CHAR_COLON) {
+                                rootEnd = 2;
+                                if (len > 2) {
+                                  if (isPathSeparator(path.charCodeAt(2))) {
+                                    if (len === 3) {
+                                      // \`path\` contains just a drive root, exit early to avoid
+                                      // unnecessary work
+                                      ret.root = ret.dir = path;
+                                      return ret;
+                                    }
+                                    rootEnd = 3;
+                                  }
+                                } else {
+                                  // \`path\` contains just a drive root, exit early to avoid
+                                  // unnecessary work
+                                  ret.root = ret.dir = path;
+                                  return ret;
+                                }
+                              }
+                            }
+                          } else if (isPathSeparator(code)) {
+                            // \`path\` contains just a path separator, exit early to avoid
+                            // unnecessary work
+                            ret.root = ret.dir = path;
+                            return ret;
+                          }
+                        
+                          if (rootEnd > 0) ret.root = path.slice(0, rootEnd);
+                        
+                          let startDot = -1;
+                          let startPart = rootEnd;
+                          let end = -1;
+                          let matchedSlash = true;
+                          let i = path.length - 1;
+                        
+                          // Track the state of characters (if any) we see before our first dot and
+                          // after any path separator we find
+                          let preDotState = 0;
+                        
+                          // Get non-dir info
+                          for (; i >= rootEnd; --i) {
+                            code = path.charCodeAt(i);
+                            if (isPathSeparator(code)) {
+                              // If we reached a path separator that was not part of a set of path
+                              // separators at the end of the string, stop now
+                              if (!matchedSlash) {
+                                startPart = i + 1;
+                                break;
+                              }
+                              continue;
+                            }
+                            if (end === -1) {
+                              // We saw the first non-path separator, mark this as the end of our
+                              // extension
+                              matchedSlash = false;
+                              end = i + 1;
+                            }
+                            if (code === CHAR_DOT) {
+                              // If this is our first dot, mark it as the start of our extension
+                              if (startDot === -1) startDot = i;
+                              else if (preDotState !== 1) preDotState = 1;
+                            } else if (startDot !== -1) {
+                              // We saw a non-dot and non-path separator before our dot, so we should
+                              // have a good chance at having a non-empty extension
+                              preDotState = -1;
+                            }
+                          }
+                        
+                          if (
+                            startDot === -1 ||
+                            end === -1 ||
+                            // We saw a non-dot character immediately before the dot
+                            preDotState === 0 ||
+                            // The (right-most) trimmed path component is exactly '..'
+                            (preDotState === 1 && startDot === end - 1 && startDot === startPart + 1)
+                          ) {
+                            if (end !== -1) {
+                              ret.base = ret.name = path.slice(startPart, end);
+                            }
+                          } else {
+                            ret.name = path.slice(startPart, startDot);
+                            ret.base = path.slice(startPart, end);
+                            ret.ext = path.slice(startDot, end);
+                          }
+                        
+                          // If the directory is the root, use the entire root as the \`dir\` including
+                          // the trailing slash if any (\`C:\\abc\` -> \`C:\\\`). Otherwise, strip out the
+                          // trailing slash (\`C:\\abc\\def\` -> \`C:\\abc\`).
+                          if (startPart > 0 && startPart !== rootEnd) {
+                            ret.dir = path.slice(0, startPart - 1);
+                          } else ret.dir = ret.root;
+                        
+                          return ret;
+                        }
+                        
+                        /**
+                         * Converts a file URL to a path string.
+                         *
+                         * \`\`\`ts
+                         *      import { fromFileUrl } from "./win32.ts";
+                         *      fromFileUrl("file:///home/foo"); // "\\\\home\\\\foo"
+                         *      fromFileUrl("file:///C:/Users/foo"); // "C:\\\\Users\\\\foo"
+                         *      fromFileUrl("file://localhost/home/foo"); // "\\\\\\\\localhost\\\\home\\\\foo"
+                         * \`\`\`
+                         * @param url of a file URL
+                         */
+                        export function fromFileUrl(url: string | URL): string {
+                          url = url instanceof URL ? url : new URL(url);
+                          if (url.protocol != "file:") {
+                            throw new TypeError("Must be a file URL.");
+                          }
+                          let path = decodeURIComponent(
+                            url.pathname.replace(/\\//g, "\\\\").replace(/%(?![0-9A-Fa-f]{2})/g, "%25"),
+                          ).replace(/^\\\\*([A-Za-z]:)(\\\\|\$)/, "\$1\\\\");
+                          if (url.hostname != "") {
+                            // Note: The \`URL\` implementation guarantees that the drive letter and
+                            // hostname are mutually exclusive. Otherwise it would not have been valid
+                            // to append the hostname and path like this.
+                            path = \`\\\\\\\\\${url.hostname}\${path}\`;
+                          }
+                          return path;
+                        }
+                        
+                        /**
+                         * Converts a path string to a file URL.
+                         *
+                         * \`\`\`ts
+                         *      import { toFileUrl } from "./win32.ts";
+                         *      toFileUrl("\\\\home\\\\foo"); // new URL("file:///home/foo")
+                         *      toFileUrl("C:\\\\Users\\\\foo"); // new URL("file:///C:/Users/foo")
+                         *      toFileUrl("\\\\\\\\127.0.0.1\\\\home\\\\foo"); // new URL("file://127.0.0.1/home/foo")
+                         * \`\`\`
+                         * @param path to convert to file URL
+                         */
+                        export function toFileUrl(path: string): URL {
+                          if (!isAbsolute(path)) {
+                            throw new TypeError("Must be an absolute path.");
+                          }
+                          const [, hostname, pathname] = path.match(
+                            /^(?:[/\\\\]{2}([^/\\\\]+)(?=[/\\\\](?:[^/\\\\]|\$)))?(.*)/,
+                          )!;
+                          const url = new URL("file:///");
+                          url.pathname = encodeWhitespace(pathname.replace(/%/g, "%25"));
+                          if (hostname != null && hostname != "localhost") {
+                            url.hostname = hostname;
+                            if (!url.hostname) {
+                              throw new TypeError("Invalid hostname.");
+                            }
+                          }
+                          return url;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/_constants.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/_constants.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Copyright the Browserify authors. MIT License.
+                        // Ported from https://github.com/browserify/path-browserify/
+                        // This module is browser compatible.
+                        
+                        // Alphabet chars.
+                        export const CHAR_UPPERCASE_A = 65; /* A */
+                        export const CHAR_LOWERCASE_A = 97; /* a */
+                        export const CHAR_UPPERCASE_Z = 90; /* Z */
+                        export const CHAR_LOWERCASE_Z = 122; /* z */
+                        
+                        // Non-alphabetic chars.
+                        export const CHAR_DOT = 46; /* . */
+                        export const CHAR_FORWARD_SLASH = 47; /* / */
+                        export const CHAR_BACKWARD_SLASH = 92; /* \\ */
+                        export const CHAR_VERTICAL_LINE = 124; /* | */
+                        export const CHAR_COLON = 58; /* : */
+                        export const CHAR_QUESTION_MARK = 63; /* ? */
+                        export const CHAR_UNDERSCORE = 95; /* _ */
+                        export const CHAR_LINE_FEED = 10; /* \\n */
+                        export const CHAR_CARRIAGE_RETURN = 13; /* \\r */
+                        export const CHAR_TAB = 9; /* \\t */
+                        export const CHAR_FORM_FEED = 12; /* \\f */
+                        export const CHAR_EXCLAMATION_MARK = 33; /* ! */
+                        export const CHAR_HASH = 35; /* # */
+                        export const CHAR_SPACE = 32; /*   */
+                        export const CHAR_NO_BREAK_SPACE = 160; /* \\u00A0 */
+                        export const CHAR_ZERO_WIDTH_NOBREAK_SPACE = 65279; /* \\uFEFF */
+                        export const CHAR_LEFT_SQUARE_BRACKET = 91; /* [ */
+                        export const CHAR_RIGHT_SQUARE_BRACKET = 93; /* ] */
+                        export const CHAR_LEFT_ANGLE_BRACKET = 60; /* < */
+                        export const CHAR_RIGHT_ANGLE_BRACKET = 62; /* > */
+                        export const CHAR_LEFT_CURLY_BRACKET = 123; /* { */
+                        export const CHAR_RIGHT_CURLY_BRACKET = 125; /* } */
+                        export const CHAR_HYPHEN_MINUS = 45; /* - */
+                        export const CHAR_PLUS = 43; /* + */
+                        export const CHAR_DOUBLE_QUOTE = 34; /* " */
+                        export const CHAR_SINGLE_QUOTE = 39; /* ' */
+                        export const CHAR_PERCENT = 37; /* % */
+                        export const CHAR_SEMICOLON = 59; /* ; */
+                        export const CHAR_CIRCUMFLEX_ACCENT = 94; /* ^ */
+                        export const CHAR_GRAVE_ACCENT = 96; /* \` */
+                        export const CHAR_AT = 64; /* @ */
+                        export const CHAR_AMPERSAND = 38; /* & */
+                        export const CHAR_EQUAL = 61; /* = */
+                        
+                        // Digits
+                        export const CHAR_0 = 48; /* 0 */
+                        export const CHAR_9 = 57; /* 9 */`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/_util.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/_util.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Copyright the Browserify authors. MIT License.
+                        // Ported from https://github.com/browserify/path-browserify/
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                
+                        
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                
+                        
+                        export function assertPath(path: string): void {
+                          if (typeof path !== "string") {
+                            throw new TypeError(
+                              \`Path must be a string. Received \${JSON.stringify(path)}\`,
+                            );
+                          }
+                        }
+                        
+                        export function isPosixPathSeparator(code: number): boolean {
+                          return code === CHAR_FORWARD_SLASH;
+                        }
+                        
+                        export function isPathSeparator(code: number): boolean {
+                          return isPosixPathSeparator(code) || code === CHAR_BACKWARD_SLASH;
+                        }
+                        
+                        export function isWindowsDeviceRoot(code: number): boolean {
+                          return (
+                            (code >= CHAR_LOWERCASE_A && code <= CHAR_LOWERCASE_Z) ||
+                            (code >= CHAR_UPPERCASE_A && code <= CHAR_UPPERCASE_Z)
+                          );
+                        }
+                        
+                        // Resolves . and .. elements in a path with directory names
+                        export function normalizeString(
+                          path: string,
+                          allowAboveRoot: boolean,
+                          separator: string,
+                          isPathSeparator: (code: number) => boolean,
+                        ): string {
+                          let res = "";
+                          let lastSegmentLength = 0;
+                          let lastSlash = -1;
+                          let dots = 0;
+                          let code: number | undefined;
+                          for (let i = 0, len = path.length; i <= len; ++i) {
+                            if (i < len) code = path.charCodeAt(i);
+                            else if (isPathSeparator(code!)) break;
+                            else code = CHAR_FORWARD_SLASH;
+                        
+                            if (isPathSeparator(code!)) {
+                              if (lastSlash === i - 1 || dots === 1) {
+                                // NOOP
+                              } else if (lastSlash !== i - 1 && dots === 2) {
+                                if (
+                                  res.length < 2 ||
+                                  lastSegmentLength !== 2 ||
+                                  res.charCodeAt(res.length - 1) !== CHAR_DOT ||
+                                  res.charCodeAt(res.length - 2) !== CHAR_DOT
+                                ) {
+                                  if (res.length > 2) {
+                                    const lastSlashIndex = res.lastIndexOf(separator);
+                                    if (lastSlashIndex === -1) {
+                                      res = "";
+                                      lastSegmentLength = 0;
+                                    } else {
+                                      res = res.slice(0, lastSlashIndex);
+                                      lastSegmentLength = res.length - 1 - res.lastIndexOf(separator);
+                                    }
+                                    lastSlash = i;
+                                    dots = 0;
+                                    continue;
+                                  } else if (res.length === 2 || res.length === 1) {
+                                    res = "";
+                                    lastSegmentLength = 0;
+                                    lastSlash = i;
+                                    dots = 0;
+                                    continue;
+                                  }
+                                }
+                                if (allowAboveRoot) {
+                                  if (res.length > 0) res += \`\${separator}..\`;
+                                  else res = "..";
+                                  lastSegmentLength = 2;
+                                }
+                              } else {
+                                if (res.length > 0) res += separator + path.slice(lastSlash + 1, i);
+                                else res = path.slice(lastSlash + 1, i);
+                                lastSegmentLength = i - lastSlash - 1;
+                              }
+                              lastSlash = i;
+                              dots = 0;
+                            } else if (code === CHAR_DOT && dots !== -1) {
+                              ++dots;
+                            } else {
+                              dots = -1;
+                            }
+                          }
+                          return res;
+                        }
+                        
+                        export function _format(
+                          sep: string,
+                          pathObject: FormatInputPathObject,
+                        ): string {
+                          const dir: string | undefined = pathObject.dir || pathObject.root;
+                          const base: string = pathObject.base ||
+                            (pathObject.name || "") + (pathObject.ext || "");
+                          if (!dir) return base;
+                          if (dir === pathObject.root) return dir + base;
+                          return dir + sep + base;
+                        }
+                        
+                        const WHITESPACE_ENCODINGS: Record<string, string> = {
+                          "\\u0009": "%09",
+                          "\\u000A": "%0A",
+                          "\\u000B": "%0B",
+                          "\\u000C": "%0C",
+                          "\\u000D": "%0D",
+                          "\\u0020": "%20",
+                        };
+                        
+                        export function encodeWhitespace(string: string): string {
+                          return string.replaceAll(/[\\s]/g, (c) => {
+                            return WHITESPACE_ENCODINGS[c] ?? c;
+                          });
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/_util/assert.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/_util/assert.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/_util"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        export class DenoStdInternalError extends Error {
+                          constructor(message: string) {
+                            super(message);
+                            this.name = "DenoStdInternalError";
+                          }
+                        }
+                        
+                        /** Make an assertion, if not \`true\`, then throw. */
+                        export function assert(expr: unknown, msg = ""): asserts expr {
+                          if (!expr) {
+                            throw new DenoStdInternalError(msg);
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/posix.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/posix.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Copyright the Browserify authors. MIT License.
+                        // Ported from https://github.com/browserify/path-browserify/
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                
+                        
+                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                
+                        
+                        
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"]);
+                                                
+                        
+                        export const sep = "/";
+                        export const delimiter = ":";
+                        
+                        // path.resolve([from ...], to)
+                        /**
+                         * Resolves \`pathSegments\` into an absolute path.
+                         * @param pathSegments an array of path segments
+                         */
+                        export function resolve(...pathSegments: string[]): string {
+                          let resolvedPath = "";
+                          let resolvedAbsolute = false;
+                        
+                          for (let i = pathSegments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+                            let path: string;
+                        
+                            if (i >= 0) path = pathSegments[i];
+                            else {
+                              // deno-lint-ignore no-explicit-any
+                              const { Deno } = globalThis as any;
+                              if (typeof Deno?.cwd !== "function") {
+                                throw new TypeError("Resolved a relative path without a CWD.");
+                              }
+                              path = Deno.cwd();
+                            }
+                        
+                            assertPath(path);
+                        
+                            // Skip empty entries
+                            if (path.length === 0) {
+                              continue;
+                            }
+                        
+                            resolvedPath = \`\${path}/\${resolvedPath}\`;
+                            resolvedAbsolute = path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+                          }
+                        
+                          // At this point the path should be resolved to a full absolute path, but
+                          // handle relative paths to be safe (might happen when process.cwd() fails)
+                        
+                          // Normalize the path
+                          resolvedPath = normalizeString(
+                            resolvedPath,
+                            !resolvedAbsolute,
+                            "/",
+                            isPosixPathSeparator,
+                          );
+                        
+                          if (resolvedAbsolute) {
+                            if (resolvedPath.length > 0) return \`/\${resolvedPath}\`;
+                            else return "/";
+                          } else if (resolvedPath.length > 0) return resolvedPath;
+                          else return ".";
+                        }
+                        
+                        /**
+                         * Normalize the \`path\`, resolving \`'..'\` and \`'.'\` segments.
+                         * @param path to be normalized
+                         */
+                        export function normalize(path: string): string {
+                          assertPath(path);
+                        
+                          if (path.length === 0) return ".";
+                        
+                          const isAbsolute = path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+                          const trailingSeparator =
+                            path.charCodeAt(path.length - 1) === CHAR_FORWARD_SLASH;
+                        
+                          // Normalize the path
+                          path = normalizeString(path, !isAbsolute, "/", isPosixPathSeparator);
+                        
+                          if (path.length === 0 && !isAbsolute) path = ".";
+                          if (path.length > 0 && trailingSeparator) path += "/";
+                        
+                          if (isAbsolute) return \`/\${path}\`;
+                          return path;
+                        }
+                        
+                        /**
+                         * Verifies whether provided path is absolute
+                         * @param path to be verified as absolute
+                         */
+                        export function isAbsolute(path: string): boolean {
+                          assertPath(path);
+                          return path.length > 0 && path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+                        }
+                        
+                        /**
+                         * Join all given a sequence of \`paths\`,then normalizes the resulting path.
+                         * @param paths to be joined and normalized
+                         */
+                        export function join(...paths: string[]): string {
+                          if (paths.length === 0) return ".";
+                          let joined: string | undefined;
+                          for (let i = 0, len = paths.length; i < len; ++i) {
+                            const path = paths[i];
+                            assertPath(path);
+                            if (path.length > 0) {
+                              if (!joined) joined = path;
+                              else joined += \`/\${path}\`;
+                            }
+                          }
+                          if (!joined) return ".";
+                          return normalize(joined);
+                        }
+                        
+                        /**
+                         * Return the relative path from \`from\` to \`to\` based on current working directory.
+                         * @param from path in current working directory
+                         * @param to path in current working directory
+                         */
+                        export function relative(from: string, to: string): string {
+                          assertPath(from);
+                          assertPath(to);
+                        
+                          if (from === to) return "";
+                        
+                          from = resolve(from);
+                          to = resolve(to);
+                        
+                          if (from === to) return "";
+                        
+                          // Trim any leading backslashes
+                          let fromStart = 1;
+                          const fromEnd = from.length;
+                          for (; fromStart < fromEnd; ++fromStart) {
+                            if (from.charCodeAt(fromStart) !== CHAR_FORWARD_SLASH) break;
+                          }
+                          const fromLen = fromEnd - fromStart;
+                        
+                          // Trim any leading backslashes
+                          let toStart = 1;
+                          const toEnd = to.length;
+                          for (; toStart < toEnd; ++toStart) {
+                            if (to.charCodeAt(toStart) !== CHAR_FORWARD_SLASH) break;
+                          }
+                          const toLen = toEnd - toStart;
+                        
+                          // Compare paths to find the longest common path from root
+                          const length = fromLen < toLen ? fromLen : toLen;
+                          let lastCommonSep = -1;
+                          let i = 0;
+                          for (; i <= length; ++i) {
+                            if (i === length) {
+                              if (toLen > length) {
+                                if (to.charCodeAt(toStart + i) === CHAR_FORWARD_SLASH) {
+                                  // We get here if \`from\` is the exact base path for \`to\`.
+                                  // For example: from='/foo/bar'; to='/foo/bar/baz'
+                                  return to.slice(toStart + i + 1);
+                                } else if (i === 0) {
+                                  // We get here if \`from\` is the root
+                                  // For example: from='/'; to='/foo'
+                                  return to.slice(toStart + i);
+                                }
+                              } else if (fromLen > length) {
+                                if (from.charCodeAt(fromStart + i) === CHAR_FORWARD_SLASH) {
+                                  // We get here if \`to\` is the exact base path for \`from\`.
+                                  // For example: from='/foo/bar/baz'; to='/foo/bar'
+                                  lastCommonSep = i;
+                                } else if (i === 0) {
+                                  // We get here if \`to\` is the root.
+                                  // For example: from='/foo'; to='/'
+                                  lastCommonSep = 0;
+                                }
+                              }
+                              break;
+                            }
+                            const fromCode = from.charCodeAt(fromStart + i);
+                            const toCode = to.charCodeAt(toStart + i);
+                            if (fromCode !== toCode) break;
+                            else if (fromCode === CHAR_FORWARD_SLASH) lastCommonSep = i;
+                          }
+                        
+                          let out = "";
+                          // Generate the relative path based on the path difference between \`to\`
+                          // and \`from\`
+                          for (i = fromStart + lastCommonSep + 1; i <= fromEnd; ++i) {
+                            if (i === fromEnd || from.charCodeAt(i) === CHAR_FORWARD_SLASH) {
+                              if (out.length === 0) out += "..";
+                              else out += "/..";
+                            }
+                          }
+                        
+                          // Lastly, append the rest of the destination (\`to\`) path that comes after
+                          // the common path parts
+                          if (out.length > 0) return out + to.slice(toStart + lastCommonSep);
+                          else {
+                            toStart += lastCommonSep;
+                            if (to.charCodeAt(toStart) === CHAR_FORWARD_SLASH) ++toStart;
+                            return to.slice(toStart);
+                          }
+                        }
+                        
+                        /**
+                         * Resolves path to a namespace path
+                         * @param path to resolve to namespace
+                         */
+                        export function toNamespacedPath(path: string): string {
+                          // Non-op on posix systems
+                          return path;
+                        }
+                        
+                        /**
+                         * Return the directory name of a \`path\`.
+                         * @param path to determine name for
+                         */
+                        export function dirname(path: string): string {
+                          assertPath(path);
+                          if (path.length === 0) return ".";
+                          const hasRoot = path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+                          let end = -1;
+                          let matchedSlash = true;
+                          for (let i = path.length - 1; i >= 1; --i) {
+                            if (path.charCodeAt(i) === CHAR_FORWARD_SLASH) {
+                              if (!matchedSlash) {
+                                end = i;
+                                break;
+                              }
+                            } else {
+                              // We saw the first non-path separator
+                              matchedSlash = false;
+                            }
+                          }
+                        
+                          if (end === -1) return hasRoot ? "/" : ".";
+                          if (hasRoot && end === 1) return "//";
+                          return path.slice(0, end);
+                        }
+                        
+                        /**
+                         * Return the last portion of a \`path\`. Trailing directory separators are ignored.
+                         * @param path to process
+                         * @param ext of path directory
+                         */
+                        export function basename(path: string, ext = ""): string {
+                          if (ext !== undefined && typeof ext !== "string") {
+                            throw new TypeError('"ext" argument must be a string');
+                          }
+                          assertPath(path);
+                        
+                          let start = 0;
+                          let end = -1;
+                          let matchedSlash = true;
+                          let i: number;
+                        
+                          if (ext !== undefined && ext.length > 0 && ext.length <= path.length) {
+                            if (ext.length === path.length && ext === path) return "";
+                            let extIdx = ext.length - 1;
+                            let firstNonSlashEnd = -1;
+                            for (i = path.length - 1; i >= 0; --i) {
+                              const code = path.charCodeAt(i);
+                              if (code === CHAR_FORWARD_SLASH) {
+                                // If we reached a path separator that was not part of a set of path
+                                // separators at the end of the string, stop now
+                                if (!matchedSlash) {
+                                  start = i + 1;
+                                  break;
+                                }
+                              } else {
+                                if (firstNonSlashEnd === -1) {
+                                  // We saw the first non-path separator, remember this index in case
+                                  // we need it if the extension ends up not matching
+                                  matchedSlash = false;
+                                  firstNonSlashEnd = i + 1;
+                                }
+                                if (extIdx >= 0) {
+                                  // Try to match the explicit extension
+                                  if (code === ext.charCodeAt(extIdx)) {
+                                    if (--extIdx === -1) {
+                                      // We matched the extension, so mark this as the end of our path
+                                      // component
+                                      end = i;
+                                    }
+                                  } else {
+                                    // Extension does not match, so our result is the entire path
+                                    // component
+                                    extIdx = -1;
+                                    end = firstNonSlashEnd;
+                                  }
+                                }
+                              }
+                            }
+                        
+                            if (start === end) end = firstNonSlashEnd;
+                            else if (end === -1) end = path.length;
+                            return path.slice(start, end);
+                          } else {
+                            for (i = path.length - 1; i >= 0; --i) {
+                              if (path.charCodeAt(i) === CHAR_FORWARD_SLASH) {
+                                // If we reached a path separator that was not part of a set of path
+                                // separators at the end of the string, stop now
+                                if (!matchedSlash) {
+                                  start = i + 1;
+                                  break;
+                                }
+                              } else if (end === -1) {
+                                // We saw the first non-path separator, mark this as the end of our
+                                // path component
+                                matchedSlash = false;
+                                end = i + 1;
+                              }
+                            }
+                        
+                            if (end === -1) return "";
+                            return path.slice(start, end);
+                          }
+                        }
+                        
+                        /**
+                         * Return the extension of the \`path\`.
+                         * @param path with extension
+                         */
+                        export function extname(path: string): string {
+                          assertPath(path);
+                          let startDot = -1;
+                          let startPart = 0;
+                          let end = -1;
+                          let matchedSlash = true;
+                          // Track the state of characters (if any) we see before our first dot and
+                          // after any path separator we find
+                          let preDotState = 0;
+                          for (let i = path.length - 1; i >= 0; --i) {
+                            const code = path.charCodeAt(i);
+                            if (code === CHAR_FORWARD_SLASH) {
+                              // If we reached a path separator that was not part of a set of path
+                              // separators at the end of the string, stop now
+                              if (!matchedSlash) {
+                                startPart = i + 1;
+                                break;
+                              }
+                              continue;
+                            }
+                            if (end === -1) {
+                              // We saw the first non-path separator, mark this as the end of our
+                              // extension
+                              matchedSlash = false;
+                              end = i + 1;
+                            }
+                            if (code === CHAR_DOT) {
+                              // If this is our first dot, mark it as the start of our extension
+                              if (startDot === -1) startDot = i;
+                              else if (preDotState !== 1) preDotState = 1;
+                            } else if (startDot !== -1) {
+                              // We saw a non-dot and non-path separator before our dot, so we should
+                              // have a good chance at having a non-empty extension
+                              preDotState = -1;
+                            }
+                          }
+                        
+                          if (
+                            startDot === -1 ||
+                            end === -1 ||
+                            // We saw a non-dot character immediately before the dot
+                            preDotState === 0 ||
+                            // The (right-most) trimmed path component is exactly '..'
+                            (preDotState === 1 && startDot === end - 1 && startDot === startPart + 1)
+                          ) {
+                            return "";
+                          }
+                          return path.slice(startDot, end);
+                        }
+                        
+                        /**
+                         * Generate a path from \`FormatInputPathObject\` object.
+                         * @param pathObject with path
+                         */
+                        export function format(pathObject: FormatInputPathObject): string {
+                          if (pathObject === null || typeof pathObject !== "object") {
+                            throw new TypeError(
+                              \`The "pathObject" argument must be of type Object. Received type \${typeof pathObject}\`,
+                            );
+                          }
+                          return _format("/", pathObject);
+                        }
+                        
+                        /**
+                         * Return a \`ParsedPath\` object of the \`path\`.
+                         * @param path to process
+                         */
+                        export function parse(path: string): ParsedPath {
+                          assertPath(path);
+                        
+                          const ret: ParsedPath = { root: "", dir: "", base: "", ext: "", name: "" };
+                          if (path.length === 0) return ret;
+                          const isAbsolute = path.charCodeAt(0) === CHAR_FORWARD_SLASH;
+                          let start: number;
+                          if (isAbsolute) {
+                            ret.root = "/";
+                            start = 1;
+                          } else {
+                            start = 0;
+                          }
+                          let startDot = -1;
+                          let startPart = 0;
+                          let end = -1;
+                          let matchedSlash = true;
+                          let i = path.length - 1;
+                        
+                          // Track the state of characters (if any) we see before our first dot and
+                          // after any path separator we find
+                          let preDotState = 0;
+                        
+                          // Get non-dir info
+                          for (; i >= start; --i) {
+                            const code = path.charCodeAt(i);
+                            if (code === CHAR_FORWARD_SLASH) {
+                              // If we reached a path separator that was not part of a set of path
+                              // separators at the end of the string, stop now
+                              if (!matchedSlash) {
+                                startPart = i + 1;
+                                break;
+                              }
+                              continue;
+                            }
+                            if (end === -1) {
+                              // We saw the first non-path separator, mark this as the end of our
+                              // extension
+                              matchedSlash = false;
+                              end = i + 1;
+                            }
+                            if (code === CHAR_DOT) {
+                              // If this is our first dot, mark it as the start of our extension
+                              if (startDot === -1) startDot = i;
+                              else if (preDotState !== 1) preDotState = 1;
+                            } else if (startDot !== -1) {
+                              // We saw a non-dot and non-path separator before our dot, so we should
+                              // have a good chance at having a non-empty extension
+                              preDotState = -1;
+                            }
+                          }
+                        
+                          if (
+                            startDot === -1 ||
+                            end === -1 ||
+                            // We saw a non-dot character immediately before the dot
+                            preDotState === 0 ||
+                            // The (right-most) trimmed path component is exactly '..'
+                            (preDotState === 1 && startDot === end - 1 && startDot === startPart + 1)
+                          ) {
+                            if (end !== -1) {
+                              if (startPart === 0 && isAbsolute) {
+                                ret.base = ret.name = path.slice(1, end);
+                              } else {
+                                ret.base = ret.name = path.slice(startPart, end);
+                              }
+                            }
+                          } else {
+                            if (startPart === 0 && isAbsolute) {
+                              ret.name = path.slice(1, startDot);
+                              ret.base = path.slice(1, end);
+                            } else {
+                              ret.name = path.slice(startPart, startDot);
+                              ret.base = path.slice(startPart, end);
+                            }
+                            ret.ext = path.slice(startDot, end);
+                          }
+                        
+                          if (startPart > 0) ret.dir = path.slice(0, startPart - 1);
+                          else if (isAbsolute) ret.dir = "/";
+                        
+                          return ret;
+                        }
+                        
+                        /**
+                         * Converts a file URL to a path string.
+                         *
+                         * \`\`\`ts
+                         *      import { fromFileUrl } from "./posix.ts";
+                         *      fromFileUrl("file:///home/foo"); // "/home/foo"
+                         * \`\`\`
+                         * @param url of a file URL
+                         */
+                        export function fromFileUrl(url: string | URL): string {
+                          url = url instanceof URL ? url : new URL(url);
+                          if (url.protocol != "file:") {
+                            throw new TypeError("Must be a file URL.");
+                          }
+                          return decodeURIComponent(
+                            url.pathname.replace(/%(?![0-9A-Fa-f]{2})/g, "%25"),
+                          );
+                        }
+                        
+                        /**
+                         * Converts a path string to a file URL.
+                         *
+                         * \`\`\`ts
+                         *      import { toFileUrl } from "./posix.ts";
+                         *      toFileUrl("/home/foo"); // new URL("file:///home/foo")
+                         * \`\`\`
+                         * @param path to convert to file URL
+                         */
+                        export function toFileUrl(path: string): URL {
+                          if (!isAbsolute(path)) {
+                            throw new TypeError("Must be an absolute path.");
+                          }
+                          const url = new URL("file:///");
+                          url.pathname = encodeWhitespace(
+                            path.replace(/%/g, "%25").replace(/\\\\/g, "%5C"),
+                          );
+                          return url;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/common.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/common.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { SEP } = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
+                                                
+                        
+                        /** Determines the common path from a set of paths, using an optional separator,
+                         * which defaults to the OS default separator.
+                         *
+                         * \`\`\`ts
+                         *       import { common } from "https://deno.land/std@\$STD_VERSION/path/mod.ts";
+                         *       const p = common([
+                         *         "./deno/std/path/mod.ts",
+                         *         "./deno/std/fs/mod.ts",
+                         *       ]);
+                         *       console.log(p); // "./deno/std/"
+                         * \`\`\`
+                         */
+                        export function common(paths: string[], sep = SEP): string {
+                          const [first = "", ...remaining] = paths;
+                          if (first === "" || remaining.length === 0) {
+                            return first.substring(0, first.lastIndexOf(sep) + 1);
+                          }
+                          const parts = first.split(sep);
+                        
+                          let endOfPrefix = parts.length;
+                          for (const path of remaining) {
+                            const compare = path.split(sep);
+                            for (let i = 0; i < endOfPrefix; i++) {
+                              if (compare[i] !== parts[i]) {
+                                endOfPrefix = i;
+                              }
+                            }
+                        
+                            if (endOfPrefix === 0) {
+                              return "";
+                            }
+                          }
+                          const prefix = parts.slice(0, endOfPrefix).join(sep);
+                          return prefix.endsWith(sep) ? prefix : \`\${prefix}\${sep}\`;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/separator.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/separator.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                        export const SEP = isWindows ? "\\\\" : "/";
+                        export const SEP_PATTERN = isWindows ? /[\\\\/]+/ : /\\/+/;`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/_interface.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/_interface.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        /**
+                         * A parsed path object generated by path.parse() or consumed by path.format().
+                         */
+                        export interface ParsedPath {
+                          /**
+                           * The root of the path such as '/' or 'c:\\'
+                           */
+                          root: string;
+                          /**
+                           * The full directory path such as '/home/user/dir' or 'c:\\path\\dir'
+                           */
+                          dir: string;
+                          /**
+                           * The file name including extension (if any) such as 'index.html'
+                           */
+                          base: string;
+                          /**
+                           * The file extension (if any) such as '.html'
+                           */
+                          ext: string;
+                          /**
+                           * The file name without extension (if any) such as 'index'
+                           */
+                          name: string;
+                        }
+                        
+                        export type FormatInputPathObject = Partial<ParsedPath>;`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/path/glob.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/path/glob.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
+                                                
+                        
+                                                    const _win32 = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"]);
+                                                
+                        
+                                                    const _posix = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"]);
+                                                
+                        
+                                                    const { OSType } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                        const path = isWindows ? _win32 : _posix;
+                        const { join, normalize } = path;
+                        
+                        export interface GlobOptions {
+                          /** Extended glob syntax.
+                           * See https://www.linuxjournal.com/content/bash-extended-globbing. Defaults
+                           * to true. */
+                          extended?: boolean;
+                          /** Globstar syntax.
+                           * See https://www.linuxjournal.com/content/globstar-new-bash-globbing-option.
+                           * If false, \`**\` is treated like \`*\`. Defaults to true. */
+                          globstar?: boolean;
+                          /** Whether globstar should be case insensitive. */
+                          caseInsensitive?: boolean;
+                          /** Operating system. Defaults to the native OS. */
+                          os?: OSType;
+                        }
+                        
+                        export type GlobToRegExpOptions = GlobOptions;
+                        
+                        const regExpEscapeChars = [
+                          "!",
+                          "\$",
+                          "(",
+                          ")",
+                          "*",
+                          "+",
+                          ".",
+                          "=",
+                          "?",
+                          "[",
+                          "\\\\",
+                          "^",
+                          "{",
+                          "|",
+                        ];
+                        const rangeEscapeChars = ["-", "\\\\", "]"];
+                        
+                        /** Convert a glob string to a regular expression.
+                         *
+                         * Tries to match bash glob expansion as closely as possible.
+                         *
+                         * Basic glob syntax:
+                         * - \`*\` - Matches everything without leaving the path segment.
+                         * - \`?\` - Matches any single character.
+                         * - \`{foo,bar}\` - Matches \`foo\` or \`bar\`.
+                         * - \`[abcd]\` - Matches \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[a-d]\` - Matches \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[!abcd]\` - Matches any single character besides \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[[:<class>:]]\` - Matches any character belonging to \`<class>\`.
+                         *     - \`[[:alnum:]]\` - Matches any digit or letter.
+                         *     - \`[[:digit:]abc]\` - Matches any digit, \`a\`, \`b\` or \`c\`.
+                         *     - See https://facelessuser.github.io/wcmatch/glob/#posix-character-classes
+                         *       for a complete list of supported character classes.
+                         * - \`\\\` - Escapes the next character for an \`os\` other than \`"windows"\`.
+                         * - \\\` - Escapes the next character for \`os\` set to \`"windows"\`.
+                         * - \`/\` - Path separator.
+                         * - \`\\\` - Additional path separator only for \`os\` set to \`"windows"\`.
+                         *
+                         * Extended syntax:
+                         * - Requires \`{ extended: true }\`.
+                         * - \`?(foo|bar)\` - Matches 0 or 1 instance of \`{foo,bar}\`.
+                         * - \`@(foo|bar)\` - Matches 1 instance of \`{foo,bar}\`. They behave the same.
+                         * - \`*(foo|bar)\` - Matches _n_ instances of \`{foo,bar}\`.
+                         * - \`+(foo|bar)\` - Matches _n > 0_ instances of \`{foo,bar}\`.
+                         * - \`!(foo|bar)\` - Matches anything other than \`{foo,bar}\`.
+                         * - See https://www.linuxjournal.com/content/bash-extended-globbing.
+                         *
+                         * Globstar syntax:
+                         * - Requires \`{ globstar: true }\`.
+                         * - \`**\` - Matches any number of any path segments.
+                         *     - Must comprise its entire path segment in the provided glob.
+                         * - See https://www.linuxjournal.com/content/globstar-new-bash-globbing-option.
+                         *
+                         * Note the following properties:
+                         * - The generated \`RegExp\` is anchored at both start and end.
+                         * - Repeating and trailing separators are tolerated. Trailing separators in the
+                         *   provided glob have no meaning and are discarded.
+                         * - Absolute globs will only match absolute paths, etc.
+                         * - Empty globs will match nothing.
+                         * - Any special glob syntax must be contained to one path segment. For example,
+                         *   \`?(foo|bar/baz)\` is invalid. The separator will take precedence and the
+                         *   first segment ends with an unclosed group.
+                         * - If a path segment ends with unclosed groups or a dangling escape prefix, a
+                         *   parse error has occurred. Every character for that segment is taken
+                         *   literally in this event.
+                         *
+                         * Limitations:
+                         * - A negative group like \`!(foo|bar)\` will wrongly be converted to a negative
+                         *   look-ahead followed by a wildcard. This means that \`!(foo).js\` will wrongly
+                         *   fail to match \`foobar.js\`, even though \`foobar\` is not \`foo\`. Effectively,
+                         *   \`!(foo|bar)\` is treated like \`!(@(foo|bar)*)\`. This will work correctly if
+                         *   the group occurs not nested at the end of the segment. */
+                        export function globToRegExp(
+                          glob: string,
+                          {
+                            extended = true,
+                            globstar: globstarOption = true,
+                            os = osType,
+                            caseInsensitive = false,
+                          }: GlobToRegExpOptions = {},
+                        ): RegExp {
+                          if (glob == "") {
+                            return /(?!)/;
+                          }
+                        
+                          const sep = os == "windows" ? "(?:\\\\\\\\|/)+" : "/+";
+                          const sepMaybe = os == "windows" ? "(?:\\\\\\\\|/)*" : "/*";
+                          const seps = os == "windows" ? ["\\\\", "/"] : ["/"];
+                          const globstar = os == "windows"
+                            ? "(?:[^\\\\\\\\/]*(?:\\\\\\\\|/|\$)+)*"
+                            : "(?:[^/]*(?:/|\$)+)*";
+                          const wildcard = os == "windows" ? "[^\\\\\\\\/]*" : "[^/]*";
+                          const escapePrefix = os == "windows" ? "\`" : "\\\\";
+                        
+                          // Remove trailing separators.
+                          let newLength = glob.length;
+                          for (; newLength > 1 && seps.includes(glob[newLength - 1]); newLength--);
+                          glob = glob.slice(0, newLength);
+                        
+                          let regExpString = "";
+                        
+                          // Terminates correctly. Trust that \`j\` is incremented every iteration.
+                          for (let j = 0; j < glob.length;) {
+                            let segment = "";
+                            const groupStack: string[] = [];
+                            let inRange = false;
+                            let inEscape = false;
+                            let endsWithSep = false;
+                            let i = j;
+                        
+                            // Terminates with \`i\` at the non-inclusive end of the current segment.
+                            for (; i < glob.length && !seps.includes(glob[i]); i++) {
+                              if (inEscape) {
+                                inEscape = false;
+                                const escapeChars = inRange ? rangeEscapeChars : regExpEscapeChars;
+                                segment += escapeChars.includes(glob[i]) ? \`\\\\\${glob[i]}\` : glob[i];
+                                continue;
+                              }
+                        
+                              if (glob[i] == escapePrefix) {
+                                inEscape = true;
+                                continue;
+                              }
+                        
+                              if (glob[i] == "[") {
+                                if (!inRange) {
+                                  inRange = true;
+                                  segment += "[";
+                                  if (glob[i + 1] == "!") {
+                                    i++;
+                                    segment += "^";
+                                  } else if (glob[i + 1] == "^") {
+                                    i++;
+                                    segment += "\\\\^";
+                                  }
+                                  continue;
+                                } else if (glob[i + 1] == ":") {
+                                  let k = i + 1;
+                                  let value = "";
+                                  while (glob[k + 1] != null && glob[k + 1] != ":") {
+                                    value += glob[k + 1];
+                                    k++;
+                                  }
+                                  if (glob[k + 1] == ":" && glob[k + 2] == "]") {
+                                    i = k + 2;
+                                    if (value == "alnum") segment += "\\\\dA-Za-z";
+                                    else if (value == "alpha") segment += "A-Za-z";
+                                    else if (value == "ascii") segment += "\\x00-\\x7F";
+                                    else if (value == "blank") segment += "\\t ";
+                                    else if (value == "cntrl") segment += "\\x00-\\x1F\\x7F";
+                                    else if (value == "digit") segment += "\\\\d";
+                                    else if (value == "graph") segment += "\\x21-\\x7E";
+                                    else if (value == "lower") segment += "a-z";
+                                    else if (value == "print") segment += "\\x20-\\x7E";
+                                    else if (value == "punct") {
+                                      segment += "!\\"#\$%&'()*+,\\\\-./:;<=>?@[\\\\\\\\\\\\]^_‘{|}~";
+                                    } else if (value == "space") segment += "\\\\s\\v";
+                                    else if (value == "upper") segment += "A-Z";
+                                    else if (value == "word") segment += "\\\\w";
+                                    else if (value == "xdigit") segment += "\\\\dA-Fa-f";
+                                    continue;
+                                  }
+                                }
+                              }
+                        
+                              if (glob[i] == "]" && inRange) {
+                                inRange = false;
+                                segment += "]";
+                                continue;
+                              }
+                        
+                              if (inRange) {
+                                if (glob[i] == "\\\\") {
+                                  segment += \`\\\\\\\\\`;
+                                } else {
+                                  segment += glob[i];
+                                }
+                                continue;
+                              }
+                        
+                              if (
+                                glob[i] == ")" && groupStack.length > 0 &&
+                                groupStack[groupStack.length - 1] != "BRACE"
+                              ) {
+                                segment += ")";
+                                const type = groupStack.pop()!;
+                                if (type == "!") {
+                                  segment += wildcard;
+                                } else if (type != "@") {
+                                  segment += type;
+                                }
+                                continue;
+                              }
+                        
+                              if (
+                                glob[i] == "|" && groupStack.length > 0 &&
+                                groupStack[groupStack.length - 1] != "BRACE"
+                              ) {
+                                segment += "|";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "+" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("+");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "@" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("@");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "?") {
+                                if (extended && glob[i + 1] == "(") {
+                                  i++;
+                                  groupStack.push("?");
+                                  segment += "(?:";
+                                } else {
+                                  segment += ".";
+                                }
+                                continue;
+                              }
+                        
+                              if (glob[i] == "!" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("!");
+                                segment += "(?!";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "{") {
+                                groupStack.push("BRACE");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "}" && groupStack[groupStack.length - 1] == "BRACE") {
+                                groupStack.pop();
+                                segment += ")";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "," && groupStack[groupStack.length - 1] == "BRACE") {
+                                segment += "|";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "*") {
+                                if (extended && glob[i + 1] == "(") {
+                                  i++;
+                                  groupStack.push("*");
+                                  segment += "(?:";
+                                } else {
+                                  const prevChar = glob[i - 1];
+                                  let numStars = 1;
+                                  while (glob[i + 1] == "*") {
+                                    i++;
+                                    numStars++;
+                                  }
+                                  const nextChar = glob[i + 1];
+                                  if (
+                                    globstarOption && numStars == 2 &&
+                                    [...seps, undefined].includes(prevChar) &&
+                                    [...seps, undefined].includes(nextChar)
+                                  ) {
+                                    segment += globstar;
+                                    endsWithSep = true;
+                                  } else {
+                                    segment += wildcard;
+                                  }
+                                }
+                                continue;
+                              }
+                        
+                              segment += regExpEscapeChars.includes(glob[i]) ? \`\\\\\${glob[i]}\` : glob[i];
+                            }
+                        
+                            // Check for unclosed groups or a dangling backslash.
+                            if (groupStack.length > 0 || inRange || inEscape) {
+                              // Parse failure. Take all characters from this segment literally.
+                              segment = "";
+                              for (const c of glob.slice(j, i)) {
+                                segment += regExpEscapeChars.includes(c) ? \`\\\\\${c}\` : c;
+                                endsWithSep = false;
+                              }
+                            }
+                        
+                            regExpString += segment;
+                            if (!endsWithSep) {
+                              regExpString += i < glob.length ? sep : sepMaybe;
+                              endsWithSep = true;
+                            }
+                        
+                            // Terminates with \`i\` at the start of the next segment.
+                            while (seps.includes(glob[i])) i++;
+                        
+                            // Check that the next value of \`j\` is indeed higher than the current value.
+                            if (!(i > j)) {
+                              throw new Error("Assertion failure: i > j (potential infinite loop)");
+                            }
+                            j = i;
+                          }
+                        
+                          regExpString = \`^\${regExpString}\$\`;
+                          return new RegExp(regExpString, caseInsensitive ? "i" : "");
+                        }
+                        
+                        /** Test whether the given string is a glob */
+                        export function isGlob(str: string): boolean {
+                          const chars: Record<string, string> = { "{": "}", "(": ")", "[": "]" };
+                          const regex =
+                            /\\\\(.)|(^!|\\*|\\?|[\\].+)]\\?|\\[[^\\\\\\]]+\\]|\\{[^\\\\}]+\\}|\\(\\?[:!=][^\\\\)]+\\)|\\([^|]+\\|[^\\\\)]+\\))/;
+                        
+                          if (str === "") {
+                            return false;
+                          }
+                        
+                          let match: RegExpExecArray | null;
+                        
+                          while ((match = regex.exec(str))) {
+                            if (match[2]) return true;
+                            let idx = match.index + match[0].length;
+                        
+                            // if an open bracket/brace/paren is escaped,
+                            // set the index to the next closing character
+                            const open = match[1];
+                            const close = open ? chars[open] : null;
+                            if (open && close) {
+                              const n = str.indexOf(close, idx);
+                              if (n !== -1) {
+                                idx = n + 1;
+                              }
+                            }
+                        
+                            str = str.slice(idx);
+                          }
+                        
+                          return false;
+                        }
+                        
+                        /** Like normalize(), but doesn't collapse "**\\/.." when \`globstar\` is true. */
+                        export function normalizeGlob(
+                          glob: string,
+                          { globstar = false }: GlobOptions = {},
+                        ): string {
+                          if (glob.match(/\\0/g)) {
+                            throw new Error(\`Glob contains invalid characters: "\${glob}"\`);
+                          }
+                          if (!globstar) {
+                            return normalize(glob);
+                          }
+                          const s = SEP_PATTERN.source;
+                          const badParentPattern = new RegExp(
+                            \`(?<=(\${s}|^)\\\\*\\\\*\${s})\\\\.\\\\.(?=\${s}|\$)\`,
+                            "g",
+                          );
+                          return normalize(glob.replace(badParentPattern, "\\0")).replace(/\\0/g, "..");
+                        }
+                        
+                        /** Like join(), but doesn't collapse "**\\/.." when \`globstar\` is true. */
+                        export function joinGlobs(
+                          globs: string[],
+                          { extended = true, globstar = false }: GlobOptions = {},
+                        ): string {
+                          if (!globstar || globs.length == 0) {
+                            return join(...globs);
+                          }
+                          if (globs.length === 0) return ".";
+                          let joined: string | undefined;
+                          for (const glob of globs) {
+                            const path = glob;
+                            if (path.length > 0) {
+                              if (!joined) joined = path;
+                              else joined += \`\${SEP}\${path}\`;
+                            }
+                          }
+                          if (!joined) return ".";
+                          return normalizeGlob(joined, { extended, globstar });
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/ensure_dir.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/ensure_dir.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                        /**
+                         * Ensures that the directory exists.
+                         * If the directory structure does not exist, it is created. Like mkdir -p.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export async function ensureDir(dir: string) {
+                          try {
+                            const fileInfo = await Deno.lstat(dir);
+                            if (!fileInfo.isDirectory) {
+                              throw new Error(
+                                \`Ensure path exists, expected 'dir', got '\${
+                                  getFileInfoType(fileInfo)
+                                }'\`,
+                              );
+                            }
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              // if dir not exists. then create it.
+                              await Deno.mkdir(dir, { recursive: true });
+                              return;
+                            }
+                            throw err;
+                          }
+                        }
+                        
+                        /**
+                         * Ensures that the directory exists.
+                         * If the directory structure does not exist, it is created. Like mkdir -p.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export function ensureDirSync(dir: string): void {
+                          try {
+                            const fileInfo = Deno.lstatSync(dir);
+                            if (!fileInfo.isDirectory) {
+                              throw new Error(
+                                \`Ensure path exists, expected 'dir', got '\${
+                                  getFileInfoType(fileInfo)
+                                }'\`,
+                              );
+                            }
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              // if dir not exists. then create it.
+                              Deno.mkdirSync(dir, { recursive: true });
+                              return;
+                            }
+                            throw err;
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/_util.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/_util.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                        /**
+                         * Test whether or not \`dest\` is a sub-directory of \`src\`
+                         * @param src src file path
+                         * @param dest dest file path
+                         * @param sep path separator
+                         */
+                        export function isSubdir(
+                          src: string,
+                          dest: string,
+                          sep: string = path.sep,
+                        ): boolean {
+                          if (src === dest) {
+                            return false;
+                          }
+                          const srcArray = src.split(sep);
+                          const destArray = dest.split(sep);
+                          return srcArray.every((current, i) => destArray[i] === current);
+                        }
+                        
+                        export type PathType = "file" | "dir" | "symlink";
+                        
+                        /**
+                         * Get a human readable file type string.
+                         *
+                         * @param fileInfo A FileInfo describes a file and is returned by \`stat\`,
+                         *                 \`lstat\`
+                         */
+                        export function getFileInfoType(fileInfo: Deno.FileInfo): PathType | undefined {
+                          return fileInfo.isFile
+                            ? "file"
+                            : fileInfo.isDirectory
+                            ? "dir"
+                            : fileInfo.isSymlink
+                            ? "symlink"
+                            : undefined;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/ensure_file.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/ensure_file.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                
+                        
+                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                        /**
+                         * Ensures that the file exists.
+                         * If the file that is requested to be created is in directories that do not
+                         * exist.
+                         * these directories are created. If the file already exists,
+                         * it is NOTMODIFIED.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export async function ensureFile(filePath: string) {
+                          try {
+                            // if file exists
+                            const stat = await Deno.lstat(filePath);
+                            if (!stat.isFile) {
+                              throw new Error(
+                                \`Ensure path exists, expected 'file', got '\${getFileInfoType(stat)}'\`,
+                              );
+                            }
+                          } catch (err) {
+                            // if file not exists
+                            if (err instanceof Deno.errors.NotFound) {
+                              // ensure dir exists
+                              await ensureDir(path.dirname(filePath));
+                              // create file
+                              await Deno.writeFile(filePath, new Uint8Array());
+                              return;
+                            }
+                        
+                            throw err;
+                          }
+                        }
+                        
+                        /**
+                         * Ensures that the file exists.
+                         * If the file that is requested to be created is in directories that do not
+                         * exist,
+                         * these directories are created. If the file already exists,
+                         * it is NOT MODIFIED.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         */
+                        export function ensureFileSync(filePath: string): void {
+                          try {
+                            // if file exists
+                            const stat = Deno.lstatSync(filePath);
+                            if (!stat.isFile) {
+                              throw new Error(
+                                \`Ensure path exists, expected 'file', got '\${getFileInfoType(stat)}'\`,
+                              );
+                            }
+                          } catch (err) {
+                            // if file not exists
+                            if (err instanceof Deno.errors.NotFound) {
+                              // ensure dir exists
+                              ensureDirSync(path.dirname(filePath));
+                              // create file
+                              Deno.writeFileSync(filePath, new Uint8Array());
+                              return;
+                            }
+                            throw err;
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/ensure_link.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/ensure_link.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                
+                        
+                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                
+                        
+                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                        /**
+                         * Ensures that the hard link exists.
+                         * If the directory structure does not exist, it is created.
+                         *
+                         * @param src the source file path. Directory hard links are not allowed.
+                         * @param dest the destination link path
+                         */
+                        export async function ensureLink(src: string, dest: string) {
+                          if (await exists(dest)) {
+                            const destStatInfo = await Deno.lstat(dest);
+                            const destFilePathType = getFileInfoType(destStatInfo);
+                            if (destFilePathType !== "file") {
+                              throw new Error(
+                                \`Ensure path exists, expected 'file', got '\${destFilePathType}'\`,
+                              );
+                            }
+                            return;
+                          }
+                        
+                          await ensureDir(path.dirname(dest));
+                        
+                          await Deno.link(src, dest);
+                        }
+                        
+                        /**
+                         * Ensures that the hard link exists.
+                         * If the directory structure does not exist, it is created.
+                         *
+                         * @param src the source file path. Directory hard links are not allowed.
+                         * @param dest the destination link path
+                         */
+                        export function ensureLinkSync(src: string, dest: string): void {
+                          if (existsSync(dest)) {
+                            const destStatInfo = Deno.lstatSync(dest);
+                            const destFilePathType = getFileInfoType(destStatInfo);
+                            if (destFilePathType !== "file") {
+                              throw new Error(
+                                \`Ensure path exists, expected 'file', got '\${destFilePathType}'\`,
+                              );
+                            }
+                            return;
+                          }
+                        
+                          ensureDirSync(path.dirname(dest));
+                        
+                          Deno.linkSync(src, dest);
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/ensure_symlink.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/ensure_symlink.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                
+                        
+                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                
+                        
+                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                        /**
+                         * Ensures that the link exists.
+                         * If the directory structure does not exist, it is created.
+                         *
+                         * @param src the source file path
+                         * @param dest the destination link path
+                         */
+                        export async function ensureSymlink(src: string, dest: string) {
+                          const srcStatInfo = await Deno.lstat(src);
+                          const srcFilePathType = getFileInfoType(srcStatInfo);
+                        
+                          if (await exists(dest)) {
+                            const destStatInfo = await Deno.lstat(dest);
+                            const destFilePathType = getFileInfoType(destStatInfo);
+                            if (destFilePathType !== "symlink") {
+                              throw new Error(
+                                \`Ensure path exists, expected 'symlink', got '\${destFilePathType}'\`,
+                              );
+                            }
+                            return;
+                          }
+                        
+                          await ensureDir(path.dirname(dest));
+                        
+                          const options: Deno.SymlinkOptions | undefined = isWindows
+                            ? {
+                              type: srcFilePathType === "dir" ? "dir" : "file",
+                            }
+                            : undefined;
+                        
+                          await Deno.symlink(src, dest, options);
+                        }
+                        
+                        /**
+                         * Ensures that the link exists.
+                         * If the directory structure does not exist, it is created.
+                         *
+                         * @param src the source file path
+                         * @param dest the destination link path
+                         */
+                        export function ensureSymlinkSync(src: string, dest: string): void {
+                          const srcStatInfo = Deno.lstatSync(src);
+                          const srcFilePathType = getFileInfoType(srcStatInfo);
+                        
+                          if (existsSync(dest)) {
+                            const destStatInfo = Deno.lstatSync(dest);
+                            const destFilePathType = getFileInfoType(destStatInfo);
+                            if (destFilePathType !== "symlink") {
+                              throw new Error(
+                                \`Ensure path exists, expected 'symlink', got '\${destFilePathType}'\`,
+                              );
+                            }
+                            return;
+                          }
+                        
+                          ensureDirSync(path.dirname(dest));
+                        
+                          const options: Deno.SymlinkOptions | undefined = isWindows
+                            ? {
+                              type: srcFilePathType === "dir" ? "dir" : "file",
+                            }
+                            : undefined;
+                        
+                          Deno.symlinkSync(src, dest, options);
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/exists.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/exists.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        /**
+                         * Test whether or not the given path exists by checking with the file system
+                         * @deprecated Checking the state of a file before using it causes a race condition. Perform the actual operation directly instead.
+                         * @see https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use
+                         */
+                        export async function exists(filePath: string): Promise<boolean> {
+                          try {
+                            await Deno.lstat(filePath);
+                            return true;
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              return false;
+                            }
+                        
+                            throw err;
+                          }
+                        }
+                        
+                        /**
+                         * Test whether or not the given path exists by checking with the file system
+                         * @deprecated Checking the state of a file before using it causes a race condition. Perform the actual operation directly instead.
+                         * @see https://en.wikipedia.org/wiki/Time-of-check_to_time-of-use
+                         */
+                        export function existsSync(filePath: string): boolean {
+                          try {
+                            Deno.lstatSync(filePath);
+                            return true;
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              return false;
+                            }
+                            throw err;
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/expand_glob.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/expand_glob.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const { GlobOptions , globToRegExp , isAbsolute , isGlob , joinGlobs , resolve , SEP_PATTERN , } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                                                    const { _createWalkEntry , _createWalkEntrySync , walk , WalkEntry , walkSync , } = (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"]);
+                                                
+                        
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                        export interface ExpandGlobOptions extends Omit<GlobOptions, "os"> {
+                          root?: string;
+                          exclude?: string[];
+                          includeDirs?: boolean;
+                        }
+                        
+                        interface SplitPath {
+                          segments: string[];
+                          isAbsolute: boolean;
+                          hasTrailingSep: boolean;
+                          // Defined for any absolute Windows path.
+                          winRoot?: string;
+                        }
+                        
+                        function split(path: string): SplitPath {
+                          const s = SEP_PATTERN.source;
+                          const segments = path
+                            .replace(new RegExp(\`^\${s}|\${s}\$\`, "g"), "")
+                            .split(SEP_PATTERN);
+                          const isAbsolute_ = isAbsolute(path);
+                          return {
+                            segments,
+                            isAbsolute: isAbsolute_,
+                            hasTrailingSep: !!path.match(new RegExp(\`\${s}\$\`)),
+                            winRoot: isWindows && isAbsolute_ ? segments.shift() : undefined,
+                          };
+                        }
+                        
+                        function throwUnlessNotFound(error: unknown): void {
+                          if (!(error instanceof Deno.errors.NotFound)) {
+                            throw error;
+                          }
+                        }
+                        
+                        function comparePath(a: WalkEntry, b: WalkEntry): number {
+                          if (a.path < b.path) return -1;
+                          if (a.path > b.path) return 1;
+                          return 0;
+                        }
+                        
+                        /** Expand the glob string from the specified \`root\` directory and yield each
+                         * result as a \`WalkEntry\` object.
+                         *
+                         * See [\`globToRegExp()\`](../path/glob.ts#globToRegExp) for details on supported
+                         * syntax.
+                         *
+                         * Example:
+                         * \`\`\`ts
+                         *      import { expandGlob } from "./expand_glob.ts";
+                         *      for await (const file of expandGlob("**\\/*.ts")) {
+                         *        console.log(file);
+                         *      }
+                         * \`\`\`
+                         */
+                        export async function* expandGlob(
+                          glob: string,
+                          {
+                            root = Deno.cwd(),
+                            exclude = [],
+                            includeDirs = true,
+                            extended = true,
+                            globstar = false,
+                            caseInsensitive,
+                          }: ExpandGlobOptions = {},
+                        ): AsyncIterableIterator<WalkEntry> {
+                          const globOptions: GlobOptions = { extended, globstar, caseInsensitive };
+                          const absRoot = resolve(root);
+                          const resolveFromRoot = (path: string): string => resolve(absRoot, path);
+                          const excludePatterns = exclude
+                            .map(resolveFromRoot)
+                            .map((s: string): RegExp => globToRegExp(s, globOptions));
+                          const shouldInclude = (path: string): boolean =>
+                            !excludePatterns.some((p: RegExp): boolean => !!path.match(p));
+                          const { segments, isAbsolute: isGlobAbsolute, hasTrailingSep, winRoot } =
+                            split(glob);
+                        
+                          let fixedRoot = isGlobAbsolute
+                            ? (winRoot != undefined ? winRoot : "/")
+                            : absRoot;
+                          while (segments.length > 0 && !isGlob(segments[0])) {
+                            const seg = segments.shift();
+                            assert(seg != null);
+                            fixedRoot = joinGlobs([fixedRoot, seg], globOptions);
+                          }
+                        
+                          let fixedRootInfo: WalkEntry;
+                          try {
+                            fixedRootInfo = await _createWalkEntry(fixedRoot);
+                          } catch (error) {
+                            return throwUnlessNotFound(error);
+                          }
+                        
+                          async function* advanceMatch(
+                            walkInfo: WalkEntry,
+                            globSegment: string,
+                          ): AsyncIterableIterator<WalkEntry> {
+                            if (!walkInfo.isDirectory) {
+                              return;
+                            } else if (globSegment == "..") {
+                              const parentPath = joinGlobs([walkInfo.path, ".."], globOptions);
+                              try {
+                                if (shouldInclude(parentPath)) {
+                                  return yield await _createWalkEntry(parentPath);
+                                }
+                              } catch (error) {
+                                throwUnlessNotFound(error);
+                              }
+                              return;
+                            } else if (globSegment == "**") {
+                              return yield* walk(walkInfo.path, { skip: excludePatterns });
+                            }
+                            const globPattern = globToRegExp(globSegment, globOptions);
+                            for await (
+                              const walkEntry of walk(walkInfo.path, {
+                                maxDepth: 1,
+                                skip: excludePatterns,
+                              })
+                            ) {
+                              if (
+                                walkEntry.path != walkInfo.path && walkEntry.name.match(globPattern)
+                              ) {
+                                yield walkEntry;
+                              }
+                            }
+                          }
+                        
+                          let currentMatches: WalkEntry[] = [fixedRootInfo];
+                          for (const segment of segments) {
+                            // Advancing the list of current matches may introduce duplicates, so we
+                            // pass everything through this Map.
+                            const nextMatchMap: Map<string, WalkEntry> = new Map();
+                            await Promise.all(currentMatches.map(async (currentMatch) => {
+                              for await (const nextMatch of advanceMatch(currentMatch, segment)) {
+                                nextMatchMap.set(nextMatch.path, nextMatch);
+                              }
+                            }));
+                            currentMatches = [...nextMatchMap.values()].sort(comparePath);
+                          }
+                          if (hasTrailingSep) {
+                            currentMatches = currentMatches.filter(
+                              (entry: WalkEntry): boolean => entry.isDirectory,
+                            );
+                          }
+                          if (!includeDirs) {
+                            currentMatches = currentMatches.filter(
+                              (entry: WalkEntry): boolean => !entry.isDirectory,
+                            );
+                          }
+                          yield* currentMatches;
+                        }
+                        
+                        /** Synchronous version of \`expandGlob()\`.
+                         *
+                         * Example:
+                         *
+                         * \`\`\`ts
+                         *      import { expandGlobSync } from "./expand_glob.ts";
+                         *      for (const file of expandGlobSync("**\\/*.ts")) {
+                         *        console.log(file);
+                         *      }
+                         * \`\`\`
+                         */
+                        export function* expandGlobSync(
+                          glob: string,
+                          {
+                            root = Deno.cwd(),
+                            exclude = [],
+                            includeDirs = true,
+                            extended = true,
+                            globstar = false,
+                            caseInsensitive,
+                          }: ExpandGlobOptions = {},
+                        ): IterableIterator<WalkEntry> {
+                          const globOptions: GlobOptions = { extended, globstar, caseInsensitive };
+                          const absRoot = resolve(root);
+                          const resolveFromRoot = (path: string): string => resolve(absRoot, path);
+                          const excludePatterns = exclude
+                            .map(resolveFromRoot)
+                            .map((s: string): RegExp => globToRegExp(s, globOptions));
+                          const shouldInclude = (path: string): boolean =>
+                            !excludePatterns.some((p: RegExp): boolean => !!path.match(p));
+                          const { segments, isAbsolute: isGlobAbsolute, hasTrailingSep, winRoot } =
+                            split(glob);
+                        
+                          let fixedRoot = isGlobAbsolute
+                            ? (winRoot != undefined ? winRoot : "/")
+                            : absRoot;
+                          while (segments.length > 0 && !isGlob(segments[0])) {
+                            const seg = segments.shift();
+                            assert(seg != null);
+                            fixedRoot = joinGlobs([fixedRoot, seg], globOptions);
+                          }
+                        
+                          let fixedRootInfo: WalkEntry;
+                          try {
+                            fixedRootInfo = _createWalkEntrySync(fixedRoot);
+                          } catch (error) {
+                            return throwUnlessNotFound(error);
+                          }
+                        
+                          function* advanceMatch(
+                            walkInfo: WalkEntry,
+                            globSegment: string,
+                          ): IterableIterator<WalkEntry> {
+                            if (!walkInfo.isDirectory) {
+                              return;
+                            } else if (globSegment == "..") {
+                              const parentPath = joinGlobs([walkInfo.path, ".."], globOptions);
+                              try {
+                                if (shouldInclude(parentPath)) {
+                                  return yield _createWalkEntrySync(parentPath);
+                                }
+                              } catch (error) {
+                                throwUnlessNotFound(error);
+                              }
+                              return;
+                            } else if (globSegment == "**") {
+                              return yield* walkSync(walkInfo.path, { skip: excludePatterns });
+                            }
+                            const globPattern = globToRegExp(globSegment, globOptions);
+                            for (
+                              const walkEntry of walkSync(walkInfo.path, {
+                                maxDepth: 1,
+                                skip: excludePatterns,
+                              })
+                            ) {
+                              if (
+                                walkEntry.path != walkInfo.path && walkEntry.name.match(globPattern)
+                              ) {
+                                yield walkEntry;
+                              }
+                            }
+                          }
+                        
+                          let currentMatches: WalkEntry[] = [fixedRootInfo];
+                          for (const segment of segments) {
+                            // Advancing the list of current matches may introduce duplicates, so we
+                            // pass everything through this Map.
+                            const nextMatchMap: Map<string, WalkEntry> = new Map();
+                            for (const currentMatch of currentMatches) {
+                              for (const nextMatch of advanceMatch(currentMatch, segment)) {
+                                nextMatchMap.set(nextMatch.path, nextMatch);
+                              }
+                            }
+                            currentMatches = [...nextMatchMap.values()].sort(comparePath);
+                          }
+                          if (hasTrailingSep) {
+                            currentMatches = currentMatches.filter(
+                              (entry: WalkEntry): boolean => entry.isDirectory,
+                            );
+                          }
+                          if (!includeDirs) {
+                            currentMatches = currentMatches.filter(
+                              (entry: WalkEntry): boolean => !entry.isDirectory,
+                            );
+                          }
+                          yield* currentMatches;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/move.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/move.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                
+                        
+                                                    const { isSubdir } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                        interface MoveOptions {
+                          overwrite?: boolean;
+                        }
+                        
+                        /** Moves a file or directory */
+                        export async function move(
+                          src: string,
+                          dest: string,
+                          { overwrite = false }: MoveOptions = {},
+                        ) {
+                          const srcStat = await Deno.stat(src);
+                        
+                          if (srcStat.isDirectory && isSubdir(src, dest)) {
+                            throw new Error(
+                              \`Cannot move '\${src}' to a subdirectory of itself, '\${dest}'.\`,
+                            );
+                          }
+                        
+                          if (overwrite) {
+                            if (await exists(dest)) {
+                              await Deno.remove(dest, { recursive: true });
+                            }
+                          } else {
+                            if (await exists(dest)) {
+                              throw new Error("dest already exists.");
+                            }
+                          }
+                        
+                          await Deno.rename(src, dest);
+                        
+                          return;
+                        }
+                        
+                        /** Moves a file or directory synchronously */
+                        export function moveSync(
+                          src: string,
+                          dest: string,
+                          { overwrite = false }: MoveOptions = {},
+                        ): void {
+                          const srcStat = Deno.statSync(src);
+                        
+                          if (srcStat.isDirectory && isSubdir(src, dest)) {
+                            throw new Error(
+                              \`Cannot move '\${src}' to a subdirectory of itself, '\${dest}'.\`,
+                            );
+                          }
+                        
+                          if (overwrite) {
+                            if (existsSync(dest)) {
+                              Deno.removeSync(dest, { recursive: true });
+                            }
+                          } else {
+                            if (existsSync(dest)) {
+                              throw new Error("dest already exists.");
+                            }
+                          }
+                        
+                          Deno.renameSync(src, dest);
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/copy.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/copy.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        
+                                                    const DenoUnstable = (await globalImports["https://deno.land/std@0.133.0/_deno_unstable.ts"]);
+                                                
+                        
+                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                
+                        
+                                                    const { getFileInfoType , isSubdir } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                
+                        
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                
+                        
+                        export interface CopyOptions {
+                          /**
+                           * overwrite existing file or directory. Default is \`false\`
+                           */
+                          overwrite?: boolean;
+                          /**
+                           * When \`true\`, will set last modification and access times to the ones of the
+                           * original source files.
+                           * When \`false\`, timestamp behavior is OS-dependent.
+                           * Default is \`false\`.
+                           */
+                          preserveTimestamps?: boolean;
+                        }
+                        
+                        interface InternalCopyOptions extends CopyOptions {
+                          /**
+                           * default is \`false\`
+                           */
+                          isFolder?: boolean;
+                        }
+                        
+                        async function ensureValidCopy(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ): Promise<Deno.FileInfo | undefined> {
+                          let destStat: Deno.FileInfo;
+                        
+                          try {
+                            destStat = await Deno.lstat(dest);
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              return;
+                            }
+                            throw err;
+                          }
+                        
+                          if (options.isFolder && !destStat.isDirectory) {
+                            throw new Error(
+                              \`Cannot overwrite non-directory '\${dest}' with directory '\${src}'.\`,
+                            );
+                          }
+                          if (!options.overwrite) {
+                            throw new Error(\`'\${dest}' already exists.\`);
+                          }
+                        
+                          return destStat;
+                        }
+                        
+                        function ensureValidCopySync(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ): Deno.FileInfo | undefined {
+                          let destStat: Deno.FileInfo;
+                          try {
+                            destStat = Deno.lstatSync(dest);
+                          } catch (err) {
+                            if (err instanceof Deno.errors.NotFound) {
+                              return;
+                            }
+                            throw err;
+                          }
+                        
+                          if (options.isFolder && !destStat.isDirectory) {
+                            throw new Error(
+                              \`Cannot overwrite non-directory '\${dest}' with directory '\${src}'.\`,
+                            );
+                          }
+                          if (!options.overwrite) {
+                            throw new Error(\`'\${dest}' already exists.\`);
+                          }
+                        
+                          return destStat;
+                        }
+                        
+                        /* copy file to dest */
+                        async function copyFile(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ) {
+                          await ensureValidCopy(src, dest, options);
+                          await Deno.copyFile(src, dest);
+                          if (options.preserveTimestamps) {
+                            const statInfo = await Deno.stat(src);
+                            assert(statInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(statInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            await DenoUnstable.utime(dest, statInfo.atime, statInfo.mtime);
+                          }
+                        }
+                        /* copy file to dest synchronously */
+                        function copyFileSync(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ): void {
+                          ensureValidCopySync(src, dest, options);
+                          Deno.copyFileSync(src, dest);
+                          if (options.preserveTimestamps) {
+                            const statInfo = Deno.statSync(src);
+                            assert(statInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(statInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            DenoUnstable.utimeSync(dest, statInfo.atime, statInfo.mtime);
+                          }
+                        }
+                        
+                        /* copy symlink to dest */
+                        async function copySymLink(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ) {
+                          await ensureValidCopy(src, dest, options);
+                          const originSrcFilePath = await Deno.readLink(src);
+                          const type = getFileInfoType(await Deno.lstat(src));
+                          if (isWindows) {
+                            await Deno.symlink(originSrcFilePath, dest, {
+                              type: type === "dir" ? "dir" : "file",
+                            });
+                          } else {
+                            await Deno.symlink(originSrcFilePath, dest);
+                          }
+                          if (options.preserveTimestamps) {
+                            const statInfo = await Deno.lstat(src);
+                            assert(statInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(statInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            await DenoUnstable.utime(dest, statInfo.atime, statInfo.mtime);
+                          }
+                        }
+                        
+                        /* copy symlink to dest synchronously */
+                        function copySymlinkSync(
+                          src: string,
+                          dest: string,
+                          options: InternalCopyOptions,
+                        ): void {
+                          ensureValidCopySync(src, dest, options);
+                          const originSrcFilePath = Deno.readLinkSync(src);
+                          const type = getFileInfoType(Deno.lstatSync(src));
+                          if (isWindows) {
+                            Deno.symlinkSync(originSrcFilePath, dest, {
+                              type: type === "dir" ? "dir" : "file",
+                            });
+                          } else {
+                            Deno.symlinkSync(originSrcFilePath, dest);
+                          }
+                        
+                          if (options.preserveTimestamps) {
+                            const statInfo = Deno.lstatSync(src);
+                            assert(statInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(statInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            DenoUnstable.utimeSync(dest, statInfo.atime, statInfo.mtime);
+                          }
+                        }
+                        
+                        /* copy folder from src to dest. */
+                        async function copyDir(
+                          src: string,
+                          dest: string,
+                          options: CopyOptions,
+                        ) {
+                          const destStat = await ensureValidCopy(src, dest, {
+                            ...options,
+                            isFolder: true,
+                          });
+                        
+                          if (!destStat) {
+                            await ensureDir(dest);
+                          }
+                        
+                          if (options.preserveTimestamps) {
+                            const srcStatInfo = await Deno.stat(src);
+                            assert(srcStatInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(srcStatInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            await DenoUnstable.utime(dest, srcStatInfo.atime, srcStatInfo.mtime);
+                          }
+                        
+                          for await (const entry of Deno.readDir(src)) {
+                            const srcPath = path.join(src, entry.name);
+                            const destPath = path.join(dest, path.basename(srcPath as string));
+                            if (entry.isSymlink) {
+                              await copySymLink(srcPath, destPath, options);
+                            } else if (entry.isDirectory) {
+                              await copyDir(srcPath, destPath, options);
+                            } else if (entry.isFile) {
+                              await copyFile(srcPath, destPath, options);
+                            }
+                          }
+                        }
+                        
+                        /* copy folder from src to dest synchronously */
+                        function copyDirSync(src: string, dest: string, options: CopyOptions): void {
+                          const destStat = ensureValidCopySync(src, dest, {
+                            ...options,
+                            isFolder: true,
+                          });
+                        
+                          if (!destStat) {
+                            ensureDirSync(dest);
+                          }
+                        
+                          if (options.preserveTimestamps) {
+                            const srcStatInfo = Deno.statSync(src);
+                            assert(srcStatInfo.atime instanceof Date, \`statInfo.atime is unavailable\`);
+                            assert(srcStatInfo.mtime instanceof Date, \`statInfo.mtime is unavailable\`);
+                            DenoUnstable.utimeSync(dest, srcStatInfo.atime, srcStatInfo.mtime);
+                          }
+                        
+                          for (const entry of Deno.readDirSync(src)) {
+                            assert(entry.name != null, "file.name must be set");
+                            const srcPath = path.join(src, entry.name);
+                            const destPath = path.join(dest, path.basename(srcPath as string));
+                            if (entry.isSymlink) {
+                              copySymlinkSync(srcPath, destPath, options);
+                            } else if (entry.isDirectory) {
+                              copyDirSync(srcPath, destPath, options);
+                            } else if (entry.isFile) {
+                              copyFileSync(srcPath, destPath, options);
+                            }
+                          }
+                        }
+                        
+                        /**
+                         * Copy a file or directory. The directory can have contents. Like \`cp -r\`.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         * @param src the file/directory path.
+                         *            Note that if \`src\` is a directory it will copy everything inside
+                         *            of this directory, not the entire directory itself
+                         * @param dest the destination path. Note that if \`src\` is a file, \`dest\` cannot
+                         *             be a directory
+                         * @param options
+                         */
+                        export async function copy(
+                          src: string,
+                          dest: string,
+                          options: CopyOptions = {},
+                        ) {
+                          src = path.resolve(src);
+                          dest = path.resolve(dest);
+                        
+                          if (src === dest) {
+                            throw new Error("Source and destination cannot be the same.");
+                          }
+                        
+                          const srcStat = await Deno.lstat(src);
+                        
+                          if (srcStat.isDirectory && isSubdir(src, dest)) {
+                            throw new Error(
+                              \`Cannot copy '\${src}' to a subdirectory of itself, '\${dest}'.\`,
+                            );
+                          }
+                        
+                          if (srcStat.isSymlink) {
+                            await copySymLink(src, dest, options);
+                          } else if (srcStat.isDirectory) {
+                            await copyDir(src, dest, options);
+                          } else if (srcStat.isFile) {
+                            await copyFile(src, dest, options);
+                          }
+                        }
+                        
+                        /**
+                         * Copy a file or directory. The directory can have contents. Like \`cp -r\`.
+                         * Requires the \`--allow-read\` and \`--allow-write\` flag.
+                         * @param src the file/directory path.
+                         *            Note that if \`src\` is a directory it will copy everything inside
+                         *            of this directory, not the entire directory itself
+                         * @param dest the destination path. Note that if \`src\` is a file, \`dest\` cannot
+                         *             be a directory
+                         * @param options
+                         */
+                        export function copySync(
+                          src: string,
+                          dest: string,
+                          options: CopyOptions = {},
+                        ): void {
+                          src = path.resolve(src);
+                          dest = path.resolve(dest);
+                        
+                          if (src === dest) {
+                            throw new Error("Source and destination cannot be the same.");
+                          }
+                        
+                          const srcStat = Deno.lstatSync(src);
+                        
+                          if (srcStat.isDirectory && isSubdir(src, dest)) {
+                            throw new Error(
+                              \`Cannot copy '\${src}' to a subdirectory of itself, '\${dest}'.\`,
+                            );
+                          }
+                        
+                          if (srcStat.isSymlink) {
+                            copySymlinkSync(src, dest, options);
+                          } else if (srcStat.isDirectory) {
+                            copyDirSync(src, dest, options);
+                          } else if (srcStat.isFile) {
+                            copyFileSync(src, dest, options);
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/_deno_unstable.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/_deno_unstable.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // @ts-nocheck Bypass static errors for missing --unstable.
+                        
+                        export type HttpClient = Deno.HttpClient;
+                        
+                        export function addSignalListener(
+                          ...args: Parameters<typeof Deno.addSignalListener>
+                        ): ReturnType<typeof Deno.addSignalListener> {
+                          if (typeof Deno.addSignalListener == "function") {
+                            return Deno.addSignalListener(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function createHttpClient(
+                          ...args: Parameters<typeof Deno.createHttpClient>
+                        ): ReturnType<typeof Deno.createHttpClient> {
+                          if (typeof Deno.createHttpClient == "function") {
+                            return Deno.createHttpClient(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function consoleSize(
+                          ...args: Parameters<typeof Deno.consoleSize>
+                        ): ReturnType<typeof Deno.consoleSize> {
+                          if (typeof Deno.consoleSize == "function") {
+                            return Deno.consoleSize(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function futime(
+                          ...args: Parameters<typeof Deno.futime>
+                        ): ReturnType<typeof Deno.futime> {
+                          if (typeof Deno.futime == "function") {
+                            return Deno.futime(...args);
+                          } else {
+                            return Promise.reject(new TypeError("Requires --unstable"));
+                          }
+                        }
+                        
+                        export function futimeSync(
+                          ...args: Parameters<typeof Deno.futimeSync>
+                        ): ReturnType<typeof Deno.futimeSync> {
+                          if (typeof Deno.futimeSync == "function") {
+                            return Deno.futimeSync(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function getUid(
+                          ...args: Parameters<typeof Deno.getUid>
+                        ): ReturnType<typeof Deno.getUid> {
+                          if (typeof Deno.getUid == "function") {
+                            return Deno.getUid(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function hostname(
+                          ...args: Parameters<typeof Deno.hostname>
+                        ): ReturnType<typeof Deno.hostname> {
+                          if (typeof Deno.hostname == "function") {
+                            return Deno.hostname(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function loadavg(
+                          ...args: Parameters<typeof Deno.loadavg>
+                        ): ReturnType<typeof Deno.loadavg> {
+                          if (typeof Deno.loadavg == "function") {
+                            return Deno.loadavg(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function osRelease(
+                          ...args: Parameters<typeof Deno.osRelease>
+                        ): ReturnType<typeof Deno.osRelease> {
+                          if (typeof Deno.osRelease == "function") {
+                            return Deno.osRelease(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function removeSignalListener(
+                          ...args: Parameters<typeof Deno.removeSignalListener>
+                        ): ReturnType<typeof Deno.removeSignalListener> {
+                          if (typeof Deno.removeSignalListener == "function") {
+                            return Deno.removeSignalListener(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function setRaw(
+                          ...args: Parameters<typeof Deno.setRaw>
+                        ): ReturnType<typeof Deno.setRaw> {
+                          if (typeof Deno.setRaw == "function") {
+                            return Deno.setRaw(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function systemMemoryInfo(
+                          ...args: Parameters<typeof Deno.systemMemoryInfo>
+                        ): ReturnType<typeof Deno.systemMemoryInfo> {
+                          if (typeof Deno.systemMemoryInfo == "function") {
+                            return Deno.systemMemoryInfo(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function utime(
+                          ...args: Parameters<typeof Deno.utime>
+                        ): ReturnType<typeof Deno.utime> {
+                          if (typeof Deno.utime == "function") {
+                            return Deno.utime(...args);
+                          } else {
+                            return Promise.reject(new TypeError("Requires --unstable"));
+                          }
+                        }
+                        
+                        export function utimeSync(
+                          ...args: Parameters<typeof Deno.utimeSync>
+                        ): ReturnType<typeof Deno.utimeSync> {
+                          if (typeof Deno.utimeSync == "function") {
+                            return Deno.utimeSync(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }
+                        
+                        export function networkInterfaces(
+                          ...args: Parameters<typeof Deno.networkInterfaces>
+                        ): ReturnType<typeof Deno.networkInterfaces> {
+                          if (typeof Deno.networkInterfaces == "function") {
+                            return Deno.networkInterfaces(...args);
+                          } else {
+                            throw new TypeError("Requires --unstable");
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/walk.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/walk.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // Documentation and interface for walk were adapted from Go
+                        // https://golang.org/pkg/path/filepath/#Walk
+                        // Copyright 2009 The Go Authors. All rights reserved. BSD license.
+                        
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                
+                        
+                                                    const { basename , join , normalize } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                
+                        
+                        /** Create WalkEntry for the \`path\` synchronously */
+                        export function _createWalkEntrySync(path: string): WalkEntry {
+                          path = normalize(path);
+                          const name = basename(path);
+                          const info = Deno.statSync(path);
+                          return {
+                            path,
+                            name,
+                            isFile: info.isFile,
+                            isDirectory: info.isDirectory,
+                            isSymlink: info.isSymlink,
+                          };
+                        }
+                        
+                        /** Create WalkEntry for the \`path\` asynchronously */
+                        export async function _createWalkEntry(path: string): Promise<WalkEntry> {
+                          path = normalize(path);
+                          const name = basename(path);
+                          const info = await Deno.stat(path);
+                          return {
+                            path,
+                            name,
+                            isFile: info.isFile,
+                            isDirectory: info.isDirectory,
+                            isSymlink: info.isSymlink,
+                          };
+                        }
+                        
+                        export interface WalkOptions {
+                          maxDepth?: number;
+                          includeFiles?: boolean;
+                          includeDirs?: boolean;
+                          followSymlinks?: boolean;
+                          exts?: string[];
+                          match?: RegExp[];
+                          skip?: RegExp[];
+                        }
+                        
+                        function include(
+                          path: string,
+                          exts?: string[],
+                          match?: RegExp[],
+                          skip?: RegExp[],
+                        ): boolean {
+                          if (exts && !exts.some((ext): boolean => path.endsWith(ext))) {
+                            return false;
+                          }
+                          if (match && !match.some((pattern): boolean => !!path.match(pattern))) {
+                            return false;
+                          }
+                          if (skip && skip.some((pattern): boolean => !!path.match(pattern))) {
+                            return false;
+                          }
+                          return true;
+                        }
+                        
+                        function wrapErrorWithRootPath(err: unknown, root: string) {
+                          if (err instanceof Error && "root" in err) return err;
+                          const e = new Error() as Error & { root: string };
+                          e.root = root;
+                          e.message = err instanceof Error
+                            ? \`\${err.message} for path "\${root}"\`
+                            : \`[non-error thrown] for path "\${root}"\`;
+                          e.stack = err instanceof Error ? err.stack : undefined;
+                          e.cause = err instanceof Error ? err.cause : undefined;
+                          return e;
+                        }
+                        
+                        export interface WalkEntry extends Deno.DirEntry {
+                          path: string;
+                        }
+                        
+                        /** Walks the file tree rooted at root, yielding each file or directory in the
+                         * tree filtered according to the given options. The files are walked in lexical
+                         * order, which makes the output deterministic but means that for very large
+                         * directories walk() can be inefficient.
+                         *
+                         * Options:
+                         * - maxDepth?: number = Infinity;
+                         * - includeFiles?: boolean = true;
+                         * - includeDirs?: boolean = true;
+                         * - followSymlinks?: boolean = false;
+                         * - exts?: string[];
+                         * - match?: RegExp[];
+                         * - skip?: RegExp[];
+                         *
+                         * \`\`\`ts
+                         *       import { walk } from "./walk.ts";
+                         *       import { assert } from "../testing/asserts.ts";
+                         *
+                         *       for await (const entry of walk(".")) {
+                         *         console.log(entry.path);
+                         *         assert(entry.isFile);
+                         *       }
+                         * \`\`\`
+                         */
+                        export async function* walk(
+                          root: string,
+                          {
+                            maxDepth = Infinity,
+                            includeFiles = true,
+                            includeDirs = true,
+                            followSymlinks = false,
+                            exts = undefined,
+                            match = undefined,
+                            skip = undefined,
+                          }: WalkOptions = {},
+                        ): AsyncIterableIterator<WalkEntry> {
+                          if (maxDepth < 0) {
+                            return;
+                          }
+                          if (includeDirs && include(root, exts, match, skip)) {
+                            yield await _createWalkEntry(root);
+                          }
+                          if (maxDepth < 1 || !include(root, undefined, undefined, skip)) {
+                            return;
+                          }
+                          try {
+                            for await (const entry of Deno.readDir(root)) {
+                              assert(entry.name != null);
+                              let path = join(root, entry.name);
+                        
+                              let { isSymlink, isDirectory } = entry;
+                        
+                              if (isSymlink) {
+                                if (!followSymlinks) continue;
+                                path = await Deno.realPath(path);
+                                // Caveat emptor: don't assume |path| is not a symlink. realpath()
+                                // resolves symlinks but another process can replace the file system
+                                // entity with a different type of entity before we call lstat().
+                                ({ isSymlink, isDirectory } = await Deno.lstat(path));
+                              }
+                        
+                              if (isSymlink || isDirectory) {
+                                yield* walk(path, {
+                                  maxDepth: maxDepth - 1,
+                                  includeFiles,
+                                  includeDirs,
+                                  followSymlinks,
+                                  exts,
+                                  match,
+                                  skip,
+                                });
+                              } else if (includeFiles && include(path, exts, match, skip)) {
+                                yield { path, ...entry };
+                              }
+                            }
+                          } catch (err) {
+                            throw wrapErrorWithRootPath(err, normalize(root));
+                          }
+                        }
+                        
+                        /** Same as walk() but uses synchronous ops */
+                        export function* walkSync(
+                          root: string,
+                          {
+                            maxDepth = Infinity,
+                            includeFiles = true,
+                            includeDirs = true,
+                            followSymlinks = false,
+                            exts = undefined,
+                            match = undefined,
+                            skip = undefined,
+                          }: WalkOptions = {},
+                        ): IterableIterator<WalkEntry> {
+                          if (maxDepth < 0) {
+                            return;
+                          }
+                          if (includeDirs && include(root, exts, match, skip)) {
+                            yield _createWalkEntrySync(root);
+                          }
+                          if (maxDepth < 1 || !include(root, undefined, undefined, skip)) {
+                            return;
+                          }
+                          let entries;
+                          try {
+                            entries = Deno.readDirSync(root);
+                          } catch (err) {
+                            throw wrapErrorWithRootPath(err, normalize(root));
+                          }
+                          for (const entry of entries) {
+                            assert(entry.name != null);
+                            let path = join(root, entry.name);
+                        
+                            let { isSymlink, isDirectory } = entry;
+                        
+                            if (isSymlink) {
+                              if (!followSymlinks) continue;
+                              path = Deno.realPathSync(path);
+                              // Caveat emptor: don't assume |path| is not a symlink. realpath()
+                              // resolves symlinks but another process can replace the file system
+                              // entity with a different type of entity before we call lstat().
+                              ({ isSymlink, isDirectory } = Deno.lstatSync(path));
+                            }
+                        
+                            if (isSymlink || isDirectory) {
+                              yield* walkSync(path, {
+                                maxDepth: maxDepth - 1,
+                                includeFiles,
+                                includeDirs,
+                                followSymlinks,
+                                exts,
+                                match,
+                                skip,
+                              });
+                            } else if (includeFiles && include(path, exts, match, skip)) {
+                              yield { path, ...entry };
+                            }
+                          }
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.133.0/fs/eol.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.133.0/fs/eol.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.133.0/fs"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        /** EndOfLine character enum */
+                        export enum EOL {
+                          LF = "\\n",
+                          CRLF = "\\r\\n",
+                        }
+                        
+                        const regDetect = /(?:\\r?\\n)/g;
+                        
+                        /**
+                         * Detect the EOL character for string input.
+                         * returns null if no newline
+                         */
+                        export function detect(content: string): EOL | null {
+                          const d = content.match(regDetect);
+                          if (!d || d.length === 0) {
+                            return null;
+                          }
+                          const hasCRLF = d.some((x: string): boolean => x === EOL.CRLF);
+                        
+                          return hasCRLF ? EOL.CRLF : EOL.LF;
+                        }
+                        
+                        /** Format the file to the targeted EOL */
+                        export function format(content: string, eol: EOL): string {
+                          return content.replace(regDetect, eol);
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -29156,7 +33468,7 @@
                             let prioritized = [...otherWords].sort((a, b) => levenshteinDistanceBetween(word, a) - levenshteinDistanceBetween(word, b))
                             return prioritized
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -29172,7 +33484,7 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.1.1.2"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = await globalImports["https://deno.land/x/good@1.1.1.2/value.js"];
+                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
                                                 
                         
                         // ideas
@@ -29735,7 +34047,7 @@
                             }
                         }
                         concurrentlyTransform.defaultPoolLimit = 40 // my best guess at an average-optimal number of parallel workers`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -29754,19 +34066,19 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows , osType } = await globalImports["https://deno.land/std@0.191.0/_util/os.ts"];
+                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
                                                 
                         
-                                                    const { SEP , SEP_PATTERN } = await globalImports["https://deno.land/std@0.191.0/path/separator.ts"];
+                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.191.0/path/separator.ts"]);
                                                 
                         
-                                                    const _win32 = await globalImports["https://deno.land/std@0.191.0/path/win32.ts"];
+                                                    const _win32 = (await globalImports["https://deno.land/std@0.191.0/path/win32.ts"]);
                                                 
                         
-                                                    const _posix = await globalImports["https://deno.land/std@0.191.0/path/posix.ts"];
+                                                    const _posix = (await globalImports["https://deno.land/std@0.191.0/path/posix.ts"]);
                                                 
                         
-                                                    const { OSType } = await globalImports["https://deno.land/std@0.191.0/_util/os.ts"];
+                                                    const { OSType } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -30178,7 +34490,7 @@
                           if (!joined) return ".";
                           return normalizeGlob(joined, { extended, globstar });
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -30216,7 +34528,7 @@
                         
                         export const isWindows = osType === "windows";
                         export const isLinux = osType === "linux";`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -30235,12 +34547,12 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = await globalImports["https://deno.land/std@0.191.0/_util/os.ts"];
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
                                                 
                         
                         export const SEP = isWindows ? "\\\\" : "/";
                         export const SEP_PATTERN = isWindows ? /[\\\\/]+/ : /\\/+/;`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -30261,17 +34573,17 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"];
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isPosixPathSeparator , isWindowsDeviceRoot , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = await globalImports["https://deno.land/std@0.191.0/path/_util.ts"];
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isPosixPathSeparator , isWindowsDeviceRoot , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"]);
                                                 
                         
-                                                    const { assert } = await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"];
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"]);
                                                 
                         
                         export const sep = "\\\\";
@@ -31209,7 +35521,7 @@
                           }
                           return url;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -31254,7 +35566,7 @@
                         }
                         
                         export type FormatInputPathObject = Partial<ParsedPath>;`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -31318,7 +35630,7 @@
                         // Digits
                         export const CHAR_0 = 48; /* 0 */
                         export const CHAR_9 = 57; /* 9 */`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -31339,10 +35651,10 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"];
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
                                                 
                         
                         export function assertPath(path: string) {
@@ -31523,7 +35835,7 @@
                         
                           return name.slice(0, -suffix.length);
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -31563,7 +35875,7 @@
                         export function unreachable(): never {
                           throw new DenoStdInternalError("unreachable");
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -31584,14 +35896,14 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_DOT } = await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"];
+                                                    const { CHAR_DOT } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = await globalImports["https://deno.land/std@0.191.0/path/_util.ts"];
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"]);
                                                 
                         
                         export const sep = "/";
@@ -32062,7 +36374,7 @@
                           );
                           return url;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -32081,13 +36393,13 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { type Reader } = await globalImports["https://deno.land/std@0.191.0/types.d.ts"];
+                                                    const { type Reader } = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"]);
                                                 
                         
-                                                    const { BufReader } = await globalImports["https://deno.land/std@0.191.0/io/buf_reader.ts"];
+                                                    const { BufReader } = (await globalImports["https://deno.land/std@0.191.0/io/buf_reader.ts"]);
                                                 
                         
-                                                    const { concat } = await globalImports["https://deno.land/std@0.191.0/bytes/concat.ts"];
+                                                    const { concat } = (await globalImports["https://deno.land/std@0.191.0/bytes/concat.ts"]);
                                                 
                         
                         /**
@@ -32132,7 +36444,7 @@
                             }
                           }
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -32237,7 +36549,7 @@
                           /** Closes the resource, "freeing" the backing file/resource. */
                           close(): void;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -32256,13 +36568,13 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { assert } = await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"];
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"]);
                                                 
                         
-                                                    const { copy } = await globalImports["https://deno.land/std@0.191.0/bytes/copy.ts"];
+                                                    const { copy } = (await globalImports["https://deno.land/std@0.191.0/bytes/copy.ts"]);
                                                 
                         
-                                                    const { Reader } = await globalImports["https://deno.land/std@0.191.0/types.d.ts"];
+                                                    const { Reader } = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"]);
                                                 
                         
                         const DEFAULT_BUF_SIZE = 4096;
@@ -32672,7 +36984,7 @@
                             return this.#buf.subarray(this.#r, this.#r + n);
                           }
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -32725,7 +37037,7 @@
                           dst.set(src, off);
                           return src.byteLength;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -32766,7 +37078,7 @@
                         
                           return output;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -33339,7 +37651,7 @@
                             descriptions.reverse()
                             return Object.fromEntries(descriptions)
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -33355,7 +37667,7 @@
                                             resolve: (relative)=>"https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { stringToBytes } = await globalImports["https://deno.land/x/binaryify@2.2.0.2/tools.js"];
+                                                    const { stringToBytes } = (await globalImports["https://deno.land/x/binaryify@2.2.0.2/tools.js"]);
                                                 
                                     export default stringToBytes(\` asm     dyl inkp7  )\\\`  \\\` \\\` \\\` \\\`   \\\` \\\`  \\\` 5 envi swspace  env iswalph a env iswdig it en v\\r__mem ory_bas e en v__tab le_base  GOT .func.t ree_sit ter_jav ascript _extern al_scan ner_cre ate GOT.fun c/tree_ sitter_ javascr ipt_ext ernal_s canner_ destroy GOT .func,t ree_sit ter_jav ascript _extern al_scan ner_sca nGO T.func1 tree_si tter_ja vascrip t_exter nal_sca nner_se rialize GOT .func3t ree_sit ter_jav ascript _extern al_scan ner_des erializ een vmemor y en v__ind irect_f unction _table p        A  
                         __wasm_ call_ct ors .t ree_sit ter_jav ascript _extern al_scan ner_cre ate /t ree_sit ter_jav ascript _extern al_scan ner_des troy - tree_si tter_ja vascrip t_exter nal_sca nner_re set 1t ree_sit ter_jav ascript _extern al_scan ner_ser ialize  3tree_ sitter_ javascr ipt_ext ernal_s canner_ deseria lize , tree_si tter_ja vascrip t_exter nal_sca nner_sc an 	tr ee_sitt er_java script  __dso _handle __wa sm_appl y_data_ relocs  	 # \\r
@@ -34278,7 +38590,7 @@
                           ^  m@  ?  +  J     o   ,    8   X   :   O  3   0  G    T      ;"  z  v   X   E  >   ?      k  D   N  \\\$  0  b  w"    ?     +  {  "  G     =   	   D  ]  !  2   l    B    <     8    )D    T  f   p  g"  F  E   
                                 2  D   (   n@    )  1  \\\\  -  g  S@  K  <	  j  d	  B	  	  HD  3	   	  \\\\  r	  	   	  U@	  &  L	  5  X	  S   j   @  }   t        p     @     C  :            v@  y     2   b  "  Y  a@  K    =  \\\$    -  9   b      p  v  w    I   "  )D      \\\\  
                            9     \`)`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -34294,10 +38606,10 @@
                                             resolve: (relative)=>"https://deno.land/x/binaryify@2.2.0.2"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { FileSystem } = await globalImports["https://deno.land/x/quickr@0.6.30/main/file_system.js"];
+                                                    const { FileSystem } = (await globalImports["https://deno.land/x/quickr@0.6.30/main/file_system.js"]);
                                                 
                         
-                                                    const { capitalize , indent , toCamelCase , digitsToEnglishArray , toPascalCase , toKebabCase , toSnakeCase , toScreamingtoKebabCase , toScreamingtoSnakeCase , toRepresentation , toString } = await globalImports["https://deno.land/x/good@0.7.8/string.js"];
+                                                    const { capitalize , indent , toCamelCase , digitsToEnglishArray , toPascalCase , toKebabCase , toSnakeCase , toScreamingtoKebabCase , toScreamingtoSnakeCase , toRepresentation , toString } = (await globalImports["https://deno.land/x/good@0.7.8/string.js"]);
                                                 
                         
                         export function getBit(n, bit) {
@@ -34489,7 +38801,7 @@
                             const realNameSuggestion = nameSuggestion[0].toUpperCase()+[...nameSuggestion].slice(1,).join("")
                             return [ realNameSuggestion, pathToBinarified ]
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -34505,28 +38817,28 @@
                                             resolve: (relative)=>"https://deno.land/x/quickr@0.6.30/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { ensure } = await globalImports["https://deno.land/x/ensure/mod.ts"];
+                                                    const { ensure } = (await globalImports["https://deno.land/x/ensure/mod.ts"]);
                                                  ensure({ denoVersion: "1.17.1", })
                         
-                                                    const Path = await globalImports["https://deno.land/std@0.128.0/path/mod.ts"];
+                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
                                                 
                         
-                                                    const { move as moveAndRename , moveSync as moveAndRenameSync , copy as basicCopy } = await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"];
+                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"]);
                                                 
                         
-                                                    const { findAll } = await globalImports["https://deno.land/x/good@1.1.1.2/string.js"];
+                                                    const { findAll } = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"]);
                                                 
                         
-                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"];
+                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"]);
                                                 
                         
-                                                    const { globToRegExp } = await globalImports["https://deno.land/std@0.191.0/path/glob.ts"];
+                                                    const { globToRegExp } = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"]);
                                                 
                         
-                                                    const { readLines } = await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"];
+                                                    const { readLines } = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"]);
                                                 
                         
-                                                    const { isGeneratorType } = await globalImports["https://deno.land/x/good@1.1.1.2/value.js"];
+                                                    const { isGeneratorType } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
                                                 
                         
                         // TODO:
@@ -35927,7 +40239,7 @@
                         }
                         
                         export const glob = FileSystem.glob`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36108,7 +40420,7 @@
                             }
                             return output
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36129,14 +40441,14 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_DOT } = await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"];
+                                                    const { CHAR_DOT } = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"]);
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = await globalImports["https://deno.land/std@0.186.0/path/_util.ts"];
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.186.0/path/_util.ts"]);
                                                 
                         
                         export const sep = "/";
@@ -36607,7 +40919,7 @@
                           );
                           return url;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36652,7 +40964,7 @@
                         }
                         
                         export type FormatInputPathObject = Partial<ParsedPath>;`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36716,7 +41028,7 @@
                         // Digits
                         export const CHAR_0 = 48; /* 0 */
                         export const CHAR_9 = 57; /* 9 */`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36737,10 +41049,10 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"];
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"]);
                                                 
                         
                         export function assertPath(path: string) {
@@ -36921,7 +41233,7 @@
                         
                           return name.slice(0, -suffix.length);
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -36942,13 +41254,13 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = await globalImports["https://deno.land/std@0.128.0/_util/os.ts"];
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
                                                 
                         
-                                                    const _win32 = await globalImports["https://deno.land/std@0.128.0/path/win32.ts"];
+                                                    const _win32 = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"]);
                                                 
                         
-                                                    const _posix = await globalImports["https://deno.land/std@0.128.0/path/posix.ts"];
+                                                    const _posix = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"]);
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -36973,11 +41285,20 @@
                           toNamespacedPath,
                         } = path;
                         
-                        export * from "./common.ts";
-                        export { SEP, SEP_PATTERN } from "./separator.ts";
-                        export * from "./_interface.ts";
-                        export * from "./glob.ts";`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/common.ts"]) };
+                                                    
+                        
+                                                        globalImportsHelper.temp = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
+                                                        export { SEP: globalImportsHelper.temp.SEP, SEP_PATTERN: globalImportsHelper.temp.SEP_PATTERN };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]) };
+                                                    
+                        
+                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/glob.ts"]) };
+                                                    `
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -37014,7 +41335,7 @@
                         })();
                         
                         export const isWindows = osType === "windows";`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -37035,17 +41356,17 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"];
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = await globalImports["https://deno.land/std@0.128.0/path/_util.ts"];
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"]);
                                                 
                         
-                                                    const { assert } = await globalImports["https://deno.land/std@0.128.0/_util/assert.ts"];
+                                                    const { assert } = (await globalImports["https://deno.land/std@0.128.0/_util/assert.ts"]);
                                                 
                         
                         export const sep = "\\\\";
@@ -38033,52 +42354,7 @@
                           }
                           return url;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
-                    }
-                })
-            
-
-
-                Object.defineProperty(globalImports, "https://deno.land/std@0.128.0/path/_interface.ts", {
-                    get() {
-                        const source = js`                        
-                                        const globalImports = globalThis.globalImports;
-                                        const globalImportsHelper = Object.freeze({
-                                            url: "https://deno.land/std@0.128.0/path/_interface.ts",
-                                            main: false,
-                                            resolve: (relative)=>"https://deno.land/std@0.128.0/path"+\`/\${relative}\`,
-                                        });
-                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
-                        // This module is browser compatible.
-                        
-                        /**
-                         * A parsed path object generated by path.parse() or consumed by path.format().
-                         */
-                        export interface ParsedPath {
-                          /**
-                           * The root of the path such as '/' or 'c:\\'
-                           */
-                          root: string;
-                          /**
-                           * The full directory path such as '/home/user/dir' or 'c:\\path\\dir'
-                           */
-                          dir: string;
-                          /**
-                           * The file name including extension (if any) such as 'index.html'
-                           */
-                          base: string;
-                          /**
-                           * The file extension (if any) such as '.html'
-                           */
-                          ext: string;
-                          /**
-                           * The file name without extension (if any) such as 'index'
-                           */
-                          name: string;
-                        }
-                        
-                        export type FormatInputPathObject = Partial<ParsedPath>;`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -38142,7 +42418,7 @@
                         // Digits
                         export const CHAR_0 = 48; /* 0 */
                         export const CHAR_9 = 57; /* 9 */`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -38163,10 +42439,10 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"];
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
                                                 
                         
                         export function assertPath(path: string): void {
@@ -38286,7 +42562,7 @@
                             return WHITESPACE_ENCODINGS[c] ?? c;
                           });
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -38317,7 +42593,7 @@
                             throw new DenoStdInternalError(msg);
                           }
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -38338,14 +42614,14 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"];
+                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
                                                 
                         
-                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"];
+                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = await globalImports["https://deno.land/std@0.128.0/path/_util.ts"];
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"]);
                                                 
                         
                         export const sep = "/";
@@ -38848,7 +43124,571 @@
                           );
                           return url;
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.128.0/path/common.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.128.0/path/common.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.128.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { SEP } = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
+                                                
+                        
+                        /** Determines the common path from a set of paths, using an optional separator,
+                         * which defaults to the OS default separator.
+                         *
+                         * \`\`\`ts
+                         *       import { common } from "https://deno.land/std@\$STD_VERSION/path/mod.ts";
+                         *       const p = common([
+                         *         "./deno/std/path/mod.ts",
+                         *         "./deno/std/fs/mod.ts",
+                         *       ]);
+                         *       console.log(p); // "./deno/std/"
+                         * \`\`\`
+                         */
+                        export function common(paths: string[], sep = SEP): string {
+                          const [first = "", ...remaining] = paths;
+                          if (first === "" || remaining.length === 0) {
+                            return first.substring(0, first.lastIndexOf(sep) + 1);
+                          }
+                          const parts = first.split(sep);
+                        
+                          let endOfPrefix = parts.length;
+                          for (const path of remaining) {
+                            const compare = path.split(sep);
+                            for (let i = 0; i < endOfPrefix; i++) {
+                              if (compare[i] !== parts[i]) {
+                                endOfPrefix = i;
+                              }
+                            }
+                        
+                            if (endOfPrefix === 0) {
+                              return "";
+                            }
+                          }
+                          const prefix = parts.slice(0, endOfPrefix).join(sep);
+                          return prefix.endsWith(sep) ? prefix : \`\${prefix}\${sep}\`;
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.128.0/path/separator.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.128.0/path/separator.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.128.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                
+                        
+                        export const SEP = isWindows ? "\\\\" : "/";
+                        export const SEP_PATTERN = isWindows ? /[\\\\/]+/ : /\\/+/;`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.128.0/path/_interface.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.128.0/path/_interface.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.128.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        /**
+                         * A parsed path object generated by path.parse() or consumed by path.format().
+                         */
+                        export interface ParsedPath {
+                          /**
+                           * The root of the path such as '/' or 'c:\\'
+                           */
+                          root: string;
+                          /**
+                           * The full directory path such as '/home/user/dir' or 'c:\\path\\dir'
+                           */
+                          dir: string;
+                          /**
+                           * The file name including extension (if any) such as 'index.html'
+                           */
+                          base: string;
+                          /**
+                           * The file extension (if any) such as '.html'
+                           */
+                          ext: string;
+                          /**
+                           * The file name without extension (if any) such as 'index'
+                           */
+                          name: string;
+                        }
+                        
+                        export type FormatInputPathObject = Partial<ParsedPath>;`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
+                    }
+                })
+            
+
+
+                Object.defineProperty(globalImports, "https://deno.land/std@0.128.0/path/glob.ts", {
+                    get() {
+                        const source = js`                        
+                                        const globalImports = globalThis.globalImports;
+                                        const globalImportsHelper = Object.freeze({
+                                            url: "https://deno.land/std@0.128.0/path/glob.ts",
+                                            main: false,
+                                            resolve: (relative)=>"https://deno.land/std@0.128.0/path"+\`/\${relative}\`,
+                                        });
+                                    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+                        // This module is browser compatible.
+                        
+                        
+                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                
+                        
+                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
+                                                
+                        
+                                                    const _win32 = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"]);
+                                                
+                        
+                                                    const _posix = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"]);
+                                                
+                        
+                                                    const { OSType } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                
+                        
+                        const path = isWindows ? _win32 : _posix;
+                        const { join, normalize } = path;
+                        
+                        export interface GlobOptions {
+                          /** Extended glob syntax.
+                           * See https://www.linuxjournal.com/content/bash-extended-globbing. Defaults
+                           * to true. */
+                          extended?: boolean;
+                          /** Globstar syntax.
+                           * See https://www.linuxjournal.com/content/globstar-new-bash-globbing-option.
+                           * If false, \`**\` is treated like \`*\`. Defaults to true. */
+                          globstar?: boolean;
+                          /** Whether globstar should be case insensitive. */
+                          caseInsensitive?: boolean;
+                          /** Operating system. Defaults to the native OS. */
+                          os?: OSType;
+                        }
+                        
+                        export type GlobToRegExpOptions = GlobOptions;
+                        
+                        const regExpEscapeChars = [
+                          "!",
+                          "\$",
+                          "(",
+                          ")",
+                          "*",
+                          "+",
+                          ".",
+                          "=",
+                          "?",
+                          "[",
+                          "\\\\",
+                          "^",
+                          "{",
+                          "|",
+                        ];
+                        const rangeEscapeChars = ["-", "\\\\", "]"];
+                        
+                        /** Convert a glob string to a regular expression.
+                         *
+                         * Tries to match bash glob expansion as closely as possible.
+                         *
+                         * Basic glob syntax:
+                         * - \`*\` - Matches everything without leaving the path segment.
+                         * - \`?\` - Matches any single character.
+                         * - \`{foo,bar}\` - Matches \`foo\` or \`bar\`.
+                         * - \`[abcd]\` - Matches \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[a-d]\` - Matches \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[!abcd]\` - Matches any single character besides \`a\`, \`b\`, \`c\` or \`d\`.
+                         * - \`[[:<class>:]]\` - Matches any character belonging to \`<class>\`.
+                         *     - \`[[:alnum:]]\` - Matches any digit or letter.
+                         *     - \`[[:digit:]abc]\` - Matches any digit, \`a\`, \`b\` or \`c\`.
+                         *     - See https://facelessuser.github.io/wcmatch/glob/#posix-character-classes
+                         *       for a complete list of supported character classes.
+                         * - \`\\\` - Escapes the next character for an \`os\` other than \`"windows"\`.
+                         * - \\\` - Escapes the next character for \`os\` set to \`"windows"\`.
+                         * - \`/\` - Path separator.
+                         * - \`\\\` - Additional path separator only for \`os\` set to \`"windows"\`.
+                         *
+                         * Extended syntax:
+                         * - Requires \`{ extended: true }\`.
+                         * - \`?(foo|bar)\` - Matches 0 or 1 instance of \`{foo,bar}\`.
+                         * - \`@(foo|bar)\` - Matches 1 instance of \`{foo,bar}\`. They behave the same.
+                         * - \`*(foo|bar)\` - Matches _n_ instances of \`{foo,bar}\`.
+                         * - \`+(foo|bar)\` - Matches _n > 0_ instances of \`{foo,bar}\`.
+                         * - \`!(foo|bar)\` - Matches anything other than \`{foo,bar}\`.
+                         * - See https://www.linuxjournal.com/content/bash-extended-globbing.
+                         *
+                         * Globstar syntax:
+                         * - Requires \`{ globstar: true }\`.
+                         * - \`**\` - Matches any number of any path segments.
+                         *     - Must comprise its entire path segment in the provided glob.
+                         * - See https://www.linuxjournal.com/content/globstar-new-bash-globbing-option.
+                         *
+                         * Note the following properties:
+                         * - The generated \`RegExp\` is anchored at both start and end.
+                         * - Repeating and trailing separators are tolerated. Trailing separators in the
+                         *   provided glob have no meaning and are discarded.
+                         * - Absolute globs will only match absolute paths, etc.
+                         * - Empty globs will match nothing.
+                         * - Any special glob syntax must be contained to one path segment. For example,
+                         *   \`?(foo|bar/baz)\` is invalid. The separator will take precedence and the
+                         *   first segment ends with an unclosed group.
+                         * - If a path segment ends with unclosed groups or a dangling escape prefix, a
+                         *   parse error has occurred. Every character for that segment is taken
+                         *   literally in this event.
+                         *
+                         * Limitations:
+                         * - A negative group like \`!(foo|bar)\` will wrongly be converted to a negative
+                         *   look-ahead followed by a wildcard. This means that \`!(foo).js\` will wrongly
+                         *   fail to match \`foobar.js\`, even though \`foobar\` is not \`foo\`. Effectively,
+                         *   \`!(foo|bar)\` is treated like \`!(@(foo|bar)*)\`. This will work correctly if
+                         *   the group occurs not nested at the end of the segment. */
+                        export function globToRegExp(
+                          glob: string,
+                          {
+                            extended = true,
+                            globstar: globstarOption = true,
+                            os = osType,
+                            caseInsensitive = false,
+                          }: GlobToRegExpOptions = {},
+                        ): RegExp {
+                          if (glob == "") {
+                            return /(?!)/;
+                          }
+                        
+                          const sep = os == "windows" ? "(?:\\\\\\\\|/)+" : "/+";
+                          const sepMaybe = os == "windows" ? "(?:\\\\\\\\|/)*" : "/*";
+                          const seps = os == "windows" ? ["\\\\", "/"] : ["/"];
+                          const globstar = os == "windows"
+                            ? "(?:[^\\\\\\\\/]*(?:\\\\\\\\|/|\$)+)*"
+                            : "(?:[^/]*(?:/|\$)+)*";
+                          const wildcard = os == "windows" ? "[^\\\\\\\\/]*" : "[^/]*";
+                          const escapePrefix = os == "windows" ? "\`" : "\\\\";
+                        
+                          // Remove trailing separators.
+                          let newLength = glob.length;
+                          for (; newLength > 1 && seps.includes(glob[newLength - 1]); newLength--);
+                          glob = glob.slice(0, newLength);
+                        
+                          let regExpString = "";
+                        
+                          // Terminates correctly. Trust that \`j\` is incremented every iteration.
+                          for (let j = 0; j < glob.length;) {
+                            let segment = "";
+                            const groupStack: string[] = [];
+                            let inRange = false;
+                            let inEscape = false;
+                            let endsWithSep = false;
+                            let i = j;
+                        
+                            // Terminates with \`i\` at the non-inclusive end of the current segment.
+                            for (; i < glob.length && !seps.includes(glob[i]); i++) {
+                              if (inEscape) {
+                                inEscape = false;
+                                const escapeChars = inRange ? rangeEscapeChars : regExpEscapeChars;
+                                segment += escapeChars.includes(glob[i]) ? \`\\\\\${glob[i]}\` : glob[i];
+                                continue;
+                              }
+                        
+                              if (glob[i] == escapePrefix) {
+                                inEscape = true;
+                                continue;
+                              }
+                        
+                              if (glob[i] == "[") {
+                                if (!inRange) {
+                                  inRange = true;
+                                  segment += "[";
+                                  if (glob[i + 1] == "!") {
+                                    i++;
+                                    segment += "^";
+                                  } else if (glob[i + 1] == "^") {
+                                    i++;
+                                    segment += "\\\\^";
+                                  }
+                                  continue;
+                                } else if (glob[i + 1] == ":") {
+                                  let k = i + 1;
+                                  let value = "";
+                                  while (glob[k + 1] != null && glob[k + 1] != ":") {
+                                    value += glob[k + 1];
+                                    k++;
+                                  }
+                                  if (glob[k + 1] == ":" && glob[k + 2] == "]") {
+                                    i = k + 2;
+                                    if (value == "alnum") segment += "\\\\dA-Za-z";
+                                    else if (value == "alpha") segment += "A-Za-z";
+                                    else if (value == "ascii") segment += "\\x00-\\x7F";
+                                    else if (value == "blank") segment += "\\t ";
+                                    else if (value == "cntrl") segment += "\\x00-\\x1F\\x7F";
+                                    else if (value == "digit") segment += "\\\\d";
+                                    else if (value == "graph") segment += "\\x21-\\x7E";
+                                    else if (value == "lower") segment += "a-z";
+                                    else if (value == "print") segment += "\\x20-\\x7E";
+                                    else if (value == "punct") {
+                                      segment += "!\\"#\$%&'()*+,\\\\-./:;<=>?@[\\\\\\\\\\\\]^_‘{|}~";
+                                    } else if (value == "space") segment += "\\\\s\\v";
+                                    else if (value == "upper") segment += "A-Z";
+                                    else if (value == "word") segment += "\\\\w";
+                                    else if (value == "xdigit") segment += "\\\\dA-Fa-f";
+                                    continue;
+                                  }
+                                }
+                              }
+                        
+                              if (glob[i] == "]" && inRange) {
+                                inRange = false;
+                                segment += "]";
+                                continue;
+                              }
+                        
+                              if (inRange) {
+                                if (glob[i] == "\\\\") {
+                                  segment += \`\\\\\\\\\`;
+                                } else {
+                                  segment += glob[i];
+                                }
+                                continue;
+                              }
+                        
+                              if (
+                                glob[i] == ")" && groupStack.length > 0 &&
+                                groupStack[groupStack.length - 1] != "BRACE"
+                              ) {
+                                segment += ")";
+                                const type = groupStack.pop()!;
+                                if (type == "!") {
+                                  segment += wildcard;
+                                } else if (type != "@") {
+                                  segment += type;
+                                }
+                                continue;
+                              }
+                        
+                              if (
+                                glob[i] == "|" && groupStack.length > 0 &&
+                                groupStack[groupStack.length - 1] != "BRACE"
+                              ) {
+                                segment += "|";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "+" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("+");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "@" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("@");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "?") {
+                                if (extended && glob[i + 1] == "(") {
+                                  i++;
+                                  groupStack.push("?");
+                                  segment += "(?:";
+                                } else {
+                                  segment += ".";
+                                }
+                                continue;
+                              }
+                        
+                              if (glob[i] == "!" && extended && glob[i + 1] == "(") {
+                                i++;
+                                groupStack.push("!");
+                                segment += "(?!";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "{") {
+                                groupStack.push("BRACE");
+                                segment += "(?:";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "}" && groupStack[groupStack.length - 1] == "BRACE") {
+                                groupStack.pop();
+                                segment += ")";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "," && groupStack[groupStack.length - 1] == "BRACE") {
+                                segment += "|";
+                                continue;
+                              }
+                        
+                              if (glob[i] == "*") {
+                                if (extended && glob[i + 1] == "(") {
+                                  i++;
+                                  groupStack.push("*");
+                                  segment += "(?:";
+                                } else {
+                                  const prevChar = glob[i - 1];
+                                  let numStars = 1;
+                                  while (glob[i + 1] == "*") {
+                                    i++;
+                                    numStars++;
+                                  }
+                                  const nextChar = glob[i + 1];
+                                  if (
+                                    globstarOption && numStars == 2 &&
+                                    [...seps, undefined].includes(prevChar) &&
+                                    [...seps, undefined].includes(nextChar)
+                                  ) {
+                                    segment += globstar;
+                                    endsWithSep = true;
+                                  } else {
+                                    segment += wildcard;
+                                  }
+                                }
+                                continue;
+                              }
+                        
+                              segment += regExpEscapeChars.includes(glob[i]) ? \`\\\\\${glob[i]}\` : glob[i];
+                            }
+                        
+                            // Check for unclosed groups or a dangling backslash.
+                            if (groupStack.length > 0 || inRange || inEscape) {
+                              // Parse failure. Take all characters from this segment literally.
+                              segment = "";
+                              for (const c of glob.slice(j, i)) {
+                                segment += regExpEscapeChars.includes(c) ? \`\\\\\${c}\` : c;
+                                endsWithSep = false;
+                              }
+                            }
+                        
+                            regExpString += segment;
+                            if (!endsWithSep) {
+                              regExpString += i < glob.length ? sep : sepMaybe;
+                              endsWithSep = true;
+                            }
+                        
+                            // Terminates with \`i\` at the start of the next segment.
+                            while (seps.includes(glob[i])) i++;
+                        
+                            // Check that the next value of \`j\` is indeed higher than the current value.
+                            if (!(i > j)) {
+                              throw new Error("Assertion failure: i > j (potential infinite loop)");
+                            }
+                            j = i;
+                          }
+                        
+                          regExpString = \`^\${regExpString}\$\`;
+                          return new RegExp(regExpString, caseInsensitive ? "i" : "");
+                        }
+                        
+                        /** Test whether the given string is a glob */
+                        export function isGlob(str: string): boolean {
+                          const chars: Record<string, string> = { "{": "}", "(": ")", "[": "]" };
+                          const regex =
+                            /\\\\(.)|(^!|\\*|\\?|[\\].+)]\\?|\\[[^\\\\\\]]+\\]|\\{[^\\\\}]+\\}|\\(\\?[:!=][^\\\\)]+\\)|\\([^|]+\\|[^\\\\)]+\\))/;
+                        
+                          if (str === "") {
+                            return false;
+                          }
+                        
+                          let match: RegExpExecArray | null;
+                        
+                          while ((match = regex.exec(str))) {
+                            if (match[2]) return true;
+                            let idx = match.index + match[0].length;
+                        
+                            // if an open bracket/brace/paren is escaped,
+                            // set the index to the next closing character
+                            const open = match[1];
+                            const close = open ? chars[open] : null;
+                            if (open && close) {
+                              const n = str.indexOf(close, idx);
+                              if (n !== -1) {
+                                idx = n + 1;
+                              }
+                            }
+                        
+                            str = str.slice(idx);
+                          }
+                        
+                          return false;
+                        }
+                        
+                        /** Like normalize(), but doesn't collapse "**\\/.." when \`globstar\` is true. */
+                        export function normalizeGlob(
+                          glob: string,
+                          { globstar = false }: GlobOptions = {},
+                        ): string {
+                          if (glob.match(/\\0/g)) {
+                            throw new Error(\`Glob contains invalid characters: "\${glob}"\`);
+                          }
+                          if (!globstar) {
+                            return normalize(glob);
+                          }
+                          const s = SEP_PATTERN.source;
+                          const badParentPattern = new RegExp(
+                            \`(?<=(\${s}|^)\\\\*\\\\*\${s})\\\\.\\\\.(?=\${s}|\$)\`,
+                            "g",
+                          );
+                          return normalize(glob.replace(badParentPattern, "\\0")).replace(/\\0/g, "..");
+                        }
+                        
+                        /** Like join(), but doesn't collapse "**\\/.." when \`globstar\` is true. */
+                        export function joinGlobs(
+                          globs: string[],
+                          { extended = true, globstar = false }: GlobOptions = {},
+                        ): string {
+                          if (!globstar || globs.length == 0) {
+                            return join(...globs);
+                          }
+                          if (globs.length === 0) return ".";
+                          let joined: string | undefined;
+                          for (const glob of globs) {
+                            const path = glob;
+                            if (path.length > 0) {
+                              if (!joined) joined = path;
+                              else joined += \`\${SEP}\${path}\`;
+                            }
+                          }
+                          if (!joined) return ".";
+                          return normalizeGlob(joined, { extended, globstar });
+                        }`
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -38864,7 +43704,7 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.3.0.4"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = await globalImports["https://deno.land/x/good@1.3.0.4/value.js"];
+                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = (await globalImports["https://deno.land/x/good@1.3.0.4/value.js"]);
                                                 
                         
                         // ideas
@@ -39509,7 +44349,7 @@
                             }
                         }
                         concurrentlyTransform.defaultPoolLimit = 40 // my best guess at an average-optimal number of parallel workers`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -40082,7 +44922,7 @@
                             descriptions.reverse()
                             return Object.fromEntries(descriptions)
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
@@ -40098,7 +44938,7 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.3.0.4"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { zip } = await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"];
+                                                    const { zip } = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"]);
                                                 
                         export const capitalize = (string) => string.replace(/\\b\\w/g, (chr) => chr.toUpperCase())
                         
@@ -40594,7 +45434,7 @@
                                 return true
                             }
                         }`
-                        return import("data:text/javascript;base64, "+btoa(source))
+                        return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
                 })
             
