@@ -139,6 +139,7 @@ const bundle = async ({ path })=> {
                     sharedInfo.sourceCodeStatusOf[childUrl] = "aboutToParse"
 
                     if (childUrl.endsWith(".ts")) {
+                        throw Error(`Can't handle typescript imports yet`)
                         // TODO: typescript support
                     }
                     
@@ -224,8 +225,17 @@ const bundle = async ({ path })=> {
                     const defaultImport = importClauseChildren.length == 1 && importClauseChildren[0]?.type == "identifier"
                     const hasFrom = each.descendantsOfType("from").length > 0
 
-
-                    const importValue = `(await ${sharedInfo.globalImportName}[${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])`
+                    const thisUrlString = JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))
+                    const importValue = `
+                        ((async ()=>{
+                            const normalOutput = (await ${sharedInfo.globalImportName}[${thisUrlString}])
+                            // merge in "other" exports
+                            if (${sharedInfo.helperName}[Symbol.for("extraAggregates")] && ${sharedInfo.helperName}[Symbol.for("extraAggregates")][${thisUrlString}]) {
+                                Object.assign(normalOutput, ${sharedInfo.helperName}[Symbol.for("extraAggregates")][${thisUrlString}])
+                            }
+                            return normalOutput
+                        })())
+                    `
                     // 
                     // import Name from "./something"
                     // 
@@ -294,15 +304,21 @@ const bundle = async ({ path })=> {
                         const isNamespaceExport = each.descendantsOfType("*").length > 0
                         const isNamedExport = each.descendantsOfType("export_clause").length > 0
                         
-                        const importValue = `(await ${sharedInfo.globalImportName}[${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])`
+                        const thisUrlString = JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))
+                        const importValue = `(await ${sharedInfo.globalImportName}[${thisUrlString}])`
                         // 
                         // export * from "./something"
                         // 
                         if (isNamespaceExport) {
                             // TODO: create extraImports for each module, then, upon import, merge the extra imports before pulling named imports out
                             replacement += `
-                                ${sharedInfo.helperName}.extra [${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}]
-                                Object.assign(${sharedInfo.helperName}.defaultAggregate, ${importValue});
+                                if (!${sharedInfo.helperName}[Symbol.for("extraAggregates")]) {
+                                    ${sharedInfo.helperName}[Symbol.for("extraAggregates")] = {}
+                                }
+                                if (!${sharedInfo.helperName}[Symbol.for("extraAggregates")][${thisUrlString}]) {
+                                    ${sharedInfo.helperName}[Symbol.for("extraAggregates")][${thisUrlString}] = {}
+                                }
+                                Object.assign(${sharedInfo.helperName}[Symbol.for("extraAggregates")][${thisUrlString}], ${importValue});
                             `
                         
                         // 

@@ -14,25 +14,88 @@
                                         });
                                     // import { Parser, parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.0.8/main.js"
                         
-                                                    const { Parser , parserFromWasm , flatNodeList } = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"]);
+                                                    const { Parser , parserFromWasm , flatNodeList } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/main.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { FileSystem , glob } = (await globalImports["https://deno.land/x/quickr@0.6.33/main/file_system.js"]);
+                                                    const { FileSystem , glob } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/quickr@0.6.33/main/file_system.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/quickr@0.6.33/main/file_system.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/quickr@0.6.33/main/file_system.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const javascript = (await globalImports["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"]).default;
+                                                    const javascript = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            .default;
                                                 
                         
-                                                    const { toFileUrl } = (await globalImports["https://deno.land/std@0.186.0/path/posix.ts"]);
+                                                    const { toFileUrl } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
+                                                    const Path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { iter , next , Stop , Iterable , zip , count , enumerate , permute , combinations , slices , asyncIteratorToList , concurrentlyTransform , forkAndFilter } = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"]);
+                                                    const { iter , next , Stop , Iterable , zip , count , enumerate , permute , combinations , slices , asyncIteratorToList , concurrentlyTransform , forkAndFilter } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/iterable.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/iterable.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { indent , isValidIdentifier , toRepresentation } = (await globalImports["https://deno.land/x/good@1.3.0.4/string.js"]);
+                                                    const { indent , isValidIdentifier , toRepresentation } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.3.0.4/string.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/string.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/string.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const parser = await parserFromWasm(javascript) // path or Uint8Array
@@ -252,8 +315,17 @@
                                             const defaultImport = importClauseChildren.length == 1 && importClauseChildren[0]?.type == "identifier"
                                             const hasFrom = each.descendantsOfType("from").length > 0
                         
-                        
-                                            const importValue = \`(await \${sharedInfo.globalImportName}[\${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])\`
+                                            const thisUrlString = JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))
+                                            const importValue = \`
+                                                ((async ()=>{
+                                                    const normalOutput = (await \${sharedInfo.globalImportName}[\${thisUrlString}])
+                                                    // merge in "other" exports
+                                                    if (\${sharedInfo.helperName}[Symbol.for("extraAggregates")] && \${sharedInfo.helperName}[Symbol.for("extraAggregates")][\${thisUrlString}]) {
+                                                        Object.assign(normalOutput, \${sharedInfo.helperName}[Symbol.for("extraAggregates")][\${thisUrlString}])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            \`
                                             // 
                                             // import Name from "./something"
                                             // 
@@ -322,13 +394,21 @@
                                                 const isNamespaceExport = each.descendantsOfType("*").length > 0
                                                 const isNamedExport = each.descendantsOfType("export_clause").length > 0
                                                 
-                                                const importValue = \`(await \${sharedInfo.globalImportName}[\${JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))}])\`
+                                                const thisUrlString = JSON.stringify(generateAsboluteImportUrl({ urlBase, importPath: eval(each.descendantsOfType("string")[0].text)  }))
+                                                const importValue = \`(await \${sharedInfo.globalImportName}[\${thisUrlString}])\`
                                                 // 
                                                 // export * from "./something"
                                                 // 
                                                 if (isNamespaceExport) {
+                                                    // TODO: create extraImports for each module, then, upon import, merge the extra imports before pulling named imports out
                                                     replacement += \`
-                                                        export { \${importValue} };
+                                                        if (!\${sharedInfo.helperName}[Symbol.for("extraAggregates")]) {
+                                                            \${sharedInfo.helperName}[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!\${sharedInfo.helperName}[Symbol.for("extraAggregates")][\${thisUrlString}]) {
+                                                            \${sharedInfo.helperName}[Symbol.for("extraAggregates")][\${thisUrlString}] = {}
+                                                        }
+                                                        Object.assign(\${sharedInfo.helperName}[Symbol.for("extraAggregates")][\${thisUrlString}], \${importValue});
                                                     \`
                                                 
                                                 // 
@@ -337,6 +417,8 @@
                                                 } else if (isNamedExport) {
                                                     const exportNameSection = each.descendantsOfType("export_clause")[0]
                                                     // FIXME: probably missing the export { thing as otherThing } from "./blah.js"
+                                                    // FIXME: export * as name1 from "module-name";
+                                                    // FIXME: export * as default from "module-name";
                                                     const names = exportNameSection.descendantsOfType("export_specifier").map(each=>each.text)
                                                     const withDetails = names.map(each=>\`\${each}: \${sharedInfo.helperName}.temp.\${each}\`)
                                                     replacement += \`
@@ -492,7 +574,16 @@
                                             resolve: (relative)=>"file:///Users/jeffhykin/repos/deno-tree-sitter"+\`/\${relative}\`,
                                         });
                                     
-                                                    const ParserClass = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"]).default;
+                                                    const ParserClass = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/web_tree_sitter.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            .default;
                                                 
                         
                         // this is to get around .parse being unwritable by default
@@ -691,11 +782,29 @@
                                     // This code was bundled using \`deno bundle\` and it's not recommended to edit it manually
                         // BUT I EDITED IT MANUALLY ANYWAYS 😎 (because web-tree-sitter doesnt work without modifications)
                         
-                                                    const { stringToBytes } = (await globalImports["https://deno.land/x/binaryify@0.0.6/tools.js"]);
+                                                    const { stringToBytes } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/binaryify@0.0.6/tools.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/binaryify@0.0.6/tools.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/binaryify@0.0.6/tools.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const wasmJson = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"]).default;
+                                                    const wasmJson = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["file:///Users/jeffhykin/repos/deno-tree-sitter/tree_sitter.wasm.binaryified.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            .default;
                                                 
                         const wasmBytes = stringToBytes(wasmJson)
                         
@@ -27461,28 +27570,100 @@
                                             resolve: (relative)=>"https://deno.land/x/quickr@0.6.33/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { ensure } = (await globalImports["https://deno.land/x/ensure/mod.ts"]);
+                                                    const { ensure } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/ensure/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                  ensure({ denoVersion: "1.17.1", })
                         
-                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
+                                                    const Path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"]);
+                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { findAll } = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"]);
+                                                    const { findAll } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/string.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/string.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"]);
+                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/iterable.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/iterable.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { globToRegExp } = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"]);
+                                                    const { globToRegExp } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/glob.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/glob.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { readLines } = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"]);
+                                                    const { readLines } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/read_lines.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/read_lines.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isGeneratorType } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
+                                                    const { isGeneratorType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         // TODO:
@@ -28923,7 +29104,13 @@
                                             resolve: (relative)=>"https://deno.land/x/ensure"+\`/\${relative}\`,
                                         });
                                     
-                                                        export { (await globalImports["https://deno.land/x/ensure/src/main.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/src/main.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/src/main.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/src/main.ts"], (await globalImports["https://deno.land/x/ensure/src/main.ts"]));
                                                     `
                         return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
@@ -28941,7 +29128,16 @@
                                             resolve: (relative)=>"https://deno.land/x/ensure/src"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { isOutdated } = (await globalImports["https://deno.land/x/ensure/src/compare.ts"]);
+                                                    const { isOutdated } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/ensure/src/compare.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/src/compare.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/src/compare.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const warn = (type: string, current: string, expected: string) =>
@@ -29046,37 +29242,103 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/empty_dir.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/empty_dir.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/empty_dir.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/empty_dir.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/empty_dir.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_file.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_file.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_file.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_file.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/ensure_file.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_link.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_link.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_link.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_link.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/ensure_link.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/ensure_symlink.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/expand_glob.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/expand_glob.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/expand_glob.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/expand_glob.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/expand_glob.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/move.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/move.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/move.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/move.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/move.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/copy.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/copy.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/copy.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/copy.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/copy.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/walk.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/walk.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/walk.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/fs/eol.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/eol.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/eol.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/eol.ts"], (await globalImports["https://deno.land/std@0.133.0/fs/eol.ts"]));
                                                     `
                         return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
@@ -29095,7 +29357,16 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const { join } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const { join } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -29178,13 +29449,40 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _win32 = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"]);
+                                                    const _win32 = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/win32.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/win32.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _posix = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"]);
+                                                    const _posix = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -29210,17 +29508,35 @@
                         } = path;
                         
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/common.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/common.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/common.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/common.ts"], (await globalImports["https://deno.land/std@0.133.0/path/common.ts"]));
                                                     
                         
                                                         globalImportsHelper.temp = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
                                                         export { SEP: globalImportsHelper.temp.SEP, SEP_PATTERN: globalImportsHelper.temp.SEP_PATTERN };
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"], (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.133.0/path/glob.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/glob.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/glob.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/glob.ts"], (await globalImports["https://deno.land/std@0.133.0/path/glob.ts"]));
                                                     `
                         return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
@@ -29280,17 +29596,53 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "\\\\";
@@ -30363,10 +30715,28 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export function assertPath(path: string): void {
@@ -30538,14 +30908,41 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"]);
+                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "/";
@@ -31067,7 +31464,16 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { SEP } = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
+                                                    const { SEP } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/separator.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/separator.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /** Determines the common path from a set of paths, using an optional separator,
@@ -31124,7 +31530,16 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const SEP = isWindows ? "\\\\" : "/";
@@ -31193,19 +31608,64 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows , osType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"]);
+                                                    const { SEP , SEP_PATTERN } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/separator.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/separator.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/separator.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _win32 = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"]);
+                                                    const _win32 = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/win32.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/win32.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/win32.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _posix = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"]);
+                                                    const _posix = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { OSType } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { OSType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -31629,7 +32089,16 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { getFileInfoType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -31698,7 +32167,16 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -31754,13 +32232,40 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                    const { ensureDir , ensureDirSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { getFileInfoType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -31840,16 +32345,52 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                    const { ensureDir , ensureDirSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                    const { exists , existsSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { getFileInfoType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -31916,19 +32457,64 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                    const { ensureDir , ensureDirSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                    const { exists , existsSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { getFileInfoType } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { getFileInfoType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -32063,16 +32649,52 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const { GlobOptions , globToRegExp , isAbsolute , isGlob , joinGlobs , resolve , SEP_PATTERN , } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const { GlobOptions , globToRegExp , isAbsolute , isGlob , joinGlobs , resolve , SEP_PATTERN , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { _createWalkEntry , _createWalkEntrySync , walk , WalkEntry , walkSync , } = (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"]);
+                                                    const { _createWalkEntry , _createWalkEntrySync , walk , WalkEntry , walkSync , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/walk.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/walk.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/walk.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export interface ExpandGlobOptions extends Omit<GlobOptions, "os"> {
@@ -32350,10 +32972,28 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const { exists , existsSync } = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"]);
+                                                    const { exists , existsSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/exists.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isSubdir } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { isSubdir } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         interface MoveOptions {
@@ -32432,22 +33072,76 @@
                                         });
                                     // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
                         
-                                                    const DenoUnstable = (await globalImports["https://deno.land/std@0.133.0/_deno_unstable.ts"]);
+                                                    const DenoUnstable = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_deno_unstable.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_deno_unstable.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_deno_unstable.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const path = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { ensureDir , ensureDirSync } = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]);
+                                                    const { ensureDir , ensureDirSync } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/ensure_dir.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { getFileInfoType , isSubdir } = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"]);
+                                                    const { getFileInfoType , isSubdir } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export interface CopyOptions {
@@ -32939,10 +33633,28 @@
                         // https://golang.org/pkg/path/filepath/#Walk
                         // Copyright 2009 The Go Authors. All rights reserved. BSD license.
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/_util/assert.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { basename , join , normalize } = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"]);
+                                                    const { basename , join , normalize } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /** Create WalkEntry for the \`path\` synchronously */
@@ -33484,7 +34196,16 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.1.1.2"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
+                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         // ideas
@@ -34066,19 +34787,64 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
+                                                    const { isWindows , osType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.191.0/path/separator.ts"]);
+                                                    const { SEP , SEP_PATTERN } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/separator.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/separator.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/separator.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _win32 = (await globalImports["https://deno.land/std@0.191.0/path/win32.ts"]);
+                                                    const _win32 = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/win32.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/win32.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/win32.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _posix = (await globalImports["https://deno.land/std@0.191.0/path/posix.ts"]);
+                                                    const _posix = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { OSType } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
+                                                    const { OSType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -34547,7 +35313,16 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const SEP = isWindows ? "\\\\" : "/";
@@ -34573,17 +35348,53 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isPosixPathSeparator , isWindowsDeviceRoot , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isPosixPathSeparator , isWindowsDeviceRoot , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/asserts.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/asserts.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "\\\\";
@@ -35651,10 +36462,28 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export function assertPath(path: string) {
@@ -35896,14 +36725,41 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_DOT } = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"]);
+                                                    const { CHAR_DOT } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "/";
@@ -36393,13 +37249,40 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { type Reader } = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"]);
+                                                    const { type Reader } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/types.d.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/types.d.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { BufReader } = (await globalImports["https://deno.land/std@0.191.0/io/buf_reader.ts"]);
+                                                    const { BufReader } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/io/buf_reader.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/buf_reader.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/buf_reader.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { concat } = (await globalImports["https://deno.land/std@0.191.0/bytes/concat.ts"]);
+                                                    const { concat } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/bytes/concat.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/bytes/concat.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/bytes/concat.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /**
@@ -36568,13 +37451,40 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/_util/asserts.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/asserts.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/_util/asserts.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { copy } = (await globalImports["https://deno.land/std@0.191.0/bytes/copy.ts"]);
+                                                    const { copy } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/bytes/copy.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/bytes/copy.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/bytes/copy.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { Reader } = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"]);
+                                                    const { Reader } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/types.d.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/types.d.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/types.d.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const DEFAULT_BUF_SIZE = 4096;
@@ -37667,7 +38577,16 @@
                                             resolve: (relative)=>"https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { stringToBytes } = (await globalImports["https://deno.land/x/binaryify@2.2.0.2/tools.js"]);
+                                                    const { stringToBytes } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/binaryify@2.2.0.2/tools.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/binaryify@2.2.0.2/tools.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/binaryify@2.2.0.2/tools.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                                     export default stringToBytes(\` asm     dyl inkp7  )\\\`  \\\` \\\` \\\` \\\`   \\\` \\\`  \\\` 5 envi swspace  env iswalph a env iswdig it en v\\r__mem ory_bas e en v__tab le_base  GOT .func.t ree_sit ter_jav ascript _extern al_scan ner_cre ate GOT.fun c/tree_ sitter_ javascr ipt_ext ernal_s canner_ destroy GOT .func,t ree_sit ter_jav ascript _extern al_scan ner_sca nGO T.func1 tree_si tter_ja vascrip t_exter nal_sca nner_se rialize GOT .func3t ree_sit ter_jav ascript _extern al_scan ner_des erializ een vmemor y en v__ind irect_f unction _table p        A  
                         __wasm_ call_ct ors .t ree_sit ter_jav ascript _extern al_scan ner_cre ate /t ree_sit ter_jav ascript _extern al_scan ner_des troy - tree_si tter_ja vascrip t_exter nal_sca nner_re set 1t ree_sit ter_jav ascript _extern al_scan ner_ser ialize  3tree_ sitter_ javascr ipt_ext ernal_s canner_ deseria lize , tree_si tter_ja vascrip t_exter nal_sca nner_sc an 	tr ee_sitt er_java script  __dso _handle __wa sm_appl y_data_ relocs  	 # \\r
@@ -38606,10 +39525,28 @@
                                             resolve: (relative)=>"https://deno.land/x/binaryify@2.2.0.2"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { FileSystem } = (await globalImports["https://deno.land/x/quickr@0.6.30/main/file_system.js"]);
+                                                    const { FileSystem } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/quickr@0.6.30/main/file_system.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/quickr@0.6.30/main/file_system.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/quickr@0.6.30/main/file_system.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { capitalize , indent , toCamelCase , digitsToEnglishArray , toPascalCase , toKebabCase , toSnakeCase , toScreamingtoKebabCase , toScreamingtoSnakeCase , toRepresentation , toString } = (await globalImports["https://deno.land/x/good@0.7.8/string.js"]);
+                                                    const { capitalize , indent , toCamelCase , digitsToEnglishArray , toPascalCase , toKebabCase , toSnakeCase , toScreamingtoKebabCase , toScreamingtoSnakeCase , toRepresentation , toString } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@0.7.8/string.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@0.7.8/string.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@0.7.8/string.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export function getBit(n, bit) {
@@ -38817,28 +39754,100 @@
                                             resolve: (relative)=>"https://deno.land/x/quickr@0.6.30/main"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { ensure } = (await globalImports["https://deno.land/x/ensure/mod.ts"]);
+                                                    const { ensure } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/ensure/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/ensure/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                  ensure({ denoVersion: "1.17.1", })
                         
-                                                    const Path = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"]);
+                                                    const Path = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"]);
+                                                    const { move: moveAndRename , moveSync: moveAndRenameSync , copy: basicCopy } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.133.0/fs/mod.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/mod.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.133.0/fs/mod.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { findAll } = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"]);
+                                                    const { findAll } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/string.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/string.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/string.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"]);
+                                                    const { makeIterable , asyncIteratorToList , concurrentlyTransform } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/iterable.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/iterable.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/iterable.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { globToRegExp } = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"]);
+                                                    const { globToRegExp } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/path/glob.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/glob.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/path/glob.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { readLines } = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"]);
+                                                    const { readLines } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.191.0/io/read_lines.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/read_lines.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.191.0/io/read_lines.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { isGeneratorType } = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"]);
+                                                    const { isGeneratorType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.1.1.2/value.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         // TODO:
@@ -40441,14 +41450,41 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_DOT } = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"]);
+                                                    const { CHAR_DOT } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = (await globalImports["https://deno.land/std@0.186.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , lastPathSegment , normalizeString , stripSuffix , stripTrailingSeparators , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "/";
@@ -41049,10 +42085,28 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.186.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.186.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export function assertPath(path: string) {
@@ -41254,13 +42308,40 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _win32 = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"]);
+                                                    const _win32 = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/win32.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/win32.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _posix = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"]);
+                                                    const _posix = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -41286,17 +42367,35 @@
                         } = path;
                         
                         
-                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/common.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/common.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/common.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/common.ts"], (await globalImports["https://deno.land/std@0.128.0/path/common.ts"]));
                                                     
                         
                                                         globalImportsHelper.temp = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
                                                         export { SEP: globalImportsHelper.temp.SEP, SEP_PATTERN: globalImportsHelper.temp.SEP_PATTERN };
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"], (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]));
                                                     
                         
-                                                        export { (await globalImports["https://deno.land/std@0.128.0/path/glob.ts"]) };
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")] = {}
+                                                        }
+                                                        if (!globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/glob.ts"]) {
+                                                            globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/glob.ts"] = {}
+                                                        }
+                                                        Object.assign(globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/glob.ts"], (await globalImports["https://deno.land/std@0.128.0/path/glob.ts"]));
                                                     `
                         return import("data:text/javascript;base64, "+btoa(unescape(encodeURIComponent(source))))
                     }
@@ -41356,17 +42455,53 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_COLON , CHAR_DOT , CHAR_QUESTION_MARK , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPathSeparator , isWindowsDeviceRoot , normalizeString , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { assert } = (await globalImports["https://deno.land/std@0.128.0/_util/assert.ts"]);
+                                                    const { assert } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/_util/assert.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/assert.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/assert.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "\\\\";
@@ -42439,10 +43574,28 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
+                                                    const { CHAR_BACKWARD_SLASH , CHAR_DOT , CHAR_FORWARD_SLASH , CHAR_LOWERCASE_A , CHAR_LOWERCASE_Z , CHAR_UPPERCASE_A , CHAR_UPPERCASE_Z , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export function assertPath(path: string): void {
@@ -42614,14 +43767,41 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { FormatInputPathObject , ParsedPath } = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"]);
+                                                    const { FormatInputPathObject , ParsedPath } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_interface.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"]);
+                                                    const { CHAR_DOT , CHAR_FORWARD_SLASH } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_constants.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         
-                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"]);
+                                                    const { _format , assertPath , encodeWhitespace , isPosixPathSeparator , normalizeString , } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/_util.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_util.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/_util.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const sep = "/";
@@ -43143,7 +44323,16 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { SEP } = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
+                                                    const { SEP } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/separator.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/separator.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         /** Determines the common path from a set of paths, using an optional separator,
@@ -43200,7 +44389,16 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                    const { isWindows } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         export const SEP = isWindows ? "\\\\" : "/";
@@ -43269,19 +44467,64 @@
                         // This module is browser compatible.
                         
                         
-                                                    const { isWindows , osType } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                    const { isWindows , osType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { SEP , SEP_PATTERN } = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"]);
+                                                    const { SEP , SEP_PATTERN } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/separator.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/separator.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/separator.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _win32 = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"]);
+                                                    const _win32 = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/win32.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/win32.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/win32.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const _posix = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"]);
+                                                    const _posix = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/path/posix.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/posix.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/path/posix.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
-                                                    const { OSType } = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"]);
+                                                    const { OSType } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/std@0.128.0/_util/os.ts"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         const path = isWindows ? _win32 : _posix;
@@ -43704,7 +44947,16 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.3.0.4"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = (await globalImports["https://deno.land/x/good@1.3.0.4/value.js"]);
+                                                    const { deepCopySymbol , typedArrayClasses , isAsyncIterable , AsyncFunction , ArrayIterator , isSyncIterableObjectOrContainer } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.3.0.4/value.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/value.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/value.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         
                         // ideas
@@ -44938,7 +46190,16 @@
                                             resolve: (relative)=>"https://deno.land/x/good@1.3.0.4"+\`/\${relative}\`,
                                         });
                                     
-                                                    const { zip } = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"]);
+                                                    const { zip } = 
+                                                ((async ()=>{
+                                                    const normalOutput = (await globalImports["https://deno.land/x/good@1.3.0.4/iterable.js"])
+                                                    // merge in "other" exports
+                                                    if (globalImportsHelper[Symbol.for("extraAggregates")] && globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/iterable.js"]) {
+                                                        Object.assign(normalOutput, globalImportsHelper[Symbol.for("extraAggregates")]["https://deno.land/x/good@1.3.0.4/iterable.js"])
+                                                    }
+                                                    return normalOutput
+                                                })())
+                                            ;
                                                 
                         export const capitalize = (string) => string.replace(/\\b\\w/g, (chr) => chr.toUpperCase())
                         
