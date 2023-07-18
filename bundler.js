@@ -7,6 +7,10 @@ import * as Path from "https://deno.land/std@0.128.0/path/mod.ts"
 import { iter, next, Stop, Iterable, zip, count, enumerate, permute, combinations, slices, asyncIteratorToList, concurrentlyTransform, forkAndFilter } from "https://deno.land/x/good@1.3.0.4/iterable.js"
 import { indent, isValidIdentifier, toRepresentation } from "https://deno.land/x/good@1.3.0.4/string.js"
 
+const ts = await import(`https://esm.sh/typescript@${Deno.version.typescript}`)
+// import * as denoGraph from "https://deno.land/x/deno_graph@0.48.1/mod.ts"
+const transpile = source=>ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ES2022 }}).outputText
+
 const parser = await parserFromWasm(javascript) // path or Uint8Array
 
 const curl = (url) => {
@@ -86,6 +90,7 @@ const generateAsboluteImportUrl = ({urlBase, importPath})=>{
     urlObject.pathname = FileSystem.normalize(urlObject.pathname)
     return urlObject.href
 }
+const sheBangPattern = /^#!.+\n/
 const readAbsoluteUrl = async (url)=>{
     // TODO: could add caching here to avoid curling twice
     const remoteUrl = url.startsWith("http")
@@ -101,10 +106,11 @@ const readAbsoluteUrl = async (url)=>{
     } else {
         sheBang = ""
     }
+    if (url.endsWith(".ts")) {
+        sourceCode = transpile(sourceCode)
+    }
     return { sourceCode, sheBang }
 }
-
-const sheBangPattern = /^#!.+\n/
 
 const bundle = async ({ path })=> {
     const sharedInfo = {
@@ -137,11 +143,6 @@ const bundle = async ({ path })=> {
                 // if hasn't been scheduled
                 } else {
                     sharedInfo.sourceCodeStatusOf[childUrl] = "aboutToParse"
-
-                    if (childUrl.endsWith(".ts")) {
-                        throw Error(`Can't handle typescript imports yet`)
-                        // TODO: typescript support
-                    }
                     
                     const { sourceCode } = await readAbsoluteUrl(childUrl)
                     const tree = parser.parse(sourceCode) 
@@ -330,7 +331,7 @@ const bundle = async ({ path })=> {
                             // FIXME: export * as name1 from "module-name";
                             // FIXME: export * as default from "module-name";
                             const names = exportNameSection.descendantsOfType("export_specifier").map(each=>each.text)
-                            const withDetails = names.map(each=>`${each}: ${sharedInfo.helperName}.temp.${each}`)
+                            const withDetails = names.map(each=>`${each} as ${each}`)
                             replacement += `
                                 ${sharedInfo.helperName}.temp = ${importValue};
                                 export { ${withDetails.join(", ")} };
