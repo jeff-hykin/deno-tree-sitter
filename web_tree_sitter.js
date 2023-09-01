@@ -24897,8 +24897,8 @@ var en = Cn((Yt, Ze)=>{
                         }
                     }
                     class Tree {
-                        constructor(t, r, s, a){
-                            be(t), this[0] = r, this.language = s, this.textCallback = a;
+                        constructor(internal, address, language, textCallback){
+                            assertInternal(internal), this[0] = address, this.language = language, this.textCallback = textCallback;
                         }
                         copy() {
                             let t = C._ts_tree_copy(this[0]);
@@ -24933,10 +24933,94 @@ var en = Cn((Yt, Ze)=>{
                             }
                             return a;
                         }
+                        /**
+                         * Query
+                         *
+                         * @example
+                         * ```js
+                         * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.0.1/main.js"
+                         * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+                         * const parser = await parserFromWasm(javascript) // path or Uint8Array
+                         * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+                         * 
+                         * tree.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
+                         * // returns:
+                         * [
+                         *   {
+                         *     pattern: 0,
+                         *     captures: [
+                         *       {
+                         *         name: "blahBlahBlah",
+                         *         node: {
+                         *           type: "identifier",
+                         *           typeId: 1,
+                         *           startPosition: { row: 0, column: 4 },
+                         *           startIndex: 4,
+                         *           endPosition: { row: 0, column: 5 },
+                         *           endIndex: 5,
+                         *           indent: undefined,
+                         *           hasChildren: false,
+                         *           children: []
+                         *         }
+                         *       }
+                         *     ]
+                         *   },
+                         *   {
+                         *     pattern: 0,
+                         *     captures: [
+                         *       {
+                         *         name: "blahBlahBlah",
+                         *         node: {
+                         *           type: "identifier",
+                         *           typeId: 1,
+                         *           startPosition: { row: 0, column: 14 },
+                         *           startIndex: 14,
+                         *           endPosition: { row: 0, column: 15 },
+                         *           endIndex: 15,
+                         *           indent: undefined,
+                         *           hasChildren: false,
+                         *           children: []
+                         *         }
+                         *       }
+                         *     ]
+                         *   },
+                         *   {
+                         *     pattern: 0,
+                         *     captures: [
+                         *       {
+                         *         name: "blahBlahBlah",
+                         *         node: {
+                         *           type: "identifier",
+                         *           typeId: 1,
+                         *           startPosition: { row: 0, column: 24 },
+                         *           startIndex: 24,
+                         *           endPosition: { row: 0, column: 25 },
+                         *           endIndex: 25,
+                         *           indent: undefined,
+                         *           hasChildren: false,
+                         *           children: []
+                         *         }
+                         *       }
+                         *     ]
+                         *   }
+                         * ]
+                         * ```
+                         *
+                         * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
+                         * @param options.matchLimit - max number of results
+                         * @param options.startPosition - {row: Number, column: number}
+                         * @param options.endPosition - {row: Number, column: number}
+                         * @returns {[Object]} output 
+                         *
+                         */
+                        query(queryString, options) {
+                            const { startPosition, endPosition, matchLimit } = {...options}
+                            return this.language.query(queryString).match(this.rootNode, startPosition, endPosition, {matchLimit})
+                        }
                     }
                     class Node {
                         constructor(t, r){
-                            be(t), this.tree = r;
+                            assertInternal(t), this.tree = r;
                         }
                         get typeId() {
                             return marshalNode(this), C._ts_node_symbol_wasm(this.tree[0]);
@@ -25079,7 +25163,7 @@ var en = Cn((Yt, Ze)=>{
                             return G(s, t), G(s + D, r), C._ts_node_named_descendant_for_position_wasm(this.tree[0]), F5(this.tree);
                         }
                         walk() {
-                            return marshalNode(this), C._ts_tree_cursor_new_wasm(this.tree[0]), new bn(re, this.tree);
+                            return marshalNode(this), C._ts_tree_cursor_new_wasm(this.tree[0]), new TreeCursor(re, this.tree);
                         }
                         toString() {
                             marshalNode(this);
@@ -25160,9 +25244,9 @@ var en = Cn((Yt, Ze)=>{
                             return this.children.length
                         }
                     }
-                    class bn {
+                    class TreeCursor {
                         constructor(t, r){
-                            be(t), this.tree = r, ve(this);
+                            assertInternal(t), this.tree = r, ve(this);
                         }
                         delete() {
                             C(this), C._ts_tree_cursor_delete_wasm(this.tree[0]), this[0] = this[1] = this[2] = 0;
@@ -25229,7 +25313,7 @@ var en = Cn((Yt, Ze)=>{
                     }
                     class Language {
                         constructor(t, r){
-                            be(t), this[0] = r, this.types = new Array(C._ts_language_symbol_count(this[0]));
+                            assertInternal(t), this[0] = r, this.types = new Array(C._ts_language_symbol_count(this[0]));
                             for(let s = 0, a = this.types.length; s < a; s++)C._ts_language_symbol_type(this[0], s) < 2 && (this.types[s] = UTF8ToString(C._ts_language_symbol_name(this[0], s)));
                             this.fields = new Array(C._ts_language_field_count(this[0]) + 1);
                             for(let s1 = 0, a2 = this.fields.length; s1 < a2; s1++){
@@ -25416,7 +25500,7 @@ ${JSON.stringify(_, null, 2)}`);
                     }
                     class Query {
                         constructor(treeNode, r, captureNames, textPredicates, predicates, setProperties, assertedProperties, refutedProperties){
-                            be(treeNode), this[0] = r, this.captureNames = captureNames, this.textPredicates = textPredicates, this.predicates = predicates, this.setProperties = setProperties, this.assertedProperties = assertedProperties, this.refutedProperties = refutedProperties, this.exceededMatchLimit = !1;
+                            assertInternal(treeNode), this[0] = r, this.captureNames = captureNames, this.textPredicates = textPredicates, this.predicates = predicates, this.setProperties = setProperties, this.assertedProperties = assertedProperties, this.refutedProperties = refutedProperties, this.exceededMatchLimit = !1;
                         }
                         delete() {
                             C._ts_query_delete(this[0]), this[0] = 0;
@@ -25501,7 +25585,7 @@ ${JSON.stringify(_, null, 2)}`);
                         }
                         return r;
                     }
-                    function be(n) {
+                    function assertInternal(n) {
                         if (n !== re) throw new Error("Illegal constructor");
                     }
                     function Oe(n) {
