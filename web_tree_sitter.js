@@ -25511,9 +25511,9 @@ ${JSON.stringify(_, null, 2)}`);
                             if (matchLimit === void 0) matchLimit = 0;
                             else if (typeof matchLimit != "number") throw new Error("Arguments must be numbers");
                             marshalNode(treeNode), C._ts_query_matches_wasm(this[0], treeNode.tree[0], startPosition.row, startPosition.column, endPosition.row, endPosition.column, matchLimit);
-                            let i180 = getValue(treeSitterId, "i32"), o = getValue(treeSitterId + d, "i32"), l = getValue(treeSitterId + 2 * d, "i32"), w = new Array(i180);
+                            let i180 = getValue(treeSitterId, "i32"), o = getValue(treeSitterId + d, "i32"), l = getValue(treeSitterId + 2 * d, "i32"), theMatches = new Array(i180);
                             this.exceededMatchLimit = !!l;
-                            let m19 = 0, y = o;
+                            let filteredCount = 0, y = o;
                             for(let S = 0; S < i180; S++){
                                 let N = getValue(y, "i32"), M = getValue(y += d, "i32");
                                 y += d;
@@ -25522,19 +25522,20 @@ ${JSON.stringify(_, null, 2)}`);
                                     y = Vt(this, treeNode.tree, y, captures),
                                     this.textPredicates[N].every((b)=>b(captures))
                                 ) {
-                                    w[m19++] = {
+                                    const filteredIndex = filteredCount++
+                                    theMatches[filteredIndex] = {
                                         pattern: N,
                                         captures: captures
                                     };
                                     let b = this.setProperties[N];
-                                    b && (w[S].setProperties = b);
+                                    b && (theMatches[filteredIndex].setProperties = b);
                                     let v20 = this.assertedProperties[N];
-                                    v20 && (w[S].assertedProperties = v20);
+                                    v20 && (theMatches[filteredIndex].assertedProperties = v20);
                                     let c = this.refutedProperties[N];
-                                    c && (w[S].refutedProperties = c);
+                                    c && (theMatches[filteredIndex].refutedProperties = c);
                                 }
                             }
-                            return w.length = m19, C._free(o), w;
+                            return theMatches.length = filteredCount, C._free(o), theMatches;
                         }
                         captures(treeNode, startNode, endNode, options) {
                             startNode || (startNode = ZERO_POINT), endNode || (endNode = ZERO_POINT), options || (options = {});
