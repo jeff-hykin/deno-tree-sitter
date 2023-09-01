@@ -24951,7 +24951,7 @@ var en = Cn((Yt, Ze)=>{
                             return E(this), u._ts_node_end_index_wasm(this.tree[0]);
                         }
                         get text() {
-                            return Kt(this.tree, this.startIndex, this.endIndex);
+                            return this.textOverride ?? Kt(this.tree, this.startIndex, this.endIndex);
                         }
                         isNamed() {
                             return E(this), u._ts_node_is_named_wasm(this.tree[0]) === 1;
@@ -25000,7 +25000,7 @@ var en = Cn((Yt, Ze)=>{
                             return this.namedChild(this.namedChildCount - 1);
                         }
                         get children() {
-                            if (!this._children) {
+                            if (this._children == null) {
                                 E(this), u._ts_node_children_wasm(this.tree[0]);
                                 let t = p(f, "i32"), r = p(f + d, "i32");
                                 if (this._children = new Array(t), t > 0) {
@@ -25110,6 +25110,7 @@ var en = Cn((Yt, Ze)=>{
                                     startIndex: this.startIndex,
                                     endIndex: this.endIndex,
                                     indent: this.indent,
+                                    textOverride: this.textOverride,
                                     ...optionalData,
                                     children: this.children.map(each=>each.toJSON()),
                                 }
@@ -25123,6 +25124,7 @@ var en = Cn((Yt, Ze)=>{
                                     startIndex: this.startIndex,
                                     endIndex: this.endIndex,
                                     indent: this.indent,
+                                    textOverride: this.textOverride,
                                     ...optionalData,
                                     text: this.text,
                                     children: [],
@@ -25150,6 +25152,12 @@ var en = Cn((Yt, Ze)=>{
                                 },
                                 options
                             )
+                        }
+                        *[Symbol.iterator]() {
+                            yield* this.children
+                        }
+                        get length() {
+                            return this.children.length
                         }
                     }
                     class bn {
