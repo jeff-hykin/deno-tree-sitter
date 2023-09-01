@@ -25537,7 +25537,7 @@ ${JSON.stringify(_, null, 2)}`);
                             }
                             return theMatches.length = filteredCount, C._free(o), theMatches;
                         }
-                        iterMatches(treeNode, startPosition, endPosition, options) {
+                        *iterMatches(treeNode, startPosition, endPosition, options) {
                             startPosition || (startPosition = ZERO_POINT), endPosition || (endPosition = ZERO_POINT), options || (options = {});
                             let matchLimit = options.matchLimit;
                             if (matchLimit === void 0) matchLimit = 0;
