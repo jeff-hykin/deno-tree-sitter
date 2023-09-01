@@ -23727,7 +23727,7 @@ var en = Cn((Yt, Ze)=>{
         var P, k = (typeof window == "object" && window.document && window.document.currentScript) ? {
             currentScript: window.document.currentScript
         } : import.meta;
-        class L {
+        class Parser {
             constructor(){
                 this.initialize();
             }
@@ -23896,7 +23896,7 @@ var en = Cn((Yt, Ze)=>{
                                 $("invalid type for setValue: " + r);
                         }
                     }
-                    function p(n, t, r) {
+                    function getValue(n, t, r) {
                         switch((t = t || "i8").charAt(t.length - 1) === "*" && (t = "i32"), t){
                             case "i1":
                             case "i8":
@@ -23940,7 +23940,7 @@ var en = Cn((Yt, Ze)=>{
                         }
                         return _;
                     }
-                    function V1(n, t) {
+                    function UTF8ToString(n, t) {
                         return n ? ht(U, n, t) : "";
                     }
                     function wt(n, t, r, s) {
@@ -23963,10 +23963,10 @@ var en = Cn((Yt, Ze)=>{
                         }
                         return t[r] = 0, r - a;
                     }
-                    function Ve(n, t, r) {
+                    function stringToUTF8(n, t, r) {
                         return wt(n, U, t, r);
                     }
-                    function Pe(n) {
+                    function lengthBytesUTF8(n) {
                         for(var t = 0, r = 0; r < n.length; ++r){
                             var s = n.charCodeAt(r);
                             s >= 55296 && s <= 57343 && (s = 65536 + ((1023 & s) << 10) | 1023 & n.charCodeAt(++r)), s <= 127 ? ++t : t += s <= 2047 ? 2 : s <= 65535 ? 3 : 4;
@@ -23974,7 +23974,7 @@ var en = Cn((Yt, Ze)=>{
                         return t;
                     }
                     function yt(n) {
-                        var t = Pe(n) + 1, r = Te(t);
+                        var t = lengthBytesUTF8(n) + 1, r = Te(t);
                         return wt(n, z, r, t), r;
                     }
                     function bt(n) {
@@ -24344,8 +24344,8 @@ var en = Cn((Yt, Ze)=>{
                         },
                         doReadlink: function(n, t, r) {
                             if (r <= 0) return -28;
-                            var s = FS.readlink(n), a = Math.min(r, Pe(s)), _ = z[t + a];
-                            return Ve(s, t, r + 1), z[t + a] = _, a;
+                            var s = FS.readlink(n), a = Math.min(r, lengthBytesUTF8(s)), _ = z[t + a];
+                            return stringToUTF8(s, t, r + 1), z[t + a] = _, a;
                         },
                         doAccess: function(n, t) {
                             if (-8 & t) return -28;
@@ -24381,7 +24381,7 @@ var en = Cn((Yt, Ze)=>{
                             return se.varargs += 4, h[se.varargs - 4 >> 2];
                         },
                         getStr: function(n) {
-                            return V1(n);
+                            return UTF8ToString(n);
                         },
                         getStreamFromFD: function(n) {
                             var t = FS.getStream(n);
@@ -24450,7 +24450,7 @@ var en = Cn((Yt, Ze)=>{
                         setTempRet0: jt,
                         tree_sitter_log_callback: function(n, t) {
                             if (ie) {
-                                let r = V1(t);
+                                let r = UTF8ToString(t);
                                 ie(r, n !== 0);
                             }
                         },
@@ -24828,32 +24828,32 @@ var en = Cn((Yt, Ze)=>{
                     ]); e.preInit.length > 0;)e.preInit.pop()();
                     var Bt1 = !0;
                     e.noInitialRun && (Bt1 = !1), rt();
-                    let u = e, re = {}, d = 4, H = 5 * d, D = 2 * d, st = 2 * d + 2 * D, ae = {
+                    let C = e, re = {}, d = 4, H = 5 * d, D = 2 * d, st = 2 * d + 2 * D, ZERO_POINT = {
                         row: 0,
                         column: 0
                     }, pn = /[\w-.]*/g, gn = 1, hn = 2, wn = /^_?tree_sitter_\w+/;
-                    var at, _t, f, _e1, ie;
-                    class it {
+                    var at, _t, treeSitterId, _e1, ie;
+                    class ParserImpl {
                         static init() {
-                            f = u._ts_init(), at = p(f, "i32"), _t = p(f + d, "i32");
+                            treeSitterId = C._ts_init(), at = getValue(treeSitterId, "i32"), _t = getValue(treeSitterId + d, "i32");
                         }
                         initialize() {
-                            u._ts_parser_new_wasm(), this[0] = p(f, "i32"), this[1] = p(f + d, "i32");
+                            C._ts_parser_new_wasm(), this[0] = getValue(treeSitterId, "i32"), this[1] = getValue(treeSitterId + d, "i32");
                         }
                         delete() {
-                            u._ts_parser_delete(this[0]), u._free(this[1]), this[0] = 0, this[1] = 0;
+                            C._ts_parser_delete(this[0]), C._free(this[1]), this[0] = 0, this[1] = 0;
                         }
                         setLanguage(t) {
                             let r;
                             if (t) {
-                                if (t.constructor !== Le1) throw new Error("Argument must be a Language");
+                                if (t.constructor !== Language) throw new Error("Argument must be a Language");
                                 {
                                     r = t[0];
-                                    let s = u._ts_language_version(r);
+                                    let s = C._ts_language_version(r);
                                     if (s < _t || at < s) throw new Error(`Incompatible language version ${s}. Compatibility range ${_t} through ${at}.`);
                                 }
                             } else r = 0, t = null;
-                            return this.language = t, u._ts_parser_set_language(this[0], r), this;
+                            return this.language = t, C._ts_parser_set_language(this[0], r), this;
                         }
                         getLanguage() {
                             return this.language;
@@ -24865,26 +24865,26 @@ var en = Cn((Yt, Ze)=>{
                                 if (typeof t != "function") throw new Error("Argument must be a string or a function");
                                 _e1 = t;
                             }
-                            this.logCallback ? (ie = this.logCallback, u._ts_parser_enable_logger_wasm(this[0], 1)) : (ie = null, u._ts_parser_enable_logger_wasm(this[0], 0));
+                            this.logCallback ? (ie = this.logCallback, C._ts_parser_enable_logger_wasm(this[0], 1)) : (ie = null, C._ts_parser_enable_logger_wasm(this[0], 0));
                             let a = 0, _ = 0;
                             if (s && s.includedRanges) {
                                 a = s.includedRanges.length;
-                                let l = _ = u._calloc(a, st);
+                                let l = _ = C._calloc(a, st);
                                 for(let w = 0; w < a; w++)En(l, s.includedRanges[w]), l += st;
                             }
-                            let i173 = u._ts_parser_parse_wasm(this[0], this[1], r ? r[0] : 0, _, a);
+                            let i173 = C._ts_parser_parse_wasm(this[0], this[1], r ? r[0] : 0, _, a);
                             if (!i173) throw _e1 = null, ie = null, new Error("Parsing failed");
-                            let o = new We(re, i173, this.language, _e1);
+                            let o = new Tree(re, i173, this.language, _e1);
                             return _e1 = null, ie = null, o;
                         }
                         reset() {
-                            u._ts_parser_reset(this[0]);
+                            C._ts_parser_reset(this[0]);
                         }
                         setTimeoutMicros(t) {
-                            u._ts_parser_set_timeout_micros(this[0], t);
+                            C._ts_parser_set_timeout_micros(this[0], t);
                         }
                         getTimeoutMicros() {
-                            return u._ts_parser_timeout_micros(this[0]);
+                            return C._ts_parser_timeout_micros(this[0]);
                         }
                         setLogger(t) {
                             if (t) {
@@ -24896,25 +24896,25 @@ var en = Cn((Yt, Ze)=>{
                             return this.logCallback;
                         }
                     }
-                    class We {
+                    class Tree {
                         constructor(t, r, s, a){
                             be(t), this[0] = r, this.language = s, this.textCallback = a;
                         }
                         copy() {
-                            let t = u._ts_tree_copy(this[0]);
-                            return new We(re, t, this.language, this.textCallback);
+                            let t = C._ts_tree_copy(this[0]);
+                            return new Tree(re, t, this.language, this.textCallback);
                         }
                         delete() {
-                            u._ts_tree_delete(this[0]), this[0] = 0;
+                            C._ts_tree_delete(this[0]), this[0] = 0;
                         }
                         edit(t) {
                             (function(r) {
-                                let s = f;
+                                let s = treeSitterId;
                                 G(s, r.startPosition), G(s += D, r.oldEndPosition), G(s += D, r.newEndPosition), I(s += D, r.startIndex, "i32"), I(s += d, r.oldEndIndex, "i32"), I(s += d, r.newEndIndex, "i32"), s += d;
-                            })(t), u._ts_tree_edit_wasm(this[0]);
+                            })(t), C._ts_tree_edit_wasm(this[0]);
                         }
                         get rootNode() {
-                            return u._ts_tree_root_node_wasm(this[0]), F5(this);
+                            return C._ts_tree_root_node_wasm(this[0]), F5(this);
                         }
                         getLanguage() {
                             return this.language;
@@ -24923,13 +24923,13 @@ var en = Cn((Yt, Ze)=>{
                             return this.rootNode.walk();
                         }
                         getChangedRanges(t) {
-                            if (t.constructor !== We) throw new TypeError("Argument must be a Tree");
-                            u._ts_tree_get_changed_ranges_wasm(this[0], t[0]);
-                            let r = p(f, "i32"), s = p(f + d, "i32"), a = new Array(r);
+                            if (t.constructor !== Tree) throw new TypeError("Argument must be a Tree");
+                            C._ts_tree_get_changed_ranges_wasm(this[0], t[0]);
+                            let r = getValue(treeSitterId, "i32"), s = getValue(treeSitterId + d, "i32"), a = new Array(r);
                             if (r > 0) {
                                 let _ = s;
                                 for(let i174 = 0; i174 < r; i174++)a[i174] = Sn(_), _ += st;
-                                u._free(s);
+                                C._free(s);
                             }
                             return a;
                         }
@@ -24939,53 +24939,53 @@ var en = Cn((Yt, Ze)=>{
                             be(t), this.tree = r;
                         }
                         get typeId() {
-                            return E(this), u._ts_node_symbol_wasm(this.tree[0]);
+                            return marshalNode(this), C._ts_node_symbol_wasm(this.tree[0]);
                         }
                         get type() {
                             return this.tree.language.types[this.typeId] || "ERROR";
                         }
                         get endPosition() {
-                            return E(this), u._ts_node_end_point_wasm(this.tree[0]), Ee(f);
+                            return marshalNode(this), C._ts_node_end_point_wasm(this.tree[0]), Ee(treeSitterId);
                         }
                         get endIndex() {
-                            return E(this), u._ts_node_end_index_wasm(this.tree[0]);
+                            return marshalNode(this), C._ts_node_end_index_wasm(this.tree[0]);
                         }
                         get text() {
                             return this.textOverride ?? Kt(this.tree, this.startIndex, this.endIndex);
                         }
                         isNamed() {
-                            return E(this), u._ts_node_is_named_wasm(this.tree[0]) === 1;
+                            return marshalNode(this), C._ts_node_is_named_wasm(this.tree[0]) === 1;
                         }
                         hasError() {
-                            return E(this), u._ts_node_has_error_wasm(this.tree[0]) === 1;
+                            return marshalNode(this), C._ts_node_has_error_wasm(this.tree[0]) === 1;
                         }
                         hasChanges() {
-                            return E(this), u._ts_node_has_changes_wasm(this.tree[0]) === 1;
+                            return marshalNode(this), C._ts_node_has_changes_wasm(this.tree[0]) === 1;
                         }
                         isMissing() {
-                            return E(this), u._ts_node_is_missing_wasm(this.tree[0]) === 1;
+                            return marshalNode(this), C._ts_node_is_missing_wasm(this.tree[0]) === 1;
                         }
                         equals(t) {
                             return this.id === t.id;
                         }
                         child(t) {
-                            return E(this), u._ts_node_child_wasm(this.tree[0], t), F5(this.tree);
+                            return marshalNode(this), C._ts_node_child_wasm(this.tree[0], t), F5(this.tree);
                         }
                         namedChild(t) {
-                            return E(this), u._ts_node_named_child_wasm(this.tree[0], t), F5(this.tree);
+                            return marshalNode(this), C._ts_node_named_child_wasm(this.tree[0], t), F5(this.tree);
                         }
                         childForFieldId(t) {
-                            return E(this), u._ts_node_child_by_field_id_wasm(this.tree[0], t), F5(this.tree);
+                            return marshalNode(this), C._ts_node_child_by_field_id_wasm(this.tree[0], t), F5(this.tree);
                         }
                         childForFieldName(t) {
                             let r = this.tree.language.fields.indexOf(t);
                             if (r !== -1) return this.childForFieldId(r);
                         }
                         get childCount() {
-                            return E(this), u._ts_node_child_count_wasm(this.tree[0]);
+                            return marshalNode(this), C._ts_node_child_count_wasm(this.tree[0]);
                         }
                         get namedChildCount() {
-                            return E(this), u._ts_node_named_child_count_wasm(this.tree[0]);
+                            return marshalNode(this), C._ts_node_named_child_count_wasm(this.tree[0]);
                         }
                         get firstChild() {
                             return this.child(0);
@@ -25001,24 +25001,24 @@ var en = Cn((Yt, Ze)=>{
                         }
                         get children() {
                             if (this._children == null) {
-                                E(this), u._ts_node_children_wasm(this.tree[0]);
-                                let t = p(f, "i32"), r = p(f + d, "i32");
+                                marshalNode(this), C._ts_node_children_wasm(this.tree[0]);
+                                let t = getValue(treeSitterId, "i32"), r = getValue(treeSitterId + d, "i32");
                                 if (this._children = new Array(t), t > 0) {
                                     let s = r;
                                     for(let a = 0; a < t; a++)this._children[a] = F5(this.tree, s), s += H;
-                                    u._free(r);
+                                    C._free(r);
                                 }
                             }
                             return this._children;
                         }
                         get namedChildren() {
                             if (!this._namedChildren) {
-                                E(this), u._ts_node_named_children_wasm(this.tree[0]);
-                                let t = p(f, "i32"), r = p(f + d, "i32");
+                                marshalNode(this), C._ts_node_named_children_wasm(this.tree[0]);
+                                let t = getValue(treeSitterId, "i32"), r = getValue(treeSitterId + d, "i32");
                                 if (this._namedChildren = new Array(t), t > 0) {
                                     let s = r;
                                     for(let a = 0; a < t; a++)this._namedChildren[a] = F5(this.tree, s), s += H;
-                                    u._free(r);
+                                    C._free(r);
                                 }
                             }
                             return this._namedChildren;
@@ -25026,71 +25026,71 @@ var en = Cn((Yt, Ze)=>{
                         descendantsOfType(t, r, s) {
                             Array.isArray(t) || (t = [
                                 t
-                            ]), r || (r = ae), s || (s = ae);
+                            ]), r || (r = ZERO_POINT), s || (s = ZERO_POINT);
                             let a = [], _ = this.tree.language.types;
                             for(let m16 = 0, y = _.length; m16 < y; m16++)t.includes(_[m16]) && a.push(m16);
-                            let i175 = u._malloc(d * a.length);
+                            let i175 = C._malloc(d * a.length);
                             for(let m1 = 0, y1 = a.length; m1 < y1; m1++)I(i175 + m1 * d, a[m1], "i32");
-                            E(this), u._ts_node_descendants_of_type_wasm(this.tree[0], i175, a.length, r.row, r.column, s.row, s.column);
-                            let o = p(f, "i32"), l = p(f + d, "i32"), w = new Array(o);
+                            marshalNode(this), C._ts_node_descendants_of_type_wasm(this.tree[0], i175, a.length, r.row, r.column, s.row, s.column);
+                            let o = getValue(treeSitterId, "i32"), l = getValue(treeSitterId + d, "i32"), w = new Array(o);
                             if (o > 0) {
                                 let m17 = l;
                                 for(let y = 0; y < o; y++)w[y] = F5(this.tree, m17), m17 += H;
                             }
-                            return u._free(l), u._free(i175), w;
+                            return C._free(l), C._free(i175), w;
                         }
                         get nextSibling() {
-                            return E(this), u._ts_node_next_sibling_wasm(this.tree[0]), F5(this.tree);
+                            return marshalNode(this), C._ts_node_next_sibling_wasm(this.tree[0]), F5(this.tree);
                         }
                         get previousSibling() {
-                            return E(this), u._ts_node_prev_sibling_wasm(this.tree[0]), F5(this.tree);
+                            return marshalNode(this), C._ts_node_prev_sibling_wasm(this.tree[0]), F5(this.tree);
                         }
                         get nextNamedSibling() {
-                            return E(this), u._ts_node_next_named_sibling_wasm(this.tree[0]), F5(this.tree);
+                            return marshalNode(this), C._ts_node_next_named_sibling_wasm(this.tree[0]), F5(this.tree);
                         }
                         get previousNamedSibling() {
-                            return E(this), u._ts_node_prev_named_sibling_wasm(this.tree[0]), F5(this.tree);
+                            return marshalNode(this), C._ts_node_prev_named_sibling_wasm(this.tree[0]), F5(this.tree);
                         }
                         get parent() {
-                            return E(this), u._ts_node_parent_wasm(this.tree[0]), F5(this.tree);
+                            return marshalNode(this), C._ts_node_parent_wasm(this.tree[0]), F5(this.tree);
                         }
                         descendantForIndex(t, r = t) {
                             if (typeof t != "number" || typeof r != "number") throw new Error("Arguments must be numbers");
-                            E(this);
-                            let s = f + H;
-                            return I(s, t, "i32"), I(s + d, r, "i32"), u._ts_node_descendant_for_index_wasm(this.tree[0]), F5(this.tree);
+                            marshalNode(this);
+                            let s = treeSitterId + H;
+                            return I(s, t, "i32"), I(s + d, r, "i32"), C._ts_node_descendant_for_index_wasm(this.tree[0]), F5(this.tree);
                         }
                         namedDescendantForIndex(t, r = t) {
                             if (typeof t != "number" || typeof r != "number") throw new Error("Arguments must be numbers");
-                            E(this);
-                            let s = f + H;
-                            return I(s, t, "i32"), I(s + d, r, "i32"), u._ts_node_named_descendant_for_index_wasm(this.tree[0]), F5(this.tree);
+                            marshalNode(this);
+                            let s = treeSitterId + H;
+                            return I(s, t, "i32"), I(s + d, r, "i32"), C._ts_node_named_descendant_for_index_wasm(this.tree[0]), F5(this.tree);
                         }
                         descendantForPosition(t, r = t) {
                             if (!Oe(t) || !Oe(r)) throw new Error("Arguments must be {row, column} objects");
-                            E(this);
-                            let s = f + H;
-                            return G(s, t), G(s + D, r), u._ts_node_descendant_for_position_wasm(this.tree[0]), F5(this.tree);
+                            marshalNode(this);
+                            let s = treeSitterId + H;
+                            return G(s, t), G(s + D, r), C._ts_node_descendant_for_position_wasm(this.tree[0]), F5(this.tree);
                         }
                         namedDescendantForPosition(t, r = t) {
                             if (!Oe(t) || !Oe(r)) throw new Error("Arguments must be {row, column} objects");
-                            E(this);
-                            let s = f + H;
-                            return G(s, t), G(s + D, r), u._ts_node_named_descendant_for_position_wasm(this.tree[0]), F5(this.tree);
+                            marshalNode(this);
+                            let s = treeSitterId + H;
+                            return G(s, t), G(s + D, r), C._ts_node_named_descendant_for_position_wasm(this.tree[0]), F5(this.tree);
                         }
                         walk() {
-                            return E(this), u._ts_tree_cursor_new_wasm(this.tree[0]), new bn(re, this.tree);
+                            return marshalNode(this), C._ts_tree_cursor_new_wasm(this.tree[0]), new bn(re, this.tree);
                         }
                         toString() {
-                            E(this);
-                            let t = u._ts_node_to_string_wasm(this.tree[0]), r = function(s) {
+                            marshalNode(this);
+                            let t = C._ts_node_to_string_wasm(this.tree[0]), r = function(s) {
                                 for(var a = "";;){
                                     var _ = U[(s++) >> 0];
                                     if (!_) return a;
                                     a += String.fromCharCode(_);
                                 }
                             }(t);
-                            return u._free(t), r;
+                            return C._free(t), r;
                         }
                         get hasChildren(){
                             return (this.children?.length||0) > 0
@@ -25165,80 +25165,80 @@ var en = Cn((Yt, Ze)=>{
                             be(t), this.tree = r, ve(this);
                         }
                         delete() {
-                            C(this), u._ts_tree_cursor_delete_wasm(this.tree[0]), this[0] = this[1] = this[2] = 0;
+                            C(this), C._ts_tree_cursor_delete_wasm(this.tree[0]), this[0] = this[1] = this[2] = 0;
                         }
                         reset(t) {
-                            E(t), C(this, f + H), u._ts_tree_cursor_reset_wasm(this.tree[0]), ve(this);
+                            marshalNode(t), C(this, treeSitterId + H), C._ts_tree_cursor_reset_wasm(this.tree[0]), ve(this);
                         }
                         get nodeType() {
                             return this.tree.language.types[this.nodeTypeId] || "ERROR";
                         }
                         get nodeTypeId() {
-                            return C(this), u._ts_tree_cursor_current_node_type_id_wasm(this.tree[0]);
+                            return C(this), C._ts_tree_cursor_current_node_type_id_wasm(this.tree[0]);
                         }
                         get nodeId() {
-                            return C(this), u._ts_tree_cursor_current_node_id_wasm(this.tree[0]);
+                            return C(this), C._ts_tree_cursor_current_node_id_wasm(this.tree[0]);
                         }
                         get nodeIsNamed() {
-                            return C(this), u._ts_tree_cursor_current_node_is_named_wasm(this.tree[0]) === 1;
+                            return C(this), C._ts_tree_cursor_current_node_is_named_wasm(this.tree[0]) === 1;
                         }
                         get nodeIsMissing() {
-                            return C(this), u._ts_tree_cursor_current_node_is_missing_wasm(this.tree[0]) === 1;
+                            return C(this), C._ts_tree_cursor_current_node_is_missing_wasm(this.tree[0]) === 1;
                         }
                         get nodeText() {
                             C(this);
-                            let t = u._ts_tree_cursor_start_index_wasm(this.tree[0]), r = u._ts_tree_cursor_end_index_wasm(this.tree[0]);
+                            let t = C._ts_tree_cursor_start_index_wasm(this.tree[0]), r = C._ts_tree_cursor_end_index_wasm(this.tree[0]);
                             return Kt(this.tree, t, r);
                         }
                         get startPosition() {
-                            return C(this), u._ts_tree_cursor_start_position_wasm(this.tree[0]), Ee(f);
+                            return C(this), C._ts_tree_cursor_start_position_wasm(this.tree[0]), Ee(treeSitterId);
                         }
                         get endPosition() {
-                            return C(this), u._ts_tree_cursor_end_position_wasm(this.tree[0]), Ee(f);
+                            return C(this), C._ts_tree_cursor_end_position_wasm(this.tree[0]), Ee(treeSitterId);
                         }
                         get startIndex() {
-                            return C(this), u._ts_tree_cursor_start_index_wasm(this.tree[0]);
+                            return C(this), C._ts_tree_cursor_start_index_wasm(this.tree[0]);
                         }
                         get endIndex() {
-                            return C(this), u._ts_tree_cursor_end_index_wasm(this.tree[0]);
+                            return C(this), C._ts_tree_cursor_end_index_wasm(this.tree[0]);
                         }
                         currentNode() {
-                            return C(this), u._ts_tree_cursor_current_node_wasm(this.tree[0]), F5(this.tree);
+                            return C(this), C._ts_tree_cursor_current_node_wasm(this.tree[0]), F5(this.tree);
                         }
                         currentFieldId() {
-                            return C(this), u._ts_tree_cursor_current_field_id_wasm(this.tree[0]);
+                            return C(this), C._ts_tree_cursor_current_field_id_wasm(this.tree[0]);
                         }
                         currentFieldName() {
                             return this.tree.language.fields[this.currentFieldId()];
                         }
                         gotoFirstChild() {
                             C(this);
-                            let t = u._ts_tree_cursor_goto_first_child_wasm(this.tree[0]);
+                            let t = C._ts_tree_cursor_goto_first_child_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
                         gotoNextSibling() {
                             C(this);
-                            let t = u._ts_tree_cursor_goto_next_sibling_wasm(this.tree[0]);
+                            let t = C._ts_tree_cursor_goto_next_sibling_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
                         gotoParent() {
                             C(this);
-                            let t = u._ts_tree_cursor_goto_parent_wasm(this.tree[0]);
+                            let t = C._ts_tree_cursor_goto_parent_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
                     }
-                    class Le1 {
+                    class Language {
                         constructor(t, r){
-                            be(t), this[0] = r, this.types = new Array(u._ts_language_symbol_count(this[0]));
-                            for(let s = 0, a = this.types.length; s < a; s++)u._ts_language_symbol_type(this[0], s) < 2 && (this.types[s] = V1(u._ts_language_symbol_name(this[0], s)));
-                            this.fields = new Array(u._ts_language_field_count(this[0]) + 1);
+                            be(t), this[0] = r, this.types = new Array(C._ts_language_symbol_count(this[0]));
+                            for(let s = 0, a = this.types.length; s < a; s++)C._ts_language_symbol_type(this[0], s) < 2 && (this.types[s] = UTF8ToString(C._ts_language_symbol_name(this[0], s)));
+                            this.fields = new Array(C._ts_language_field_count(this[0]) + 1);
                             for(let s1 = 0, a2 = this.fields.length; s1 < a2; s1++){
-                                let _ = u._ts_language_field_name_for_id(this[0], s1);
-                                this.fields[s1] = _ !== 0 ? V1(_) : null;
+                                let _ = C._ts_language_field_name_for_id(this[0], s1);
+                                this.fields[s1] = _ !== 0 ? UTF8ToString(_) : null;
                             }
                         }
                         get version() {
-                            return u._ts_language_version(this[0]);
+                            return C._ts_language_version(this[0]);
                         }
                         get fieldCount() {
                             return this.fields.length - 1;
@@ -25251,72 +25251,72 @@ var en = Cn((Yt, Ze)=>{
                             return this.fields[t] || null;
                         }
                         idForNodeType(t, r) {
-                            let s = Pe(t), a = u._malloc(s + 1);
-                            Ve(t, a, s + 1);
-                            let _ = u._ts_language_symbol_for_name(this[0], a, s, r);
-                            return u._free(a), _ || null;
+                            let s = lengthBytesUTF8(t), a = C._malloc(s + 1);
+                            stringToUTF8(t, a, s + 1);
+                            let _ = C._ts_language_symbol_for_name(this[0], a, s, r);
+                            return C._free(a), _ || null;
                         }
                         get nodeTypeCount() {
-                            return u._ts_language_symbol_count(this[0]);
+                            return C._ts_language_symbol_count(this[0]);
                         }
                         nodeTypeForId(t) {
-                            let r = u._ts_language_symbol_name(this[0], t);
-                            return r ? V1(r) : null;
+                            let r = C._ts_language_symbol_name(this[0], t);
+                            return r ? UTF8ToString(r) : null;
                         }
                         nodeTypeIsNamed(t) {
-                            return !!u._ts_language_type_is_named_wasm(this[0], t);
+                            return !!C._ts_language_type_is_named_wasm(this[0], t);
                         }
                         nodeTypeIsVisible(t) {
-                            return !!u._ts_language_type_is_visible_wasm(this[0], t);
+                            return !!C._ts_language_type_is_visible_wasm(this[0], t);
                         }
-                        query(t) {
-                            let r = Pe(t), s = u._malloc(r + 1);
-                            Ve(t, s, r + 1);
-                            let a = u._ts_query_new(this[0], s, r, f, f + d);
-                            if (!a) {
-                                let g3 = p(f + d, "i32"), b = V1(s, p(f, "i32")).length, v16 = t.substr(b, 100).split(`
-`)[0], c, x = v16.match(pn)[0];
-                                switch(g3){
+                        query(queryString) {
+                            let sourceLength = lengthBytesUTF8(queryString), sourceAddress = C._malloc(sourceLength + 1);
+                            stringToUTF8(queryString, sourceAddress, sourceLength + 1);
+                            let address = C._ts_query_new(this[0], sourceAddress, sourceLength, treeSitterId, treeSitterId + d);
+                            if (!address) {
+                                let errorId = getValue(treeSitterId + d, "i32"), b = UTF8ToString(sourceAddress, getValue(treeSitterId, "i32")).length, v16 = queryString.substr(b, 100).split(`
+`)[0], error, x = v16.match(pn)[0];
+                                switch(errorId){
                                     case 2:
-                                        c = new RangeError(`Bad node name '${x}'`);
+                                        error = new RangeError(`Bad node name '${x}'`);
                                         break;
                                     case 3:
-                                        c = new RangeError(`Bad field name '${x}'`);
+                                        error = new RangeError(`Bad field name '${x}'`);
                                         break;
                                     case 4:
-                                        c = new RangeError(`Bad capture name @${x}`);
+                                        error = new RangeError(`Bad capture name @${x}`);
                                         break;
                                     case 5:
-                                        c = new TypeError(`Bad pattern structure at offset ${b}: '${v16}'...`), x = "";
+                                        error = new TypeError(`Bad pattern structure at offset ${b}: '${v16}'...`), x = "";
                                         break;
                                     default:
-                                        c = new SyntaxError(`Bad syntax at offset ${b}: '${v16}'...`), x = "";
+                                        error = new SyntaxError(`Bad syntax at offset ${b}: '${v16}'...`), x = "";
                                 }
-                                throw c.index = b, c.length = x.length, u._free(s), c;
+                                throw error.index = b, error.length = x.length, C._free(sourceAddress), error;
                             }
-                            let _ = u._ts_query_string_count(a), i176 = u._ts_query_capture_count(a), o = u._ts_query_pattern_count(a), l = new Array(i176), w = new Array(_);
-                            for(let g4 = 0; g4 < i176; g4++){
-                                let b = u._ts_query_capture_name_for_id(a, g4, f), v17 = p(f, "i32");
-                                l[g4] = V1(b, v17);
+                            let queryStringCount = C._ts_query_string_count(address), queryCaptureCount = C._ts_query_capture_count(address), o = C._ts_query_pattern_count(address), queryCaptures = new Array(queryCaptureCount), queryStrings = new Array(queryStringCount);
+                            for(let queryCaptureIndex = 0; queryCaptureIndex < queryCaptureCount; queryCaptureIndex++){
+                                let nameAddress = C._ts_query_capture_name_for_id(address, queryCaptureIndex, treeSitterId), nameLength = getValue(treeSitterId, "i32");
+                                queryCaptures[queryCaptureIndex] = UTF8ToString(nameAddress, nameLength);
                             }
-                            for(let g1 = 0; g1 < _; g1++){
-                                let b = u._ts_query_string_value_for_id(a, g1, f), v18 = p(f, "i32");
-                                w[g1] = V1(b, v18);
+                            for(let queryStringIndex = 0; queryStringIndex < queryStringCount; queryStringIndex++){
+                                let b = C._ts_query_string_value_for_id(address, queryStringIndex, treeSitterId), v18 = getValue(treeSitterId, "i32");
+                                queryStrings[queryStringIndex] = UTF8ToString(b, v18);
                             }
                             let m18 = new Array(o), y = new Array(o), S = new Array(o), N = new Array(o), M = new Array(o);
                             for(let g2 = 0; g2 < o; g2++){
-                                let b = u._ts_query_predicates_for_pattern(a, g2, f), v19 = p(f, "i32");
+                                let b = C._ts_query_predicates_for_pattern(address, g2, treeSitterId), v19 = getValue(treeSitterId, "i32");
                                 N[g2] = [], M[g2] = [];
                                 let c = [], x = b;
                                 for(let oe = 0; oe < v19; oe++){
-                                    let Xt = p(x, "i32"), Jt = p(x += d, "i32");
+                                    let Xt = getValue(x, "i32"), Jt = getValue(x += d, "i32");
                                     if (x += d, Xt === gn) c.push({
                                         type: "capture",
-                                        name: l[Jt]
+                                        name: queryCaptures[Jt]
                                     });
                                     else if (Xt === hn) c.push({
                                         type: "string",
-                                        value: w[Jt]
+                                        value: queryStrings[Jt]
                                     });
                                     else if (c.length > 0) {
                                         if (c[0].type !== "string") throw new Error("Predicates must begin with a literal value");
@@ -25379,7 +25379,7 @@ var en = Cn((Yt, Ze)=>{
                                 }
                                 Object.freeze(m18[g2]), Object.freeze(y[g2]), Object.freeze(S[g2]);
                             }
-                            return u._free(s), new vn(re, a, l, M, N, Object.freeze(m18), Object.freeze(y), Object.freeze(S));
+                            return C._free(sourceAddress), new Query(re, address, queryCaptures, M, N, Object.freeze(m18), Object.freeze(y), Object.freeze(S));
                         }
                         static load(t) {
                             let r;
@@ -25410,35 +25410,37 @@ ${o}`);
                                 i178 || console.log(`Couldn't find language function in WASM file. Symbols:
 ${JSON.stringify(_, null, 2)}`);
                                 let o = a[i178]();
-                                return new Le1(re, o);
+                                return new Language(re, o);
                             });
                         }
                     }
-                    class vn {
-                        constructor(t, r, s, a, _, i179, o, l){
-                            be(t), this[0] = r, this.captureNames = s, this.textPredicates = a, this.predicates = _, this.setProperties = i179, this.assertedProperties = o, this.refutedProperties = l, this.exceededMatchLimit = !1;
+                    class Query {
+                        constructor(treeNode, r, captureNames, textPredicates, predicates, setProperties, assertedProperties, refutedProperties){
+                            be(treeNode), this[0] = r, this.captureNames = captureNames, this.textPredicates = textPredicates, this.predicates = predicates, this.setProperties = setProperties, this.assertedProperties = assertedProperties, this.refutedProperties = refutedProperties, this.exceededMatchLimit = !1;
                         }
                         delete() {
-                            u._ts_query_delete(this[0]), this[0] = 0;
+                            C._ts_query_delete(this[0]), this[0] = 0;
                         }
-                        matches(t, r, s, a) {
-                            r || (r = ae), s || (s = ae), a || (a = {});
-                            let _ = a.matchLimit;
-                            if (_ === void 0) _ = 0;
-                            else if (typeof _ != "number") throw new Error("Arguments must be numbers");
-                            E(t), u._ts_query_matches_wasm(this[0], t.tree[0], r.row, r.column, s.row, s.column, _);
-                            let i180 = p(f, "i32"), o = p(f + d, "i32"), l = p(f + 2 * d, "i32"), w = new Array(i180);
+                        matches(treeNode, startPosition, endPosition, options) {
+                            startPosition || (startPosition = ZERO_POINT), endPosition || (endPosition = ZERO_POINT), options || (options = {});
+                            let matchLimit = options.matchLimit;
+                            if (matchLimit === void 0) matchLimit = 0;
+                            else if (typeof matchLimit != "number") throw new Error("Arguments must be numbers");
+                            marshalNode(treeNode), C._ts_query_matches_wasm(this[0], treeNode.tree[0], startPosition.row, startPosition.column, endPosition.row, endPosition.column, matchLimit);
+                            let i180 = getValue(treeSitterId, "i32"), o = getValue(treeSitterId + d, "i32"), l = getValue(treeSitterId + 2 * d, "i32"), w = new Array(i180);
                             this.exceededMatchLimit = !!l;
                             let m19 = 0, y = o;
                             for(let S = 0; S < i180; S++){
-                                let N = p(y, "i32"), M = p(y += d, "i32");
+                                let N = getValue(y, "i32"), M = getValue(y += d, "i32");
                                 y += d;
-                                let g5 = new Array(M);
-                                if (y = Vt(this, t.tree, y, g5), this.textPredicates[N].every((b)=>b(g5)
-                                )) {
+                                let captures = new Array(M);
+                                if (
+                                    y = Vt(this, treeNode.tree, y, captures),
+                                    this.textPredicates[N].every((b)=>b(captures))
+                                ) {
                                     w[m19++] = {
                                         pattern: N,
-                                        captures: g5
+                                        captures: captures
                                     };
                                     let b = this.setProperties[N];
                                     b && (w[S].setProperties = b);
@@ -25448,20 +25450,20 @@ ${JSON.stringify(_, null, 2)}`);
                                     c && (w[S].refutedProperties = c);
                                 }
                             }
-                            return w.length = m19, u._free(o), w;
+                            return w.length = m19, C._free(o), w;
                         }
-                        captures(t, r, s, a) {
-                            r || (r = ae), s || (s = ae), a || (a = {});
-                            let _ = a.matchLimit;
-                            if (_ === void 0) _ = 0;
-                            else if (typeof _ != "number") throw new Error("Arguments must be numbers");
-                            E(t), u._ts_query_captures_wasm(this[0], t.tree[0], r.row, r.column, s.row, s.column, _);
-                            let i181 = p(f, "i32"), o = p(f + d, "i32"), l = p(f + 2 * d, "i32"), w = [];
+                        captures(treeNode, startNode, endNode, options) {
+                            startNode || (startNode = ZERO_POINT), endNode || (endNode = ZERO_POINT), options || (options = {});
+                            let matchLimit = options.matchLimit;
+                            if (matchLimit === void 0) matchLimit = 0;
+                            else if (typeof matchLimit != "number") throw new Error("Arguments must be numbers");
+                            marshalNode(treeNode), C._ts_query_captures_wasm(this[0], treeNode.tree[0], startNode.row, startNode.column, endNode.row, endNode.column, matchLimit);
+                            let i181 = getValue(treeSitterId, "i32"), o = getValue(treeSitterId + d, "i32"), l = getValue(treeSitterId + 2 * d, "i32"), w = [];
                             this.exceededMatchLimit = !!l;
                             let m20 = [], y = o;
                             for(let S = 0; S < i181; S++){
-                                let N = p(y, "i32"), M = p(y += d, "i32"), g6 = p(y += d, "i32");
-                                if (y += d, m20.length = M, y = Vt(this, t.tree, y, m20), this.textPredicates[N].every((b)=>b(m20)
+                                let N = getValue(y, "i32"), M = getValue(y += d, "i32"), g6 = getValue(y += d, "i32");
+                                if (y += d, m20.length = M, y = Vt(this, treeNode.tree, y, m20), this.textPredicates[N].every((b)=>b(m20)
                                 )) {
                                     let b = m20[g6], v21 = this.setProperties[N];
                                     v21 && (b.setProperties = v21);
@@ -25471,7 +25473,7 @@ ${JSON.stringify(_, null, 2)}`);
                                     x && (b.refutedProperties = x), w.push(b);
                                 }
                             }
-                            return u._free(o), w;
+                            return C._free(o), w;
                         }
                         predicatesForPattern(t) {
                             return this.predicates[t];
@@ -25491,7 +25493,7 @@ ${JSON.stringify(_, null, 2)}`);
                     }
                     function Vt(n, t, r, s) {
                         for(let a = 0, _ = s.length; a < _; a++){
-                            let i182 = p(r, "i32"), o = F5(t, r += d);
+                            let i182 = getValue(r, "i32"), o = F5(t, r += d);
                             r += H, s[a] = {
                                 name: n.captureNames[i182],
                                 node: o
@@ -25505,32 +25507,32 @@ ${JSON.stringify(_, null, 2)}`);
                     function Oe(n) {
                         return n && typeof n.row == "number" && typeof n.column == "number";
                     }
-                    function E(n) {
-                        let t = f;
+                    function marshalNode(n) {
+                        let t = treeSitterId;
                         I(t, n.id, "i32"), I(t += d, n.startIndex, "i32"), I(t += d, n.startPosition.row, "i32"), I(t += d, n.startPosition.column, "i32"), I(t += d, n[0], "i32");
                     }
-                    function F5(n, t = f) {
-                        let r = p(t, "i32");
+                    function F5(n, t = treeSitterId) {
+                        let r = getValue(t, "i32");
                         if (r === 0) return null;
-                        let s = p(t += d, "i32"), a = p(t += d, "i32"), _ = p(t += d, "i32"), i183 = p(t += d, "i32"), o = new Node(re, n);
+                        let s = getValue(t += d, "i32"), a = getValue(t += d, "i32"), _ = getValue(t += d, "i32"), i183 = getValue(t += d, "i32"), o = new Node(re, n);
                         return o.id = r, o.startIndex = s, o.startPosition = {
                             row: a,
                             column: _
                         }, o[0] = i183, o;
                     }
-                    function C(n, t = f) {
+                    function C(n, t = treeSitterId) {
                         I(t + 0 * d, n[0], "i32"), I(t + 1 * d, n[1], "i32"), I(t + 2 * d, n[2], "i32");
                     }
                     function ve(n) {
-                        n[0] = p(f + 0 * d, "i32"), n[1] = p(f + 1 * d, "i32"), n[2] = p(f + 2 * d, "i32");
+                        n[0] = getValue(treeSitterId + 0 * d, "i32"), n[1] = getValue(treeSitterId + 1 * d, "i32"), n[2] = getValue(treeSitterId + 2 * d, "i32");
                     }
                     function G(n, t) {
                         I(n, t.row, "i32"), I(n + d, t.column, "i32");
                     }
                     function Ee(n) {
                         return {
-                            row: p(n, "i32"),
-                            column: p(n + d, "i32")
+                            row: getValue(n, "i32"),
+                            column: getValue(n + d, "i32")
                         };
                     }
                     function En(n, t) {
@@ -25538,21 +25540,21 @@ ${JSON.stringify(_, null, 2)}`);
                     }
                     function Sn(n) {
                         let t = {};
-                        return t.startPosition = Ee(n), n += D, t.endPosition = Ee(n), n += D, t.startIndex = p(n, "i32"), n += d, t.endIndex = p(n, "i32"), t;
+                        return t.startPosition = Ee(n), n += D, t.endPosition = Ee(n), n += D, t.startIndex = getValue(n, "i32"), n += d, t.endIndex = getValue(n, "i32"), t;
                     }
-                    for (let n1 of Object.getOwnPropertyNames(it.prototype))Object.defineProperty(L.prototype, n1, {
-                        value: it.prototype[n1],
+                    for (let n1 of Object.getOwnPropertyNames(ParserImpl.prototype))Object.defineProperty(Parser.prototype, n1, {
+                        value: ParserImpl.prototype[n1],
                         enumerable: !1,
                         writable: !1,
                         configurable: true,
                     });
-                    L.Language = Le1, e.onRuntimeInitialized = ()=>{
-                        it.init(), nn();
+                    Parser.Language = Language, e.onRuntimeInitialized = ()=>{
+                        ParserImpl.init(), nn();
                     };
                 }));
             }
         }
-        return L;
+        return Parser;
     }();
     typeof Yt == "object" && (Ze.exports = Rn);
 });
