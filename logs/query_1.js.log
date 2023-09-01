@@ -1,0 +1,118 @@
+🚀 ~ file: query_1.js:12 ~ results: [
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 4 },
+          startIndex: 4,
+          endPosition: { row: 0, column: 5 },
+          endIndex: 5,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  },
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 14 },
+          startIndex: 14,
+          endPosition: { row: 0, column: 15 },
+          endIndex: 15,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  },
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 24 },
+          startIndex: 24,
+          endPosition: { row: 0, column: 25 },
+          endIndex: 25,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  }
+]
+🚀 ~ file: query_1.js:13 ~ results: [
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 4 },
+          startIndex: 4,
+          endPosition: { row: 0, column: 5 },
+          endIndex: 5,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  },
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 14 },
+          startIndex: 14,
+          endPosition: { row: 0, column: 15 },
+          endIndex: 15,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  },
+  {
+    pattern: 0,
+    captures: [
+      {
+        name: "blahBlahBlah",
+        node: {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 24 },
+          startIndex: 24,
+          endPosition: { row: 0, column: 25 },
+          endIndex: 25,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      }
+    ]
+  }
+]

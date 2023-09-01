@@ -25015,7 +25015,7 @@ var en = Cn((Yt, Ze)=>{
                          */
                         query(queryString, options) {
                             const { startPosition, endPosition, matchLimit } = {...options}
-                            return this.language.query(queryString).match(this.rootNode, startPosition, endPosition, {matchLimit})
+                            return this.language.query(queryString).matches(this.rootNode, startPosition, endPosition, {matchLimit})
                         }
                     }
                     class Node {
