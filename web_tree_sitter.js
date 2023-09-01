@@ -13358,22 +13358,22 @@ var kr = g((uu, Pr)=>{
 var v = g((su, jr)=>{
     "use strict";
     var { ObjectDefineProperties: tf , ObjectGetOwnPropertyDescriptor: B , ObjectKeys: nf , ObjectSetPrototypeOf: Wr  } = m();
-    jr.exports = C;
+    jr.exports = C0842;
     var Dt = we(), x = Tt();
-    Wr(C.prototype, Dt.prototype);
-    Wr(C, Dt);
+    Wr(C0842.prototype, Dt.prototype);
+    Wr(C0842, Dt);
     {
         let e = nf(x.prototype);
         for(let t = 0; t < e.length; t++){
             let n = e[t];
-            C.prototype[n] || (C.prototype[n] = x.prototype[n]);
+            C0842.prototype[n] || (C0842.prototype[n] = x.prototype[n]);
         }
     }
-    function C(e) {
-        if (!(this instanceof C)) return new C(e);
+    function C0842(e) {
+        if (!(this instanceof C0842)) return new C0842(e);
         Dt.call(this, e), x.call(this, e), e ? (this.allowHalfOpen = e.allowHalfOpen !== !1, e.readable === !1 && (this._readableState.readable = !1, this._readableState.ended = !0, this._readableState.endEmitted = !0), e.writable === !1 && (this._writableState.writable = !1, this._writableState.ending = !0, this._writableState.ended = !0, this._writableState.finished = !0)) : this.allowHalfOpen = !0;
     }
-    tf(C.prototype, {
+    tf(C0842.prototype, {
         writable: {
             __proto__: null,
             ...B(x.prototype, "writable")
@@ -13424,14 +13424,14 @@ var v = g((su, jr)=>{
     function Cr() {
         return Mt === void 0 && (Mt = {}), Mt;
     }
-    C.fromWeb = function(e, t) {
+    C0842.fromWeb = function(e, t) {
         return Cr().newStreamDuplexFromReadableWritablePair(e, t);
     };
-    C.toWeb = function(e) {
+    C0842.toWeb = function(e) {
         return Cr().newReadableWritablePairFromDuplex(e);
     };
     var Nt;
-    C.from = function(e) {
+    C0842.from = function(e) {
         return Nt || (Nt = kr()), Nt(e, "body");
     };
 });
@@ -25165,64 +25165,64 @@ var en = Cn((Yt, Ze)=>{
                             be(t), this.tree = r, ve(this);
                         }
                         delete() {
-                            C(this), u._ts_tree_cursor_delete_wasm(this.tree[0]), this[0] = this[1] = this[2] = 0;
+                            C1293(this), u._ts_tree_cursor_delete_wasm(this.tree[0]), this[0] = this[1] = this[2] = 0;
                         }
                         reset(t) {
-                            E(t), C(this, f + H), u._ts_tree_cursor_reset_wasm(this.tree[0]), ve(this);
+                            E(t), C1293(this, f + H), u._ts_tree_cursor_reset_wasm(this.tree[0]), ve(this);
                         }
                         get nodeType() {
                             return this.tree.language.types[this.nodeTypeId] || "ERROR";
                         }
                         get nodeTypeId() {
-                            return C(this), u._ts_tree_cursor_current_node_type_id_wasm(this.tree[0]);
+                            return C1293(this), u._ts_tree_cursor_current_node_type_id_wasm(this.tree[0]);
                         }
                         get nodeId() {
-                            return C(this), u._ts_tree_cursor_current_node_id_wasm(this.tree[0]);
+                            return C1293(this), u._ts_tree_cursor_current_node_id_wasm(this.tree[0]);
                         }
                         get nodeIsNamed() {
-                            return C(this), u._ts_tree_cursor_current_node_is_named_wasm(this.tree[0]) === 1;
+                            return C1293(this), u._ts_tree_cursor_current_node_is_named_wasm(this.tree[0]) === 1;
                         }
                         get nodeIsMissing() {
-                            return C(this), u._ts_tree_cursor_current_node_is_missing_wasm(this.tree[0]) === 1;
+                            return C1293(this), u._ts_tree_cursor_current_node_is_missing_wasm(this.tree[0]) === 1;
                         }
                         get nodeText() {
-                            C(this);
+                            C1293(this);
                             let t = u._ts_tree_cursor_start_index_wasm(this.tree[0]), r = u._ts_tree_cursor_end_index_wasm(this.tree[0]);
                             return Kt(this.tree, t, r);
                         }
                         get startPosition() {
-                            return C(this), u._ts_tree_cursor_start_position_wasm(this.tree[0]), Ee(f);
+                            return C1293(this), u._ts_tree_cursor_start_position_wasm(this.tree[0]), Ee(f);
                         }
                         get endPosition() {
-                            return C(this), u._ts_tree_cursor_end_position_wasm(this.tree[0]), Ee(f);
+                            return C1293(this), u._ts_tree_cursor_end_position_wasm(this.tree[0]), Ee(f);
                         }
                         get startIndex() {
-                            return C(this), u._ts_tree_cursor_start_index_wasm(this.tree[0]);
+                            return C1293(this), u._ts_tree_cursor_start_index_wasm(this.tree[0]);
                         }
                         get endIndex() {
-                            return C(this), u._ts_tree_cursor_end_index_wasm(this.tree[0]);
+                            return C1293(this), u._ts_tree_cursor_end_index_wasm(this.tree[0]);
                         }
                         currentNode() {
-                            return C(this), u._ts_tree_cursor_current_node_wasm(this.tree[0]), F5(this.tree);
+                            return C1293(this), u._ts_tree_cursor_current_node_wasm(this.tree[0]), F5(this.tree);
                         }
                         currentFieldId() {
-                            return C(this), u._ts_tree_cursor_current_field_id_wasm(this.tree[0]);
+                            return C1293(this), u._ts_tree_cursor_current_field_id_wasm(this.tree[0]);
                         }
                         currentFieldName() {
                             return this.tree.language.fields[this.currentFieldId()];
                         }
                         gotoFirstChild() {
-                            C(this);
+                            C1293(this);
                             let t = u._ts_tree_cursor_goto_first_child_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
                         gotoNextSibling() {
-                            C(this);
+                            C1293(this);
                             let t = u._ts_tree_cursor_goto_next_sibling_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
                         gotoParent() {
-                            C(this);
+                            C1293(this);
                             let t = u._ts_tree_cursor_goto_parent_wasm(this.tree[0]);
                             return ve(this), t === 1;
                         }
@@ -25518,7 +25518,7 @@ ${JSON.stringify(_, null, 2)}`);
                             column: _
                         }, o[0] = i183, o;
                     }
-                    function C(n, t = f) {
+                    function C1293(n, t = f) {
                         I(t + 0 * d, n[0], "i32"), I(t + 1 * d, n[1], "i32"), I(t + 2 * d, n[2], "i32");
                     }
                     function ve(n) {
