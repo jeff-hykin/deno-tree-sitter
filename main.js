@@ -51,7 +51,7 @@ export const parserFromWasm = async (wasmUint8ArrayOrFilePath)=>{
                 string: arg1.string,
             })
         }
-        return realParceFunction(typeof arg1.string == 'string' ? : arg1.string)
+        return realParceFunction(typeof arg1.string == 'string' ? arg1.string : arg1)
     }
     return parser
 }
