@@ -25537,6 +25537,39 @@ ${JSON.stringify(_, null, 2)}`);
                             }
                             return theMatches.length = filteredCount, C._free(o), theMatches;
                         }
+                        iterMatches(treeNode, startPosition, endPosition, options) {
+                            startPosition || (startPosition = ZERO_POINT), endPosition || (endPosition = ZERO_POINT), options || (options = {});
+                            let matchLimit = options.matchLimit;
+                            if (matchLimit === void 0) matchLimit = 0;
+                            else if (typeof matchLimit != "number") throw new Error("Arguments must be numbers");
+                            marshalNode(treeNode), C._ts_query_matches_wasm(this[0], treeNode.tree[0], startPosition.row, startPosition.column, endPosition.row, endPosition.column, matchLimit);
+                            let i180 = getValue(treeSitterId, "i32"), o = getValue(treeSitterId + d, "i32"), l = getValue(treeSitterId + 2 * d, "i32");
+                            this.exceededMatchLimit = !!l;
+                            let filteredCount = 0, y = o;
+                            for(let S = 0; S < i180; S++){
+                                let N = getValue(y, "i32"), M = getValue(y += d, "i32");
+                                y += d;
+                                let captures = new Array(M);
+                                if (
+                                    y = Vt(this, treeNode.tree, y, captures),
+                                    this.textPredicates[N].every((b)=>b(captures))
+                                ) {
+                                    const filteredIndex = filteredCount++
+                                    const output = {
+                                        pattern: N,
+                                        captures: captures
+                                    };
+                                    let b = this.setProperties[N];
+                                    b && (output.setProperties = b);
+                                    let v20 = this.assertedProperties[N];
+                                    v20 && (output.assertedProperties = v20);
+                                    let c = this.refutedProperties[N];
+                                    c && (output.refutedProperties = c);
+                                    yield output
+                                }
+                            }
+                            C._free(o)
+                        }
                         captures(treeNode, startNode, endNode, options) {
                             startNode || (startNode = ZERO_POINT), endNode || (endNode = ZERO_POINT), options || (options = {});
                             let matchLimit = options.matchLimit;
