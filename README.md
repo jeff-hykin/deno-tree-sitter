@@ -398,20 +398,64 @@ results == [
 ]
 ```
 
-### Flatten 
+### Traverse
 
-It is surprisingly handy to be able to iterate over every node in order.
+It is surprisingly handy to be able to iterate over every node (at any depth) in order.
 
 ```js
 import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+const parser = await parserFromWasm(javascript) // path or Uint8Array
+const tree = parser.parse(`
+    function thing(arg1) {
+        let a = 10
+    }
+`)
 
-var parser = await parserFromWasm(javascript)
-var tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
+// 
+// example with nice printout:
+// 
+let indent = ""
+for (const [ parents, node, direction ] of tree.rootNode.traverse()) {
+    const isLeafNode = direction == "-"
+    if (isLeafNode) {
+        console.log(indent+`<${node.type} text=${JSON.stringify(node.text)} />`)
+    } else {
+        if (direction == "->") {
+            console.log(indent+`<${node.type}>`)
+            indent += "    "
+        } else if (direction == "<-") {
+            indent = indent.slice(0,-4)
+            console.log(indent+`</${node.type}>`)
+        }
+    }
+}
 
-var allNodes = flatNodeList(tree.rootNode)
+// prints:
+// <program>
+//     <function_declaration>
+//         <function text="function" />
+//         <identifier text="thing" />
+//         <formal_parameters>
+//             <( text="(" />
+//             <identifier text="arg1" />
+//             <) text=")" />
+//         </formal_parameters>
+//         <statement_block>
+//             <{ text="{" />
+//             <lexical_declaration>
+//                 <let text="let" />
+//                 <variable_declarator>
+//                     <identifier text="a" />
+//                     <= text="=" />
+//                     <number text="10" />
+//                 </variable_declarator>
+//             </lexical_declaration>
+//             <} text="}" />
+//         </statement_block>
+//     </function_declaration>
+// </program>
 
-var originalString = allNodes.map(each=>each.hasChildren ? "" : (each.text||"")).join("")
 ```
 
 

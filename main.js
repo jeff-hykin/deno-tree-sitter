@@ -25353,6 +25353,25 @@ class ParserClass {
                     walk() {
                         return marshalNode(this), C._ts_tree_cursor_new_wasm(this.tree[0]), new TreeCursor(re, this.tree)
                     }
+                    *traverse(arg={_parentNodes: [],}) {
+                        const { _parentNodes } = arg
+                        const parentNodes = [ this, ..._parentNodes ]
+                        if (this.children.length == 0) {
+                            yield [_parentNodes, this, "-"]
+                        } else {
+                            yield [_parentNodes, this, "->"]
+                            for (const each of this.children) {
+                                if (each instanceof Node) {
+                                    for (const eachInner of each.traverse({ _parentNodes: parentNodes })) {
+                                        yield eachInner
+                                    }
+                                } else {
+                                    yield [_parentNodes, each, "-"]
+                                }
+                            }
+                            yield [_parentNodes, this, "<-"]
+                        }
+                    }
                     toString() {
                         marshalNode(this)
                         let t = C._ts_node_to_string_wasm(this.tree[0]),

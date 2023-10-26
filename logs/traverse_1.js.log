@@ -1,0 +1,49 @@
+<program>
+    <function_declaration>
+        <function text="function" />
+        <identifier text="thing" />
+        <formal_parameters>
+            <( text="(" />
+            <identifier text="arg1" />
+            <) text=")" />
+        </formal_parameters>
+        <statement_block>
+            <{ text="{" />
+            <lexical_declaration>
+                <let text="let" />
+                <variable_declarator>
+                    <identifier text="a" />
+                    <= text="=" />
+                    <number text="10" />
+                </variable_declarator>
+            </lexical_declaration>
+            <} text="}" />
+        </statement_block>
+    </function_declaration>
+</program>
+
+<program>
+    <function_declaration>
+        "function": "function"
+        "identifier": "thing"
+        <formal_parameters>
+            "(": "("
+            "identifier": "arg1"
+            ",": ","
+            "identifier": "arg2"
+            ")": ")"
+        </formal_parameters>
+        <statement_block>
+            "{": "{"
+            <lexical_declaration>
+                "let": "let"
+                <variable_declarator>
+                    "identifier": "a"
+                    "=": "="
+                    "number": "10"
+                </variable_declarator>
+            </lexical_declaration>
+            "}": "}"
+        </statement_block>
+    </function_declaration>
+</program>
