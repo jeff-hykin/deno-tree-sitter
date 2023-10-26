@@ -83,6 +83,87 @@ tree.rootNode = {
 
 ## Handy Tools/Usage
 
+### Languages
+
+I aggregated some wasm parser [here](https://github.com/jeff-hykin/common_tree_sitter_languages) for quick usage.
+
+```js
+import html from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/html.js"
+import c from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/c.js"
+import python from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/python.js"
+import typescript from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/typescript.js"
+import yaml from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/yaml.js"
+import javascript from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/javascript.js"
+import rust from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/rust.js"
+import css from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/css.js"
+import json from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/json.js"
+import wat from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/wat.js"
+import wast from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/wast.js"
+import tsx from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/tsx.js"
+import toml from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/toml.js"
+import nix from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/nix.js"
+import cpp from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/cpp.js"
+import gitignore from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/gitignore.js"
+import treeSitterQuery from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/tree-sitter-query.js"
+```
+
+
+### Traversing
+
+It is surprisingly handy to be able to iterate over every node (at any depth) in order.
+
+```js
+import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.1.3.0/main.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+const parser = await parserFromWasm(javascript) // path or Uint8Array
+const tree = parser.parse(`
+    function thing(arg1) {
+        let a = 10
+    }
+`)
+
+// 
+// example with nice printout:
+// 
+let indent = ""
+for (const [ parents, node, direction ] of tree.rootNode.traverse()) {
+    const isLeafNode = direction == "-"
+    if (isLeafNode) {
+        console.log(indent+`<${node.type} text=${JSON.stringify(node.text)} />`)
+    } if (direction == "->") {
+        console.log(indent+`<${node.type}>`)
+        indent += "    "
+    } else if (direction == "<-") {
+        indent = indent.slice(0,-4)
+        console.log(indent+`</${node.type}>`)
+    }
+}
+
+// prints:
+// <program>
+//     <function_declaration>
+//         <function text="function" />
+//         <identifier text="thing" />
+//         <formal_parameters>
+//             <( text="(" />
+//             <identifier text="arg1" />
+//             <) text=")" />
+//         </formal_parameters>
+//         <statement_block>
+//             <{ text="{" />
+//             <lexical_declaration>
+//                 <let text="let" />
+//                 <variable_declarator>
+//                     <identifier text="a" />
+//                     <= text="=" />
+//                     <number text="10" />
+//                 </variable_declarator>
+//             </lexical_declaration>
+//             <} text="}" />
+//         </statement_block>
+//     </function_declaration>
+// </program>
+```
 
 ### Whitespace Nodes
 
@@ -396,66 +477,6 @@ results == [
         ]
     }
 ]
-```
-
-### Traverse
-
-It is surprisingly handy to be able to iterate over every node (at any depth) in order.
-
-```js
-import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.1.3.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
-const parser = await parserFromWasm(javascript) // path or Uint8Array
-const tree = parser.parse(`
-    function thing(arg1) {
-        let a = 10
-    }
-`)
-
-// 
-// example with nice printout:
-// 
-let indent = ""
-for (const [ parents, node, direction ] of tree.rootNode.traverse()) {
-    const isLeafNode = direction == "-"
-    if (isLeafNode) {
-        console.log(indent+`<${node.type} text=${JSON.stringify(node.text)} />`)
-    } else {
-        if (direction == "->") {
-            console.log(indent+`<${node.type}>`)
-            indent += "    "
-        } else if (direction == "<-") {
-            indent = indent.slice(0,-4)
-            console.log(indent+`</${node.type}>`)
-        }
-    }
-}
-
-// prints:
-// <program>
-//     <function_declaration>
-//         <function text="function" />
-//         <identifier text="thing" />
-//         <formal_parameters>
-//             <( text="(" />
-//             <identifier text="arg1" />
-//             <) text=")" />
-//         </formal_parameters>
-//         <statement_block>
-//             <{ text="{" />
-//             <lexical_declaration>
-//                 <let text="let" />
-//                 <variable_declarator>
-//                     <identifier text="a" />
-//                     <= text="=" />
-//                     <number text="10" />
-//                 </variable_declarator>
-//             </lexical_declaration>
-//             <} text="}" />
-//         </statement_block>
-//     </function_declaration>
-// </program>
-
 ```
 
 
