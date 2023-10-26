@@ -903,13 +903,15 @@ export class Query {
             const captures = new Array(captureCount)
             address = unmarshalCaptures(this, node.tree, address, captures)
             if (this.textPredicates[pattern].every((p) => p(captures))) {
-                result[filteredCount++] = { pattern, captures }
+                result[filteredCount] = { pattern, captures }
+                const element = result[filteredCount]
+                filteredCount++
                 const setProperties = this.setProperties[pattern]
-                if (setProperties) result[i].setProperties = setProperties
+                if (setProperties) element.setProperties = setProperties
                 const assertedProperties = this.assertedProperties[pattern]
-                if (assertedProperties) result[i].assertedProperties = assertedProperties
+                if (assertedProperties) element.assertedProperties = assertedProperties
                 const refutedProperties = this.refutedProperties[pattern]
-                if (refutedProperties) result[i].refutedProperties = refutedProperties
+                if (refutedProperties) element.refutedProperties = refutedProperties
             }
         }
         result.length = filteredCount

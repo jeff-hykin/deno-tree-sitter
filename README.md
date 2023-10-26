@@ -25,7 +25,7 @@ const Parser = require('web-tree-sitter');
 ### The New Way ✨
 
 ```js
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 const parser = await parserFromWasm(javascript) // path or Uint8Array
@@ -35,7 +35,7 @@ const tree = parser.parse('let x = 1;')
 Alternatively load from a file:
 
 ```js
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 
 // see https://github.com/jeff-hykin/common_tree_sitter_languages
 // for getting wasm files for different languages
@@ -47,7 +47,7 @@ const tree = parser.parse('let x = 1;')
 ### Data Structure
 
 ```js
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/rust.js"
 
 const parser = await parserFromWasm(rust)
@@ -89,7 +89,7 @@ tree.rootNode = {
 Most tree sitter parsers don't have whitespace nodes, they just skip the whitespace. This means doing a .join("") on the code doesn't reproduce the original input. This argument solves that problem by auto-injecting whitespace nodes into any parsed output!
 
 ```js
-import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 const parser = await parserFromWasm(javascript)
@@ -108,7 +108,7 @@ const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
 For quick analysis and debugging, its always nice to convert a parsed document to JSON.
 
 ```js
-import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 const parser = await parserFromWasm(javascript)
@@ -296,20 +296,38 @@ There's a whole query syntax explained [here](https://tree-sitter.github.io/tree
 // 
 // setup
 // 
-import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
-const parser = await parserFromWasm(javascript) // path or Uint8Array
+var parser = await parserFromWasm(javascript) // path or Uint8Array
 var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+var root = tree.rootNode
 
 // 
-// usage
+// quickQuery will return the high level node, even if you dont specify names (like @name1)
+// 
+    var firstLexicalNode = root.quickQuery(`(lexical_declaration)`)[0]
+    // Alternatively:
+    var firstLexicalNode = root.quickQueryFirst(`(lexical_declaration)`)
+
+// 
+// quickQueryFirst
+// 
+    var firstIdentifierNode = root.quickQueryFirst(`(lexical_declaration)`).quickQueryFirst(`(identifier)`)
+
+// 
+// you can also specify extraction names
+// 
+    var { blahInner, blahOuter } = root.quickQuery(`(lexical_declaration (identifier) @blahInner ) @blahOuter`)[0]
+
+// 
+// full .query()
 // 
     // basic
-    var results = tree.query(`(identifier) @blahBlahBlah`)
+    var results = tree.rootNode.query(`(identifier) @blahBlahBlah`)
     // capped count
-    var results = tree.query(`(identifier) @blahBlahBlah`, { matchLimit: 2 })
+    var results = tree.rootNode.query(`(identifier) @blahBlahBlah`, { matchLimit: 2 })
     // limited range
-    var results = tree.query(
+    var results = tree.rootNode.query(
         `(identifier) @blahBlahBlah`,
         {
             matchLimit: 2,
@@ -385,7 +403,7 @@ results == [
 It is surprisingly handy to be able to iterate over every node in order.
 
 ```js
-import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.1.1.0/main.js"
+import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.1.2.0/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 var parser = await parserFromWasm(javascript)

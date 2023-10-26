@@ -1,0 +1,630 @@
+🚀 ~ file: node_query_1.js:16 ~ nodes: [
+  {
+    type: "lexical_declaration",
+    typeId: 138,
+    startPosition: { row: 0, column: 0 },
+    startIndex: 0,
+    endPosition: { row: 0, column: 10 },
+    endIndex: 10,
+    indent: undefined,
+    hasChildren: true,
+    children: [
+      {
+        type: "let",
+        typeId: 13,
+        startPosition: { row: 0, column: 0 },
+        startIndex: 0,
+        endPosition: { row: 0, column: 3 },
+        endIndex: 3,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        type: "variable_declarator",
+        typeId: 139,
+        startPosition: { row: 0, column: 4 },
+        startIndex: 4,
+        endPosition: { row: 0, column: 9 },
+        endIndex: 9,
+        indent: undefined,
+        hasChildren: true,
+        children: [
+          {
+            type: "identifier",
+            typeId: 1,
+            startPosition: { row: 0, column: 4 },
+            startIndex: 4,
+            endPosition: { row: 0, column: 5 },
+            endIndex: 5,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "=",
+            typeId: 39,
+            startPosition: { row: 0, column: 6 },
+            startIndex: 6,
+            endPosition: { row: 0, column: 7 },
+            endIndex: 7,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "number",
+            typeId: 109,
+            startPosition: { row: 0, column: 8 },
+            startIndex: 8,
+            endPosition: { row: 0, column: 9 },
+            endIndex: 9,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          }
+        ]
+      },
+      {
+        type: ";",
+        typeId: 33,
+        startPosition: { row: 0, column: 9 },
+        startIndex: 9,
+        endPosition: { row: 0, column: 10 },
+        endIndex: 10,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      }
+    ]
+  },
+  {
+    type: "lexical_declaration",
+    typeId: 138,
+    startPosition: { row: 0, column: 10 },
+    startIndex: 10,
+    endPosition: { row: 0, column: 20 },
+    endIndex: 20,
+    indent: undefined,
+    hasChildren: true,
+    children: [
+      {
+        type: "let",
+        typeId: 13,
+        startPosition: { row: 0, column: 10 },
+        startIndex: 10,
+        endPosition: { row: 0, column: 13 },
+        endIndex: 13,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        type: "variable_declarator",
+        typeId: 139,
+        startPosition: { row: 0, column: 14 },
+        startIndex: 14,
+        endPosition: { row: 0, column: 19 },
+        endIndex: 19,
+        indent: undefined,
+        hasChildren: true,
+        children: [
+          {
+            type: "identifier",
+            typeId: 1,
+            startPosition: { row: 0, column: 14 },
+            startIndex: 14,
+            endPosition: { row: 0, column: 15 },
+            endIndex: 15,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "=",
+            typeId: 39,
+            startPosition: { row: 0, column: 16 },
+            startIndex: 16,
+            endPosition: { row: 0, column: 17 },
+            endIndex: 17,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "number",
+            typeId: 109,
+            startPosition: { row: 0, column: 18 },
+            startIndex: 18,
+            endPosition: { row: 0, column: 19 },
+            endIndex: 19,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          }
+        ]
+      },
+      {
+        type: ";",
+        typeId: 33,
+        startPosition: { row: 0, column: 19 },
+        startIndex: 19,
+        endPosition: { row: 0, column: 20 },
+        endIndex: 20,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      }
+    ]
+  },
+  {
+    type: "lexical_declaration",
+    typeId: 138,
+    startPosition: { row: 0, column: 20 },
+    startIndex: 20,
+    endPosition: { row: 0, column: 30 },
+    endIndex: 30,
+    indent: undefined,
+    hasChildren: true,
+    children: [
+      {
+        type: "let",
+        typeId: 13,
+        startPosition: { row: 0, column: 20 },
+        startIndex: 20,
+        endPosition: { row: 0, column: 23 },
+        endIndex: 23,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        type: "variable_declarator",
+        typeId: 139,
+        startPosition: { row: 0, column: 24 },
+        startIndex: 24,
+        endPosition: { row: 0, column: 29 },
+        endIndex: 29,
+        indent: undefined,
+        hasChildren: true,
+        children: [
+          {
+            type: "identifier",
+            typeId: 1,
+            startPosition: { row: 0, column: 24 },
+            startIndex: 24,
+            endPosition: { row: 0, column: 25 },
+            endIndex: 25,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "=",
+            typeId: 39,
+            startPosition: { row: 0, column: 26 },
+            startIndex: 26,
+            endPosition: { row: 0, column: 27 },
+            endIndex: 27,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            type: "number",
+            typeId: 109,
+            startPosition: { row: 0, column: 28 },
+            startIndex: 28,
+            endPosition: { row: 0, column: 29 },
+            endIndex: 29,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          }
+        ]
+      },
+      {
+        type: ";",
+        typeId: 33,
+        startPosition: { row: 0, column: 29 },
+        startIndex: 29,
+        endPosition: { row: 0, column: 30 },
+        endIndex: 30,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      }
+    ]
+  }
+]
+🚀 ~ file: node_query_1.js:12 ~ nodes: [
+  {
+    blahBlahOuter: {
+      type: "lexical_declaration",
+      typeId: 138,
+      startPosition: { row: 0, column: 0 },
+      startIndex: 0,
+      endPosition: { row: 0, column: 10 },
+      endIndex: 10,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "let",
+          typeId: 13,
+          startPosition: { row: 0, column: 0 },
+          startIndex: 0,
+          endPosition: { row: 0, column: 3 },
+          endIndex: 3,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "variable_declarator",
+          typeId: 139,
+          startPosition: { row: 0, column: 4 },
+          startIndex: 4,
+          endPosition: { row: 0, column: 9 },
+          endIndex: 9,
+          indent: undefined,
+          hasChildren: true,
+          children: [
+            {
+              type: "identifier",
+              typeId: 1,
+              startPosition: { row: 0, column: 4 },
+              startIndex: 4,
+              endPosition: { row: 0, column: 5 },
+              endIndex: 5,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "=",
+              typeId: 39,
+              startPosition: { row: 0, column: 6 },
+              startIndex: 6,
+              endPosition: { row: 0, column: 7 },
+              endIndex: 7,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "number",
+              typeId: 109,
+              startPosition: { row: 0, column: 8 },
+              startIndex: 8,
+              endPosition: { row: 0, column: 9 },
+              endIndex: 9,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            }
+          ]
+        },
+        {
+          type: ";",
+          typeId: 33,
+          startPosition: { row: 0, column: 9 },
+          startIndex: 9,
+          endPosition: { row: 0, column: 10 },
+          endIndex: 10,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    },
+    blahBlahInner: {
+      type: "variable_declarator",
+      typeId: 139,
+      startPosition: { row: 0, column: 4 },
+      startIndex: 4,
+      endPosition: { row: 0, column: 9 },
+      endIndex: 9,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 4 },
+          startIndex: 4,
+          endPosition: { row: 0, column: 5 },
+          endIndex: 5,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "=",
+          typeId: 39,
+          startPosition: { row: 0, column: 6 },
+          startIndex: 6,
+          endPosition: { row: 0, column: 7 },
+          endIndex: 7,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "number",
+          typeId: 109,
+          startPosition: { row: 0, column: 8 },
+          startIndex: 8,
+          endPosition: { row: 0, column: 9 },
+          endIndex: 9,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    }
+  },
+  {
+    blahBlahOuter: {
+      type: "lexical_declaration",
+      typeId: 138,
+      startPosition: { row: 0, column: 10 },
+      startIndex: 10,
+      endPosition: { row: 0, column: 20 },
+      endIndex: 20,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "let",
+          typeId: 13,
+          startPosition: { row: 0, column: 10 },
+          startIndex: 10,
+          endPosition: { row: 0, column: 13 },
+          endIndex: 13,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "variable_declarator",
+          typeId: 139,
+          startPosition: { row: 0, column: 14 },
+          startIndex: 14,
+          endPosition: { row: 0, column: 19 },
+          endIndex: 19,
+          indent: undefined,
+          hasChildren: true,
+          children: [
+            {
+              type: "identifier",
+              typeId: 1,
+              startPosition: { row: 0, column: 14 },
+              startIndex: 14,
+              endPosition: { row: 0, column: 15 },
+              endIndex: 15,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "=",
+              typeId: 39,
+              startPosition: { row: 0, column: 16 },
+              startIndex: 16,
+              endPosition: { row: 0, column: 17 },
+              endIndex: 17,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "number",
+              typeId: 109,
+              startPosition: { row: 0, column: 18 },
+              startIndex: 18,
+              endPosition: { row: 0, column: 19 },
+              endIndex: 19,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            }
+          ]
+        },
+        {
+          type: ";",
+          typeId: 33,
+          startPosition: { row: 0, column: 19 },
+          startIndex: 19,
+          endPosition: { row: 0, column: 20 },
+          endIndex: 20,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    },
+    blahBlahInner: {
+      type: "variable_declarator",
+      typeId: 139,
+      startPosition: { row: 0, column: 14 },
+      startIndex: 14,
+      endPosition: { row: 0, column: 19 },
+      endIndex: 19,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 14 },
+          startIndex: 14,
+          endPosition: { row: 0, column: 15 },
+          endIndex: 15,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "=",
+          typeId: 39,
+          startPosition: { row: 0, column: 16 },
+          startIndex: 16,
+          endPosition: { row: 0, column: 17 },
+          endIndex: 17,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "number",
+          typeId: 109,
+          startPosition: { row: 0, column: 18 },
+          startIndex: 18,
+          endPosition: { row: 0, column: 19 },
+          endIndex: 19,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    }
+  },
+  {
+    blahBlahOuter: {
+      type: "lexical_declaration",
+      typeId: 138,
+      startPosition: { row: 0, column: 20 },
+      startIndex: 20,
+      endPosition: { row: 0, column: 30 },
+      endIndex: 30,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "let",
+          typeId: 13,
+          startPosition: { row: 0, column: 20 },
+          startIndex: 20,
+          endPosition: { row: 0, column: 23 },
+          endIndex: 23,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "variable_declarator",
+          typeId: 139,
+          startPosition: { row: 0, column: 24 },
+          startIndex: 24,
+          endPosition: { row: 0, column: 29 },
+          endIndex: 29,
+          indent: undefined,
+          hasChildren: true,
+          children: [
+            {
+              type: "identifier",
+              typeId: 1,
+              startPosition: { row: 0, column: 24 },
+              startIndex: 24,
+              endPosition: { row: 0, column: 25 },
+              endIndex: 25,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "=",
+              typeId: 39,
+              startPosition: { row: 0, column: 26 },
+              startIndex: 26,
+              endPosition: { row: 0, column: 27 },
+              endIndex: 27,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              type: "number",
+              typeId: 109,
+              startPosition: { row: 0, column: 28 },
+              startIndex: 28,
+              endPosition: { row: 0, column: 29 },
+              endIndex: 29,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            }
+          ]
+        },
+        {
+          type: ";",
+          typeId: 33,
+          startPosition: { row: 0, column: 29 },
+          startIndex: 29,
+          endPosition: { row: 0, column: 30 },
+          endIndex: 30,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    },
+    blahBlahInner: {
+      type: "variable_declarator",
+      typeId: 139,
+      startPosition: { row: 0, column: 24 },
+      startIndex: 24,
+      endPosition: { row: 0, column: 29 },
+      endIndex: 29,
+      indent: undefined,
+      hasChildren: true,
+      children: [
+        {
+          type: "identifier",
+          typeId: 1,
+          startPosition: { row: 0, column: 24 },
+          startIndex: 24,
+          endPosition: { row: 0, column: 25 },
+          endIndex: 25,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "=",
+          typeId: 39,
+          startPosition: { row: 0, column: 26 },
+          startIndex: 26,
+          endPosition: { row: 0, column: 27 },
+          endIndex: 27,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          type: "number",
+          typeId: 109,
+          startPosition: { row: 0, column: 28 },
+          startIndex: 28,
+          endPosition: { row: 0, column: 29 },
+          endIndex: 29,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        }
+      ]
+    }
+  }
+]
+nodes[0].blahBlahInner.quickQueryFirst("number") is: {
+  type: "number",
+  typeId: 109,
+  startPosition: { row: 0, column: 8 },
+  startIndex: 8,
+  endPosition: { row: 0, column: 9 },
+  endIndex: 9,
+  indent: undefined,
+  hasChildren: false,
+  children: []
+}

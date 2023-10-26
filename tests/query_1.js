@@ -7,8 +7,8 @@ var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
 // 
 // usage
 // 
-var results = tree.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
+var results = tree.rootNode.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
 console.log("🚀 ~ file: query_1.js:12 ~ results:", results)
 
-var results = tree.query(`(identifier) @blahBlahBlah`, {matchLimit: 2, startPosition: { row: 0, column: 0 }, endPosition: {row: 1000, column: 1000}})
+var results = tree.rootNode.query(`(identifier) @blahBlahBlah`, {matchLimit: 2, startPosition: { row: 0, column: 0 }, endPosition: {row: 1000, column: 1000}})
 console.log("🚀 ~ file: query_1.js:13 ~ results:", results)
