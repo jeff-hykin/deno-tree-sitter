@@ -1,8 +1,9 @@
 import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.js"
+import treeSitterQuery from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/tree-sitter-query.js"
 // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
-import __Process$ from "node:process";
-import * as __0$ from "node:fs";
-import * as __1$ from "node:path";
+var __Process$ = { versions: { node: "1" }, argv: [ import.meta.href ] };
+import * as __0$ from "https://deno.land/std@0.177.0/node/fs.ts";
+import * as __1$ from "https://deno.land/std@0.177.0/node/path.ts";
 var require2 = (n) => {
   const e = (m) => typeof m.default < "u" ? m.default : m, c = (m) => Object.assign({ __esModule: true }, m);
   switch (n) {
@@ -1053,6 +1054,222 @@ var q = ee((exports, module) => {
               let t = C._ts_node_to_string_wasm(this.tree[0]), _ = AsciiToString(t);
               return C._free(t), _;
             }
+            get hasChildren() {
+                return (this.children?.length || 0) > 0
+            }
+            *traverse(arg={_parentNodes: [],}) {
+                const { _parentNodes } = arg
+                const parentNodes = [ this, ..._parentNodes ]
+                if (this.children.length == 0) {
+                    yield [_parentNodes, this, "-"]
+                } else {
+                    yield [_parentNodes, this, "->"]
+                    for (const each of this.children) {
+                        if (each instanceof Node) {
+                            for (const eachInner of each.traverse({ _parentNodes: parentNodes })) {
+                                yield eachInner
+                            }
+                        } else {
+                            yield [_parentNodes, each, "-"]
+                        }
+                    }
+                    yield [_parentNodes, this, "<-"]
+                }
+            }
+            toJSON() {
+                const optionalData = {}
+                if (typeof this.rootLeadingWhitespace == "string") {
+                    optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
+                }
+                if (this.children && this.children.length) {
+                    return {
+                        type: this.type,
+                        typeId: this.typeId,
+                        startPosition: this.startPosition,
+                        startIndex: this.startIndex,
+                        endPosition: this.endPosition,
+                        startIndex: this.startIndex,
+                        endIndex: this.endIndex,
+                        indent: this.indent,
+                        textOverride: this.textOverride,
+                        ...optionalData,
+                        children: this.children.map((each) => each.toJSON()),
+                    }
+                } else {
+                    return {
+                        type: this.type,
+                        typeId: this.typeId,
+                        startPosition: this.startPosition,
+                        startIndex: this.startIndex,
+                        endPosition: this.endPosition,
+                        startIndex: this.startIndex,
+                        endIndex: this.endIndex,
+                        indent: this.indent,
+                        textOverride: this.textOverride,
+                        ...optionalData,
+                        text: this.text,
+                        children: [],
+                    }
+                }
+            }
+            [Symbol.for("Deno.customInspect")](inspect, options) {
+                const optional = {}
+                if (typeof this.rootLeadingWhitespace == "string") {
+                    optional.rootLeadingWhitespace = this.rootLeadingWhitespace
+                }
+                return inspect(
+                    {
+                        type: this.type,
+                        typeId: this.typeId,
+                        startPosition: this.startPosition,
+                        startIndex: this.startIndex,
+                        endPosition: this.endPosition,
+                        startIndex: this.startIndex,
+                        endIndex: this.endIndex,
+                        indent: this.indent,
+                        ...optional,
+                        hasChildren: this.hasChildren,
+                        children: [...(this.children || [])],
+                    },
+                    options
+                )
+            }
+            *[Symbol.iterator]() {
+                yield* this.children
+            }
+            get length() {
+                return this.children.length
+            }
+            /**
+             * Query
+             *
+             * @example
+             * ```js
+             * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.0.1/main.js"
+             * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+             * const parser = await parserFromWasm(javascript) // path or Uint8Array
+             * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+             *
+             * tree.rootNode.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
+             * // returns:
+             * [
+             *   {
+             *     pattern: 0,
+             *     captures: [
+             *       {
+             *         name: "blahBlahBlah",
+             *         node: {
+             *           type: "identifier",
+             *           typeId: 1,
+             *           startPosition: { row: 0, column: 4 },
+             *           startIndex: 4,
+             *           endPosition: { row: 0, column: 5 },
+             *           endIndex: 5,
+             *           indent: undefined,
+             *           hasChildren: false,
+             *           children: []
+             *         }
+             *       }
+             *     ]
+             *   },
+             *   {
+             *     pattern: 0,
+             *     captures: [
+             *       {
+             *         name: "blahBlahBlah",
+             *         node: {
+             *           type: "identifier",
+             *           typeId: 1,
+             *           startPosition: { row: 0, column: 14 },
+             *           startIndex: 14,
+             *           endPosition: { row: 0, column: 15 },
+             *           endIndex: 15,
+             *           indent: undefined,
+             *           hasChildren: false,
+             *           children: []
+             *         }
+             *       }
+             *     ]
+             *   },
+             *   {
+             *     pattern: 0,
+             *     captures: [
+             *       {
+             *         name: "blahBlahBlah",
+             *         node: {
+             *           type: "identifier",
+             *           typeId: 1,
+             *           startPosition: { row: 0, column: 24 },
+             *           startIndex: 24,
+             *           endPosition: { row: 0, column: 25 },
+             *           endIndex: 25,
+             *           indent: undefined,
+             *           hasChildren: false,
+             *           children: []
+             *         }
+             *       }
+             *     ]
+             *   }
+             * ]
+             * ```
+             *
+             * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
+             * @param options.matchLimit - max number of results
+             * @param options.startPosition - {row: Number, column: number}
+             * @param options.endPosition - {row: Number, column: number}
+             * @returns {[Object]} output
+             *
+             */
+            query(queryString, options) {
+                const { matchLimit, startPosition, endPosition } = { ...options }
+                return this.tree.language.query(queryString).matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
+            }
+            quickQuery(queryString, options) {
+                let thereIsOnlyUnderscore = false
+                let numberOfAtSymbols = 0
+                let thereAreQuotes = false
+                for (const each of queryString) {
+                    if (each == "@") {
+                        numberOfAtSymbols += 1
+                    }
+                    if (each == `"`) {
+                        thereAreQuotes = true
+                    }
+                }
+                // if there's no @'s theres no vars, so add the default one
+                if (numberOfAtSymbols == 0) {
+                    queryString = `${queryString} @_`
+                    thereIsOnlyUnderscore = true
+                // if there's no quotes, then number of @'s == number of vars
+                } else if (!thereAreQuotes) {
+                    if (numberOfAtSymbols == 1 && queryString.match(/@_/)) {
+                        thereIsOnlyUnderscore = true
+                    }
+                // if there are quotes and @'s then we need a full parse to determine
+                } else {
+                    // yes I am calling the tree sitter inside of the tree sitter
+                    const tree = treeSitterQueryParser.parse(queryString)
+                    const variableNamesInQuery = tree.language.query(`("@") @_`).matches(tree.rootNode)
+                    const varCount = variableNamesInQuery.length
+                    if (varCount == 0) {
+                        queryString = `${queryString} @_`
+                        thereIsOnlyUnderscore = true
+                    } else if (varCount == 1) {
+                        if (matches.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
+                            thereIsOnlyUnderscore = true
+                        }
+                    }
+                }
+                let output = this.query(queryString, options).map((each) => Object.fromEntries(each.captures.map((each) => [each.name, each.node])))
+                if (thereIsOnlyUnderscore) {
+                    return output.map((each) => each._)
+                }
+                return output
+            }
+            quickQueryFirst(queryString, options) {
+                return this.quickQuery(queryString, options)[0]
+            }
+            
           }
           class TreeCursor {
             constructor(t, _) {
@@ -1443,6 +1660,44 @@ ${JSON.stringify(r, null, 2)}`);
               }
               return c.length = f, C._free(m), c;
             }
+            *iterMatches(t, startPosition=null, endPosition=null, options) {
+              var defaultValues = { startPosition: _ = ZERO_POINT, endPosition: s = ZERO_POINT, startIndex: r = 0, endIndex: a = 0, matchLimit: o = 4294967295, maxStartDepth: n = 4294967295, }
+              if (!(originalStart instanceof Object && originalStart.row != undefined)) {
+                var { startPosition, endPosition, matchLimit, startIndex, endIndex, maxStartDepth } = { ...defaultValues, ...options, ...startPosition }
+              } else {
+                var values = { ...defaultValues, ...options, }
+                var { matchLimit, startIndex, endIndex, maxStartDepth } = values
+                if (endPosition === null) {
+                    endPosition = values.endPosition
+                }
+              }
+              if (matchLimit === void 0) matchLimit = 0
+              if (typeof matchLimit != "number")
+                throw new Error("Arguments must be numbers");
+              marshalNode(t), C._ts_query_matches_wasm(this[0], t.tree[0], _.row, _.column, endPosition.row, endPosition.column, r, a, matchLimit, maxStartDepth);
+              let u = getValue(TRANSFER_BUFFER, "i32"), m = getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32"), w = getValue(TRANSFER_BUFFER + 2 * SIZE_OF_INT, "i32");
+              this.exceededMatchLimit = !!w;
+              let p = m;
+              for (let I = 0; I < u; I++) {
+                let d = getValue(p, "i32");
+                p += SIZE_OF_INT;
+                let b = getValue(p, "i32");
+                p += SIZE_OF_INT;
+                let h = new Array(b);
+                if (p = unmarshalCaptures(this, t.tree, p, h), this.textPredicates[d].every((l) => l(h))) {
+                  const item = { pattern: d, captures: h };
+                  let l = this.setProperties[d];
+                  l && (item.setProperties = l);
+                  let g = this.assertedProperties[d];
+                  g && (item.assertedProperties = g);
+                  let M = this.refutedProperties[d];
+                  M && (item.refutedProperties = M);
+                  yield item;
+                }
+              }
+              C._free(m)
+            }
+            
             captures(t, { startPosition: _ = ZERO_POINT, endPosition: s = ZERO_POINT, startIndex: r = 0, endIndex: a = 0, matchLimit: o = 4294967295, maxStartDepth: n = 4294967295 } = {}) {
               if (typeof o != "number")
                 throw new Error("Arguments must be numbers");
@@ -1557,3 +1812,4 @@ var re = G !== void 0 ? G : se;
 export {
   re as default
 };
+await re.init();export var treeSitterQueryLanguage = await re.Language.load(treeSitterQuery);export var treeSitterQueryParser = new re();treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)

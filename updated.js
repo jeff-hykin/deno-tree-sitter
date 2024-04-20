@@ -1,15 +1,14 @@
-import ParserClass from "./tree_sitter.js"
+import ParserClass, { treeSitterQueryParser} from "./tree_sitter.js"
 
 // this is to get around .parse being unwritable by default
 class ParserWrapper extends ParserClass {
     parse = ParserClass.prototype.parse
 }
 
-let hasBeenInitilizedAtLeastOnce = false
 export const Parser = (...args)=>ParserClass.init(...args).then(_=>{
-    hasBeenInitilizedAtLeastOnce = true
     return new ParserClass()
 })
+
 
 /**
  * Create a parser
@@ -18,9 +17,6 @@ export const Parser = (...args)=>ParserClass.init(...args).then(_=>{
  *
  */
 export const parserFromWasm = async (wasmUint8ArrayOrFilePath)=>{
-    if (!hasBeenInitilizedAtLeastOnce) {
-        await ParserClass.init()
-    }
     let bytes = wasmUint8ArrayOrFilePath
     if (typeof wasmUint8ArrayOrFilePath == 'string') {
         bytes = await Deno.readFile(wasmUint8ArrayOrFilePath)
@@ -63,7 +59,7 @@ export function flatNodeList(node) {
     return [ node, ...(node.children||[]).map(flatNodeList) ].flat(Infinity)
 }
 
-class WhitespaceNode {
+export class WhitespaceNode {
     constructor(data) {
         Object.assign(this, data)
     }
@@ -102,6 +98,7 @@ class WhitespaceNode {
         }
     }
 }
+
 export const addWhitespaceNodes = ({tree, string})=>{
     const rootNode = tree.rootNode
     Object.defineProperties(tree, {
