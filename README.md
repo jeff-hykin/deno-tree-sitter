@@ -26,7 +26,7 @@ const Parser = require('web-tree-sitter');
 
 ```js
 import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.0.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
 
 const parser = await parserFromWasm(javascript) // path or Uint8Array
 const tree = parser.parse('let x = 1;')

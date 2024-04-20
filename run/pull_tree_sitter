@@ -42,7 +42,7 @@ if (!globalMatch || !globalMatch[1]) {
 const parserVarName = globalMatch[1]
 
 // import the wasm file
-treeSitterCode = `import treeSitterQuery from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/tree-sitter-query.js"\n${treeSitterCode}\nawait ${parserVarName}.init();export var treeSitterQueryLanguage = await ${parserVarName}.Language.load(treeSitterQuery);export var treeSitterQueryParser = new ${parserVarName}();treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)` 
+treeSitterCode = `import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/tree-sitter-query.js"\n${treeSitterCode}\nawait ${parserVarName}.init();export var treeSitterQueryLanguage = await ${parserVarName}.Language.load(treeSitterQuery);export var treeSitterQueryParser = new ${parserVarName}();treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)` 
 treeSitterCode = `import uint8ArrayOfWasmTreeSitter from ${JSON.stringify("./"+FileSystem.makeRelativePath({ from: FileSystem.parentPath(treeSitterPath), to: treeSitterWasmPath }))}\n${treeSitterCode}` 
 
 // last run: https://esm.sh/web-tree-sitter@0.22.5
