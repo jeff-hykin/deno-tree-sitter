@@ -1,4 +1,4 @@
-import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.js"
+import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
 import treeSitterQuery from "https://deno.land/x/common_tree_sitter_languages@1.0.0.3/main/tree-sitter-query.js"
 // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
 var __Process$ = { versions: { node: "1" }, argv: [ import.meta.href ] };

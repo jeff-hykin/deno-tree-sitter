@@ -11,7 +11,7 @@ import { pureBinaryify } from "https://deno.land/x/binaryify@2.4.1.0/tools.js"
 const deno = Deno.execPath()
 
 const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
-const treeSitterWasmPath = `${FileSystem.thisFolder}/../tree_sitter.wasm.js`
+const treeSitterWasmPath = `${FileSystem.thisFolder}/../tree_sitter.wasm.binaryified.js`
  
 // $`${deno} run -A https://raw.githubusercontent.com/jeff-hykin/deno_bundle/master/main.js`
 let treeSitterCode = await $`${deno} run -A https://raw.githubusercontent.com/jeff-hykin/deno_bundle/a87f6f782c0f014aa288c12da57d32aae2359a90/main.js https://esm.sh/web-tree-sitter`.text("stdout")
