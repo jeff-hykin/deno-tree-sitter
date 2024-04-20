@@ -1,3 +1,4 @@
+var Deno = {args: [],build: {os: "",arch: "x86_64",version: "",},pid: 1,env: {get(_) {return null;},set(_, __) {return null;},},...Deno,};
 import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
 import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/tree-sitter-query.js"
 // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
@@ -1255,7 +1256,7 @@ var q = ee((exports, module) => {
                         queryString = `${queryString} @_`
                         thereIsOnlyUnderscore = true
                     } else if (varCount == 1) {
-                        if (matches.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
+                        if (variableNamesInQuery.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
                             thereIsOnlyUnderscore = true
                         }
                     }

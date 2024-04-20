@@ -302,7 +302,7 @@ treeSitterCode = treeSitterCode.replace(
                         queryString = \`\${queryString} @_\`
                         thereIsOnlyUnderscore = true
                     } else if (varCount == 1) {
-                        if (matches.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
+                        if (variableNamesInQuery.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
                             thereIsOnlyUnderscore = true
                         }
                     }
