@@ -1,0 +1,5 @@
+
+        function <span style="color:aqua; font-weight:bold;" class=""><p>thing</p></span><p>(</p><span style="color:cornflowerblue;" class="animate-pulse"><p>arg1</p></span><span style="color:puple;" class=""><p>,</p></span><p> </p><span style="color:cornflowerblue;" class="animate-pulse"><p>arg2</p></span><p>) {
+            let </p><span style="color:cornflowerblue;" class="animate-pulse"><p>a</p></span><p> = </p><span style="color:salmon;" class=""><p>10</p></span>
+        }
+    
