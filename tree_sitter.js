@@ -1,7 +1,7 @@
-import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICIiLGFyY2g6ICJ4ODZfNjQiLHZlcnNpb246ICIiLH0scGlkOiAxLGVudjoge2dldChfKSB7cmV0dXJuIG51bGw7fSxzZXQoXywgX18pIHtyZXR1cm4gbnVsbDt9LH0sLi4uRGVubyx9KTs="
+import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
 import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
 import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/tree-sitter-query.js"
-var Deno = {args: [],build: {os: "",arch: "x86_64",version: "",},pid: 1,env: {get(_) {return null;},set(_, __) {return null;},},...Deno,};// https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
+// https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
 var __Process$ = { versions: { node: "1" }, argv: [ import.meta.href ] };
 import * as __0$ from "https://deno.land/std@0.177.0/node/fs.ts";
 import * as __1$ from "https://deno.land/std@0.177.0/node/path.ts";

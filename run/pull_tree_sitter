@@ -41,8 +41,6 @@ if (!globalMatch || !globalMatch[1]) {
 }
 const parserVarName = globalMatch[1]
 
-// make it work even if on the web (by pollyfilling a little bit of deno)
-treeSitterCode = `var Deno = {args: [],build: {os: "",arch: "x86_64",version: "",},pid: 1,env: {get(_) {return null;},set(_, __) {return null;},},...Deno,};${treeSitterCode}`
 // pull in the query language
 treeSitterCode = `import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/tree-sitter-query.js"\n${treeSitterCode}\nvar treeSitterQueryLanguage
 var treeSitterQueryParser
