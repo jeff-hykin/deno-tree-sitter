@@ -300,6 +300,6 @@ export const applyThemeGetHtml = ({ themeRules, tree, string }) => {
 
         prevSlicePoint = eachSplicePoint;
     }
-    innerHtml += string.slice(prevSlicePoint);
+    innerHtml += `<p>${escapeHtml(string.slice(prevSlicePoint))}</p>`
     return innerHtml;
 };
