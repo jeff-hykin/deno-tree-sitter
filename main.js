@@ -201,7 +201,7 @@ var escapeHtml;
  * 
  * @example
  * ```js
- * import { Parser, parserFromWasm, applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@0.2.0.0/main.js"
+ * import { Parser, parserFromWasm, applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@0.2.1.0/main.js"
  * import bash from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/bash.js"
  * 
  * const string = "echo hello 'world'";
