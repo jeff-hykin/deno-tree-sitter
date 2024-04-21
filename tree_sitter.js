@@ -1813,10 +1813,10 @@ var re = G !== void 0 ? G : se;
 export {
   re as default
 };
-export var treeSitterQueryLanguage
-export var treeSitterQueryParser
+var treeSitterQueryLanguage
+var treeSitterQueryParser
 re.init().then(()=>re.Language.load(treeSitterQuery)).then((result)=>{
     treeSitterQueryParser = new re()
-    treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)
     var treeSitterQueryLanguage = result
+    treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)
 })

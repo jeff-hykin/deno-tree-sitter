@@ -1,4 +1,6 @@
-import ParserClass, { treeSitterQueryParser } from "./tree_sitter.js"
+import ParserClass from "./tree_sitter.js"
+
+await ParserClass.init()
 
 // this is to get around .parse being unwritable by default
 class ParserWrapper extends ParserClass {
