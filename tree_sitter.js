@@ -1019,6 +1019,16 @@ var q = ee((exports, module) => {
             get parent() {
               return marshalNode(this), C._ts_node_parent_wasm(this.tree[0]), unmarshalNode(this.tree);
             }
+            get depth() {
+                if (this._depth == null) {
+                    if (this.parent == null) {
+                        this._depth = 0
+                    } else {
+                        this._depth = this.parent.depth + 1
+                    }
+                }
+                return this._depth
+            }
             descendantForIndex(t, _ = t) {
               if (typeof t != "number" || typeof _ != "number")
                 throw new Error("Arguments must be numbers");
@@ -1146,7 +1156,7 @@ var q = ee((exports, module) => {
              *
              * @example
              * ```js
-             * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.1.0.1/main.js"
+             * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
              * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
              * const parser = await parserFromWasm(javascript) // path or Uint8Array
              * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -1218,13 +1228,51 @@ var q = ee((exports, module) => {
              * @param options.matchLimit - max number of results
              * @param options.startPosition - {row: Number, column: number}
              * @param options.endPosition - {row: Number, column: number}
+             * @param options.maxResultDepth - depth relative to the current node (1 = direct children, 2 = grandchildren, etc)
              * @returns {[Object]} output
              *
              */
             query(queryString, options) {
-                const { matchLimit, startPosition, endPosition } = { ...options }
-                return this.tree.language.query(queryString).matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
+                const { matchLimit, startPosition, endPosition, maxResultDepth } = options||{}
+                const realMaxResultDepth = maxResultDepth == null ? Infinity : maxResultDepth
+                const result = this.tree.language.query(queryString).matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
+                return result.filter((each)=>each.captures.every((each)=>(each.node.depth-this.depth) <= realMaxResultDepth))
             }
+            /**
+             * quickQuery
+             *
+             * @example
+             * ```js
+             * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+             * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+             * const parser = await parserFromWasm(javascript) // path or Uint8Array
+             * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+             *
+             * tree.rootNode.quickQuery(`(identifier)`, {matchLimit: 2})
+             * // returns:
+             * [
+             *   {
+             *      type: "identifier",
+             *      typeId: 1,
+             *      startPosition: { row: 0, column: 4 },
+             *      startIndex: 4,
+             *      endPosition: { row: 0, column: 5 },
+             *      endIndex: 5,
+             *      indent: undefined,
+             *      hasChildren: false,
+             *      children: []
+             *   }
+             * ]
+             * ```
+             *
+             * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
+             * @param options.matchLimit - max number of results
+             * @param options.startPosition - {row: Number, column: number}
+             * @param options.endPosition - {row: Number, column: number}
+             * @param options.maxResultDepth - depth relative to the current node (1 = direct children, 2 = grandchildren, etc)
+             * @returns {[Object]} output
+             *
+             */
             quickQuery(queryString, options) {
                 let thereIsOnlyUnderscore = false
                 let numberOfAtSymbols = 0
@@ -1267,10 +1315,41 @@ var q = ee((exports, module) => {
                 }
                 return output
             }
+            /**
+             * quickQueryFirst
+             *
+             * @example
+             * ```js
+             * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+             * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+             * const parser = await parserFromWasm(javascript) // path or Uint8Array
+             * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+             *
+             * tree.rootNode.quickQueryFirst(`(identifier)`)
+             * // returns:
+             * ({
+             *      type: "identifier",
+             *      typeId: 1,
+             *      startPosition: { row: 0, column: 4 },
+             *      startIndex: 4,
+             *      endPosition: { row: 0, column: 5 },
+             *      endIndex: 5,
+             *      indent: undefined,
+             *      hasChildren: false,
+             *      children: []
+             * })
+             * ```
+             *
+             * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
+             * @param options.startPosition - {row: Number, column: number}
+             * @param options.endPosition - {row: Number, column: number}
+             * @param options.maxResultDepth - depth relative to the current node (1 = direct children, 2 = grandchildren, etc)
+             * @returns {Object} output
+             *
+             */
             quickQueryFirst(queryString, options) {
                 return this.quickQuery(queryString, options)[0]
             }
-            
           }
           class TreeCursor {
             constructor(t, _) {
@@ -1432,8 +1511,7 @@ var q = ee((exports, module) => {
               stringToUTF8(t, s, _ + 1);
               let r = C._ts_query_new(this[0], s, _, TRANSFER_BUFFER, TRANSFER_BUFFER + SIZE_OF_INT);
               if (!r) {
-                let d = getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32"), b = getValue(TRANSFER_BUFFER, "i32"), h = UTF8ToString(s, b).length, l = t.substr(h, 100).split(`
-`)[0], g, M = l.match(QUERY_WORD_REGEX)[0];
+                let d = getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32"), b = getValue(TRANSFER_BUFFER, "i32"), h = UTF8ToString(s, b).length, l = t.substr(h, 100).split(`\n`)[0], g, M = l.match(QUERY_WORD_REGEX)[0];
                 switch (d) {
                   case 2:
                     g = new RangeError(`Bad node name '${M}'`);
