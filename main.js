@@ -44,7 +44,7 @@ export const parserFromWasm = async (wasmUint8ArrayOrFilePath)=>{
      */
     parser.parse = (arg1, ...args)=>{
         let tree
-        if (arg1.withWhitespace) {
+        if (arg1?.withWhitespace) {
             tree = addWhitespaceNodes({
                 tree: realParceFunction(arg1.string, ...args),
                 string: arg1.string,
