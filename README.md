@@ -586,3 +586,8 @@ parser.parse(sourceCode).rootNode.descendantForPosition(t, r=t)
 parser.parse(sourceCode).rootNode.namedDescendantForPosition(t, r=t) 
 parser.parse(sourceCode).rootNode.walk() 
 ```
+
+
+# Contributing
+
+You can edit the main.js or tree_sitter.js. But, if you edit the tree_sitter.js, you'll need to edit `run/pull_tree_sitter` (which is JavaScript). The `run/pull_tree_sitter` is what allows this repo to stay up to date with the tree-sitter-web. It injects changes into the official tree-sitter codebase, and you'll have to do that for any changes you make as well.
