@@ -416,7 +416,15 @@ var q = ee((exports, module) => {
                 if (t in wasmImports && !wasmImports[t].stub)
                   return wasmImports[t];
                 var _;
-                return t in e || (e[t] = (...s) => (_ ||= resolveSymbol(t), _(...s))), e[t];
+                return t in e || (
+                        e[t]=(...s)=>{
+                            _ ||= resolveSymbol(t)
+                            if (typeof _ != "function") {
+                                throw new Error(`\n\n(deno-tree-sitter speaking here)\nSo a wasm file you're trying to load is old or incomplete.\nI can't find the symbol ${JSON.stringify(t)}.\nThis is effectively a dynamic linking (dyld) error from compiling the C code that became wasm.\n\n`)
+                            }
+                            return _(...s)
+                        }
+                    ), e[t];
               } }, proxy = new Proxy({}, proxyHandler), info = { "GOT.mem": new Proxy({}, GOTHandler), "GOT.func": new Proxy({}, GOTHandler), env: proxy, wasi_snapshot_preview1: proxy };
               function postInstantiation(module, instance) {
                 function addEmAsm(addr, body) {
@@ -1019,6 +1027,7 @@ var q = ee((exports, module) => {
             get parent() {
               return marshalNode(this), C._ts_node_parent_wasm(this.tree[0]), unmarshalNode(this.tree);
             }
+
             get depth() {
                 if (this._depth == null) {
                     if (this.parent == null) {
@@ -1244,7 +1253,7 @@ var q = ee((exports, module) => {
              * @example
              * ```js
              * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
-             * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+             * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
              * const parser = await parserFromWasm(javascript) // path or Uint8Array
              * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
              *
@@ -1291,7 +1300,7 @@ var q = ee((exports, module) => {
                     thereIsOnlyUnderscore = true
                 // if there's no quotes, then number of @'s == number of vars
                 } else if (!thereAreQuotes) {
-                    if (numberOfAtSymbols == 1 && queryString.match(/@_/)) {
+                    if (numberOfAtSymbols == 1 && queryString.match(/@_\b/)) {
                         thereIsOnlyUnderscore = true
                     }
                 // if there are quotes and @'s then we need a full parse to determine
