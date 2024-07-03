@@ -3,47 +3,46 @@
         <function text="function" />
         <identifier text="thing" />
         <formal_parameters>
-            <( text="(" />
+            <"(" text="(" />
             <identifier text="arg1" />
-            <) text=")" />
+            <")" text=")" />
         </formal_parameters>
         <statement_block>
-            <{ text="{" />
+            <"{" text="{" />
             <lexical_declaration>
                 <let text="let" />
                 <variable_declarator>
                     <identifier text="a" />
-                    <= text="=" />
+                    <"=" text="=" />
                     <number text="10" />
                 </variable_declarator>
             </lexical_declaration>
-            <} text="}" />
+            <"}" text="}" />
         </statement_block>
     </function_declaration>
 </program>
 
-<program>
-    <function_declaration>
-        "function": "function"
-        "identifier": "thing"
-        <formal_parameters>
-            "(": "("
-            "identifier": "arg1"
-            ",": ","
-            "identifier": "arg2"
-            ")": ")"
+<program text="function thing(arg1) {\n            let a = 10\n        }\n    " />
+    <function_declaration text="function thing(arg1) {\n            let a = 10\n        }" />
+        <function text="function" />
+        <identifier text="thing" />
+        <formal_parameters text="(arg1)" />
+            <"(" text="(" />
+            <identifier text="arg1" />
+            <")" text=")" />
         </formal_parameters>
-        <statement_block>
-            "{": "{"
-            <lexical_declaration>
-                "let": "let"
-                <variable_declarator>
-                    "identifier": "a"
-                    "=": "="
-                    "number": "10"
+        <statement_block text="{\n            let a = 10\n        }" />
+            <"{" text="{" />
+            <lexical_declaration text="let a = 10" />
+                <let text="let" />
+                <variable_declarator text="a = 10" />
+                    <identifier text="a" />
+                    <"=" text="=" />
+                    <number text="10" />
                 </variable_declarator>
             </lexical_declaration>
-            "}": "}"
+            <"}" text="}" />
         </statement_block>
     </function_declaration>
 </program>
+
