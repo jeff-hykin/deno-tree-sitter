@@ -1357,7 +1357,7 @@ var q = ee((exports, module) => {
              *
              */
             quickQueryFirst(queryString, options) {
-                return this.quickQuery(queryString, options)[0]
+                return this.quickQuery(queryString, {...options, matchLimit: 1})[0]
             }
           }
           class TreeCursor {
