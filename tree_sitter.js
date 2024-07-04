@@ -1,6 +1,5 @@
 import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
 import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
-import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/tree-sitter-query.js"
 // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
 var __Process$ = { versions: { node: "1" }, argv: [ import.meta.href ] };
 import * as __0$ from "https://deno.land/std@0.177.0/node/fs.ts";
@@ -1283,46 +1282,84 @@ var q = ee((exports, module) => {
              *
              */
             quickQuery(queryString, options) {
-                let thereIsOnlyUnderscore = false
-                let numberOfAtSymbols = 0
-                let thereAreQuotes = false
-                for (const each of queryString) {
-                    if (each == "@") {
-                        numberOfAtSymbols += 1
-                    }
-                    if (each == `"`) {
-                        thereAreQuotes = true
-                    }
+                let topLevelVarname = ""
+                let thereMightBeIssues = true
+                while (thereMightBeIssues) {
+                    topLevelVarname = `${topLevelVarname}_`
+                    thereMightBeIssues = (queryString.includes(`@${topLevelVarname} `) || queryString.includes(`@${topLevelVarname}\t`) || queryString.endsWith(`@${topLevelVarname}`))
                 }
-                // if there's no @'s theres no vars, so add the default one
-                if (numberOfAtSymbols == 0) {
-                    queryString = `${queryString} @_`
-                    thereIsOnlyUnderscore = true
-                // if there's no quotes, then number of @'s == number of vars
-                } else if (!thereAreQuotes) {
-                    if (numberOfAtSymbols == 1 && queryString.match(/@_\b/)) {
-                        thereIsOnlyUnderscore = true
+                // add the top-level extraction always
+                queryString = `${queryString} @${topLevelVarname}`
+                const output = this.query(queryString, options).map((each) => Object.fromEntries(each.captures.map((each) => [each.name, each.node])))
+                // combine the top-level extraction and the named extractions using proxies
+                return output.map((eachMatch) => {
+                    const topLevel = eachMatch[topLevelVarname]
+                    delete eachMatch[topLevelVarname]
+                    const keys = Object.keys(eachMatch)
+                    if (keys.length == 0) {
+                        return topLevel
                     }
-                // if there are quotes and @'s then we need a full parse to determine
-                } else {
-                    // yes I am calling the tree sitter inside of the tree sitter
-                    const tree = treeSitterQueryParser.parse(queryString)
-                    const variableNamesInQuery = tree.language.query(`("@") @_`).matches(tree.rootNode)
-                    const varCount = variableNamesInQuery.length
-                    if (varCount == 0) {
-                        queryString = `${queryString} @_`
-                        thereIsOnlyUnderscore = true
-                    } else if (varCount == 1) {
-                        if (variableNamesInQuery.slice(-1)[0].captures[0]?.node?.nextNamedSibling?.text == "_") {
-                            thereIsOnlyUnderscore = true
-                        }
-                    }
-                }
-                let output = this.query(queryString, options).map((each) => Object.fromEntries(each.captures.map((each) => [each.name, each.node])))
-                if (thereIsOnlyUnderscore) {
-                    return output.map((each) => each._)
-                }
-                return output
+                    return new Proxy(topLevel, {
+                        ownKeys(original, ...args) {
+                            return keys.concat(Reflect.ownKeys(original, ...args)) 
+                        },
+                        getOwnPropertyDescriptor(original, prop) {
+                            return {
+                                enumerable: true,
+                                configurable: true
+                            }
+                        },
+                        get(original, key, ...args) {
+                            // replace the inspect and toJSON
+                            if (key == Symbol.for("Deno.customInspect") || key == "toJSON") {
+                                return (inspect=(a)=>a, options={})=>{
+                                    const optional = {}
+                                    if (typeof original.rootLeadingWhitespace == "string") {
+                                        optional.rootLeadingWhitespace = original.rootLeadingWhitespace
+                                    }
+                                    return inspect(
+                                        {
+                                            ...Object.fromEntries(keys.map((eachKey)=>[eachKey,eachMatch[eachKey]])),
+                                            type: original.type,
+                                            typeId: original.typeId,
+                                            startPosition: original.startPosition,
+                                            startIndex: original.startIndex,
+                                            endPosition: original.endPosition,
+                                            startIndex: original.startIndex,
+                                            endIndex: original.endIndex,
+                                            indent: original.indent,
+                                            ...optional,
+                                            hasChildren: original.hasChildren,
+                                            children: [...(original.children || [])],
+                                        },
+                                        options
+                                    )
+                                }
+                            }
+                            return keys.includes(key) ? eachMatch[key] : Reflect.get(original, key, ...args)
+                        },
+                        set(original, key, value) {
+                            if (keys.includes(key)) {
+                                eachMatch[key] = value
+                            }
+                            return Reflect.set(original, key, value)
+                        },
+                        has(target, key) {
+                            return keys.includes(key) || Reflect.has(target, key)
+                        },
+                        deleteProperty(target, key) {
+                            if (keys.includes(key)) {
+                                delete keys[keys.indexOf(key)]
+                            }
+                            return Reflect.deleteProperty(target, key)
+                        },
+                        isExtensible: Reflect.isExtensible,
+                        preventExtensions: Reflect.preventExtensions,
+                        setPrototypeOf: Reflect.setPrototypeOf,
+                        defineProperty: Reflect.defineProperty,
+                        getPrototypeOf: Reflect.getPrototypeOf,
+                    })
+                })
             }
             /**
              * quickQueryFirst
@@ -1900,10 +1937,3 @@ var re = G !== void 0 ? G : se;
 export {
   re as default
 };
-var treeSitterQueryLanguage
-var treeSitterQueryParser
-re.init().then(()=>re.Language.load(treeSitterQuery)).then((result)=>{
-    treeSitterQueryParser = new re()
-    var treeSitterQueryLanguage = result
-    treeSitterQueryParser.setLanguage(treeSitterQueryLanguage)
-})
