@@ -10,6 +10,39 @@ import { pureBinaryify } from "https://deno.land/x/binaryify@2.4.1.0/tools.js"
 
 const deno = Deno.execPath()
 
+// TODO: the following has been hand-done but needs to be automated:
+    // - handle enumerable/configurable/writable: true
+    
+    // - extract out of function
+    // - set ENVIRONMENT_IS_NODE=true
+    // - set ENVIRONMENT_IS_WEB=false
+    // - set ENVIRONMENT_IS_WORKER=false
+    // - var Module, initPromise
+    // - delete nodePath = Z("path"), change the import
+    // - delete nodePath = Z("fs"), change the import
+    // - WORKS^
+
+    // - extract out of promise
+    // - var Module = {}, // no initPromise
+    // - put "for (let e of Object.getOwnPropertyNames"... below parser class
+    // - fix the initPromise next to "ParserImpl.init()" in the Module.onRuntimeInitialized
+    // - keep the Object.assign({}, Module) in the moduleOverrides
+    // - ALSO WORKS^
+
+    // - add constructor to class ParserImpl
+    // - add if (firstTime) check to ParserImpl init()
+    // - remove "for (let e of Object.getOwnPropertyNames"... below parser class
+    // - remove "ENVIRONMENT_IS_NODE" check, remove the else (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) 
+    // - export class Tree
+    // - export class Node
+    // - export class TreeCursor
+    // - export class Language
+    // - export class LookaheadIterable
+    // - export class Query
+    // - delete class Parser
+    // - rename class ParserImpl to Parser and export
+    // - ALSO WORKS^
+
 const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
 const treeSitterWasmPath = `${FileSystem.thisFolder}/../tree_sitter.wasm.binaryified.js`
  

@@ -1,10 +1,19 @@
 import ParserClass from "./tree_sitter.js"
-
 await ParserClass.init()
 
-// this is to get around .parse being unwritable by default
-class ParserWrapper extends ParserClass {
-    parse = ParserClass.prototype.parse
+// modyify the .parse method to handle "withWhitespace"
+const realParseFunction = ParserClass.prototype.parse
+ParserClass.prototype.parse = function(arg1, ...args) {
+    let tree
+    if (arg1?.withWhitespace) {
+        tree = addWhitespaceNodes({
+            tree: realParseFunction.apply(this, [arg1?.string, ...args]),
+            string: arg1?.string,
+        })
+    } else {
+        tree = realParseFunction.apply(this, [typeof arg1?.string == 'string' ? arg1.string : arg1])
+    }
+    return tree
 }
 
 export const Parser = (...args)=>ParserClass.init(...args).then(_=>{
@@ -24,36 +33,8 @@ export const parserFromWasm = async (wasmUint8ArrayOrFilePath)=>{
         bytes = await Deno.readFile(wasmUint8ArrayOrFilePath)
     }
     const language = await ParserClass.Language.load(bytes)
-    const parser = new ParserWrapper()
+    const parser = new ParserClass()
     parser.setLanguage(language)
-    const realParceFunction = parser.parse.bind(parser)
-    
-    /**
-     * parse
-     *
-     * @example
-     *     var tree = parser.parse("blah blah")
-     *     var treeWithWhitespace = parser.parse({string: "blah blah", withWhitespace: true })
-     *     // for efficient updates (see tree.edit() documentation)
-     *     var parser.parse(newSourceCode, tree)
-     *     // for Custom Data Structure (see full docs)
-     *     var tree = parser.parse((index, position) => line.slice(position.column))
-     * 
-     * @returns output - a Tree object
-     *
-     */
-    parser.parse = (arg1, ...args)=>{
-        let tree
-        if (arg1?.withWhitespace) {
-            tree = addWhitespaceNodes({
-                tree: realParceFunction(arg1?.string, ...args),
-                string: arg1?.string,
-            })
-        } else {
-            tree = realParceFunction(typeof arg1?.string == 'string' ? arg1.string : arg1)
-        }
-        return tree
-    }
     return parser
 }
 
