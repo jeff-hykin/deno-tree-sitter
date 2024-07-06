@@ -370,6 +370,66 @@ const outputLooksLike = {
 }
 ```
 
+### XML Style Preview
+
+Sometimes you want to know what the tree looks like, but without the verbose structure of JSON. The XML style preview can give be a bit more readable in that aspect.
+
+NOTE: It is NOT valid XML, just very XML-like
+
+```js
+import { parserFromWasm, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@0.2.4.0/main.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+
+const parser = await parserFromWasm(javascript)
+const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
+
+console.log(xmlStylePreview(tree.rootNode))
+```
+
+Output:
+
+```xml
+<program>
+    <lexical_declaration>
+        <let text="let" />
+        <whitespace text=" " />
+        <variable_declarator>
+            <identifier text="x" />
+            <whitespace text=" " />
+            <"=" text="=" />
+            <whitespace text=" " />
+            <number text="1" />
+        </variable_declarator>
+        <";" text=";" />
+    </lexical_declaration>
+</program>
+```
+
+For *extreme* debugging, you can use the `alwaysShowTextAttr` option.
+
+```js
+
+// CAUTION: for normal-sized files, this will create a HUGE output (<program text=THE ENTIRE FILE>)
+console.log(xmlStylePreview(tree.rootNode, { alwaysShowTextAttr: true }))
+```
+
+```xml
+<program text="let x = 1;" />
+    <lexical_declaration text="let x = 1;" />
+        <let text="let" />
+        <whitespace text=" " />
+        <variable_declarator text="x = 1" />
+            <identifier text="x" />
+            <whitespace text=" " />
+            <"=" text="=" />
+            <whitespace text=" " />
+            <number text="1" />
+        </variable_declarator>
+        <";" text=";" />
+    </lexical_declaration>
+</program>
+```
+
 ### Querying
 
 There's a whole query syntax explained [here](https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax) but here's how to use it:
