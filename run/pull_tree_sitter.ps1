@@ -11,6 +11,7 @@ import { pureBinaryify } from "https://deno.land/x/binaryify@2.4.1.0/tools.js"
 const deno = Deno.execPath()
 
 // TODO: the following has been hand-done but needs to be automated:
+    // - see git tag "prev_hand_modified_commit"
     // - handle enumerable/configurable/writable: true
     
     // - extract out of function
