@@ -3,16 +3,24 @@ await ParserClass.init()
 
 // modyify the .parse method to handle "withWhitespace"
 const realParseFunction = ParserClass.prototype.parse
-ParserClass.prototype.parse = function(arg1, ...args) {
-    let tree
-    if (arg1?.withWhitespace) {
+ParserClass.prototype.parse = function(arg1, oldTree, options) {
+    let stringArg
+    if (typeof arg1 == 'string') {
+        stringArg = arg1
+    } else {
+        stringArg = arg1?.string
+    }
+    let withWhitespace = arg1?.withWhitespace
+    
+    let tree = realParseFunction.apply(this, [stringArg, oldTree, options])
+    if (withWhitespace) {
         tree = addWhitespaceNodes({
-            tree: realParseFunction.apply(this, [arg1?.string, ...args]),
+            tree: realParseFunction.apply(this, [stringArg, oldTree, options]),
             string: arg1?.string,
         })
-    } else {
-        tree = realParseFunction.apply(this, [typeof arg1?.string == 'string' ? arg1.string : arg1])
     }
+    // attach parse function
+    tree.parse = (newString,newOptions) => this.parse(newString, tree, newOptions||options)
     return tree
 }
 

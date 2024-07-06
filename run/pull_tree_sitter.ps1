@@ -13,6 +13,8 @@ const deno = Deno.execPath()
 // TODO: the following has been hand-done but needs to be automated:
     // - see git tag "prev_hand_modified_commit"
     // - handle enumerable/configurable/writable: true
+    // - replace parse args with parse(inputString, previousTree, options)
+    // - n.parser = this at the bottom of parse() in ParserImpl 
     
     // - extract out of function
     // - set ENVIRONMENT_IS_NODE=true

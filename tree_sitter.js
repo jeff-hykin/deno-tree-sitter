@@ -1,4 +1,5 @@
 import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
+import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
 // 
 // 
 // all the wasm setup stuff
@@ -983,23 +984,33 @@ import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5E
         getLanguage() {
             return this.language
         }
-        parse(t, _, s) {
-            if (typeof t == "string") currentParseCallback = (u, m) => t.slice(u)
-            else {
-                if (typeof t != "function") throw new Error("Argument must be a string or a function")
-                currentParseCallback = t
+        // parse(input: string | Parser.Input, previousTree?: Parser.Tree, options?: Parser.Options): Parser.Tree
+        parse(inputString, previousTree, options) {
+            if (typeof inputString == "string") {
+                currentParseCallback = (u, m) => inputString.slice(u)
+            } else {
+                if (typeof inputString != "function") throw new Error("Argument must be a string or a function")
+                currentParseCallback = inputString
             }
             this.logCallback ? ((currentLogCallback = this.logCallback), C._ts_parser_enable_logger_wasm(this[0], 1)) : ((currentLogCallback = null), C._ts_parser_enable_logger_wasm(this[0], 0))
             let r = 0,
                 a = 0
-            if (s?.includedRanges) {
-                ;(r = s.includedRanges.length), (a = C._calloc(r, SIZE_OF_RANGE))
+            if (options?.includedRanges) {
+                ;(r = options.includedRanges.length), (a = C._calloc(r, SIZE_OF_RANGE))
                 let u = a
-                for (let m = 0; m < r; m++) marshalRange(u, s.includedRanges[m]), (u += SIZE_OF_RANGE)
+                for (let m = 0; m < r; m++) marshalRange(u, options.includedRanges[m]), (u += SIZE_OF_RANGE)
             }
-            let o = C._ts_parser_parse_wasm(this[0], this[1], _ ? _[0] : 0, a, r)
+            let o = C._ts_parser_parse_wasm(this[0], this[1], previousTree ? previousTree[0] : 0, a, r)
             if (!o) throw ((currentParseCallback = null), (currentLogCallback = null), new Error("Parsing failed"))
             let n = new Tree(INTERNAL, o, this.language, currentParseCallback)
+            n.parse = (newString,newOptions) => this.parse(newString, n, newOptions||options)
+            // enable modification
+            Object.defineProperty(n, "string", {
+                get: () => inputString,
+                set(v) {
+                    inputString = v
+                }
+            })
             return (currentParseCallback = null), (currentLogCallback = null), n
         }
         reset() {
@@ -1044,8 +1055,8 @@ import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5E
         delete() {
             C._ts_tree_delete(this[0]), (this[0] = 0)
         }
-        edit(t) {
-            marshalEdit(t), C._ts_tree_edit_wasm(this[0])
+        edit({ startIndex, oldEndIndex, newEndIndex, startPosition, oldEndPosition, newEndPosition }) {
+            marshalEdit({ startIndex, oldEndIndex, newEndIndex, startPosition, oldEndPosition, newEndPosition }), C._ts_tree_edit_wasm(this[0])
         }
         get rootNode() {
             return C._ts_tree_root_node_wasm(this[0]), unmarshalNode(this)
@@ -1623,6 +1634,33 @@ import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5E
          */
         quickQueryFirst(queryString, options) {
             return this.quickQuery(queryString, { ...options, matchLimit: 1 })[0]
+        }
+        gutWith(stringOrNode) {
+            const oldTree = this.tree
+            const { startPosition: originalStart, endPosition: originalEnd, startIndex: originalStartIndex, endIndex: originalEndIndex } = this
+            if (typeof stringOrNode != "string") {
+                stringOrNode = stringOrNode?.text||""
+            }
+            const addedLines = stringOrNode.match(/\n/g)?.length || 0
+            
+            let newEndRow = originalStart.row
+            if (addedLines == 0) {
+                newEndRow = originalStart.row + stringOrNode.length
+            } else {
+                newEndRow = stringOrNode.split("\n").slice(-1)[0].length
+            }
+            const newString = this.tree.string.slice(0, originalStartIndex) + stringOrNode + this.tree.string.slice(originalEndIndex) 
+            // update the .text of all the nodes
+            this.tree.string = newString
+            // update all the indices
+            oldTree.edit({
+                startIndex: originalStartIndex,
+                oldEndIndex: originalEndIndex,
+                newEndIndex: originalStartIndex + stringOrNode.length,
+                startPosition: originalStart,
+                oldEndPosition: originalEnd,
+                newEndPosition: { row: newEndRow, column: originalStart.column + addedLines } 
+            })
         }
     }
     export class TreeCursor {
