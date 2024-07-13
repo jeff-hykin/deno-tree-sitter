@@ -1,6 +1,6 @@
 # The Tree Sitter for Deno!
 
-This is a patched version of the [web-tree-sitter](https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web) made to run on Deno.
+This is a patched+enhanced version of the [web-tree-sitter](https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web) made to run on Deno.
 
 # Usage
 
