@@ -24,9 +24,10 @@ ParserClass.prototype.parse = function(arg1, oldTree, options) {
     return tree
 }
 
-export const Parser = (...args)=>ParserClass.init(...args).then(_=>{
+export const Parser = (...args)=>{
+    ParserClass.init(...args)
     return new ParserClass()
-})
+}
 
 
 /**
