@@ -56,7 +56,7 @@ const tree = parser.parse('fn main() { }')
 tree.language.types  // array 
 tree.language.fields // array 
 tree.rootNode.text == "fn main() { }" // true
-tree.rootNode = {
+tree.rootNode == {
   type: "source_file",
   typeId: 139,
   startPosition: { row: 0, column: 0 },
@@ -131,7 +131,7 @@ for (const [ parents, node, direction ] of tree.rootNode.traverse()) {
     const isLeafNode = direction == "-"
     if (isLeafNode) {
         console.log(indent+`<${node.type} text=${JSON.stringify(node.text)} />`)
-    } if (direction == "->") {
+    } else if (direction == "->") {
         console.log(indent+`<${node.type}>`)
         indent += "    "
     } else if (direction == "<-") {
