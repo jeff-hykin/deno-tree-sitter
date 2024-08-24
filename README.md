@@ -48,7 +48,7 @@ const tree = parser.parse('let x = 1;')
 
 ```js
 import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/rust.js"
+import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/rust.js"
 
 const parser = await parserFromWasm(rust)
 const tree = parser.parse('fn main() { }')
@@ -98,7 +98,7 @@ Either get a newer wasm file, or import an older deno-tree-sitter, probably this
 
 ```js
 import * as oldTreeSitter from "https://deno.land/x/deno_tree_sitter@0.1.3.0/main.js"
-import oldYamlWasm from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/yaml.js"
+import oldYamlWasm from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/yaml.js"
 
 const parser = await oldTreeSitter.parserFromWasm(oldYamlWasm)
 ``` -->
@@ -110,24 +110,24 @@ const parser = await oldTreeSitter.parserFromWasm(oldYamlWasm)
 I aggregated some wasm parser [here](https://github.com/jeff-hykin/common_tree_sitter_languages) for quick usage.
 
 ```js
-import html from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/html.js"
-import c from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/c.js"
-import python from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/python.js"
-import bash from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/bash.js"
-import typescript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/typescript.js"
-import yaml from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/yaml.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
-import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/rust.js"
-import css from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/css.js"
-import json from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/json.js"
-import wat from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/wat.js"
-import wast from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/wast.js"
-import tsx from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/tsx.js"
-import toml from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/toml.js"
-import nix from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/nix.js"
-import cpp from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/cpp.js"
-import gitignore from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/gitignore.js"
-import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/tree-sitter-query.js"
+import html from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/html.js"
+import c from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/c.js"
+import python from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/python.js"
+import bash from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/bash.js"
+import typescript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/typescript.js"
+import yaml from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/yaml.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
+import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/rust.js"
+import css from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/css.js"
+import json from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/json.js"
+import wat from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/wat.js"
+import wast from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/wast.js"
+import tsx from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/tsx.js"
+import toml from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/toml.js"
+import nix from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/nix.js"
+import cpp from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/cpp.js"
+import gitignore from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/gitignore.js"
+import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/tree-sitter-query.js"
 ```
 
 
@@ -137,7 +137,7 @@ It is surprisingly handy to be able to iterate over every node (at any depth) in
 
 ```js
 import { parserFromWasm, flatNodeList } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 const parser = await parserFromWasm(javascript) // path or Uint8Array
 const tree = parser.parse(`
     function thing(arg1) {
@@ -194,7 +194,7 @@ Most tree sitter parsers don't have whitespace nodes, they just skip the whitesp
 
 ```js
 import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await parserFromWasm(javascript)
 const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
@@ -213,7 +213,7 @@ For quick analysis and debugging, its always nice to convert a parsed document t
 
 ```js
 import { parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await parserFromWasm(javascript)
 const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
@@ -400,7 +400,7 @@ NOTE: It is NOT valid XML, just very XML-like
 
 ```js
 import { parserFromWasm, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await parserFromWasm(javascript)
 const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
@@ -461,7 +461,7 @@ There's a whole query syntax explained [here](https://tree-sitter.github.io/tree
 // setup
 // 
 import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.5.0/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/javascript.js"
+import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 var parser = await parserFromWasm(javascript) // path or Uint8Array
 var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
 var root = tree.rootNode
