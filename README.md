@@ -81,6 +81,28 @@ tree.rootNode == {
 }
 ```
 
+### Issues
+
+None specific to deno-tree-sitter!
+
+However, there is an issue with the tree sitter library itself though. Using the newest tree sitter with an older wasm file will throw something like this:
+
+```
+(deno-tree-sitter speaking here)
+So a wasm file you're trying to load is old or incomplete.
+I can't find the symbol "_Znwm".
+This is effectively a dynamic linking (dyld) error from compiling the C code that became wasm.
+```
+
+Either get a newer wasm file, or import an older deno-tree-sitter, probably this version:
+
+```js
+import * as oldTreeSitter from "https://deno.land/x/deno_tree_sitter@0.1.3.0/main.js"
+import oldYamlWasm from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/e2c125ea47a0eee2453f0cbe7ca8a8d19d04df03/main/yaml.js"
+
+const parser = await oldTreeSitter.parserFromWasm(oldYamlWasm)
+```
+
 ## Handy Tools/Usage
 
 ### Languages
