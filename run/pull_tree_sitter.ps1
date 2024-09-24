@@ -536,6 +536,11 @@ treeSitterCode = treeSitterCode.replace(
                         }
                     ), e[t];`,
 )
+treeSitterCode = treeSitterCode.replace(
+    `_ = t + alignMemory(e, 16)`,
+    // fix race condition that seems to only show up when loaded in the browser
+    `_ = t + alignMemory(e, 16);\n            (!GOT.__heap_base)&&GOTHandler.get(wasmImports, "__heap_base");`,
+)
 
 
 

@@ -302,7 +302,8 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
         getMemory = (e) => {
             if (runtimeInitialized) return zeroMemory(_malloc(e), e)
             var t = ___heap_base,
-                _ = t + alignMemory(e, 16)
+                _ = t + alignMemory(e, 16);
+            (!GOT.__heap_base)&&GOTHandler.get(wasmImports, "__heap_base");
             return (___heap_base = _), (GOT.__heap_base.value = _), t
         },
         isInternalSym = (e) => ["__cpp_exception", "__c_longjmp", "__wasm_apply_data_relocs", "__dso_handle", "__tls_size", "__tls_align", "__set_stack_limits", "_emscripten_tls_init", "__wasm_init_tls", "__wasm_call_ctors", "__start_em_asm", "__stop_em_asm", "__start_em_js", "__stop_em_js"].includes(e) || e.startsWith("__em_js__"),
