@@ -1415,7 +1415,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                             yield eachInner
                         }
                     } else {
-                        yield [_parentNodes, each, "-"]
+                        yield [parentNodes, each, "-"]
                     }
                 }
                 yield [_parentNodes, this, "<-"]
