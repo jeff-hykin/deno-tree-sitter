@@ -39,6 +39,10 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
         get hasChildren() {
             return (this.children?.length || 0) > 0
         }
+        
+        get hardChildren() {
+            return this.children.filter(each=>each instanceof HardNode)
+        }
 
         toJSON() {
             const optionalData = {}
