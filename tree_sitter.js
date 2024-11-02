@@ -1098,7 +1098,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             return s
         }
     }
-    export class Node {
+    export class HardNode {
         constructor(t, _) {
             assertInternal(t), (this.tree = _)
         }
@@ -1324,7 +1324,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             } else {
                 yield [_parentNodes, this, "->"]
                 for (const each of this.children) {
-                    if (each instanceof Node) {
+                    if (each instanceof HardNode) {
                         for (const eachInner of each.traverse({ _parentNodes: parentNodes })) {
                             yield eachInner
                         }
@@ -2179,7 +2179,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             r = getValue((t += SIZE_OF_INT), "i32"),
             a = getValue((t += SIZE_OF_INT), "i32"),
             o = getValue((t += SIZE_OF_INT), "i32"),
-            n = new Node(INTERNAL, e)
+            n = new HardNode(INTERNAL, e)
         return (n.id = _), (n.startIndex = s), (n.startPosition = { row: r, column: a }), (n[0] = o), n
     }
     function marshalTreeCursor(e, t = TRANSFER_BUFFER) {
