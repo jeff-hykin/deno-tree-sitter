@@ -1,6 +1,104 @@
 import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
 import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
 // 
+// helper modifications
+// 
+    export class Node {
+        // type = ""
+        // typeId = 0
+        // startPosition = 0
+        // startIndex = 0
+        // endPosition = 0
+        // startIndex = 0
+        // endIndex = 0
+        // indent = ""
+
+        constructor(data) {
+            Object.assign(this, data)
+        }
+
+        get depth() {
+            if (this._depth == null) {
+                if (this.parent == null) {
+                    this._depth = 0
+                } else {
+                    this._depth = this.parent.depth + 1
+                }
+            }
+            return this._depth
+        }
+
+        get length() {
+            return this.children.length
+        }
+        
+        *[Symbol.iterator]() {
+            yield* this.children
+        }
+        
+        get hasChildren() {
+            return (this.children?.length || 0) > 0
+        }
+
+        toJSON() {
+            const optionalData = {}
+            if (typeof this.rootLeadingWhitespace == 'string') {
+                optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
+            }
+            if (this.children && this.children.length) {
+                return {
+                    type: this.type,
+                    typeId: this.typeId,
+                    startPosition: this.startPosition,
+                    startIndex: this.startIndex,
+                    endPosition: this.endPosition,
+                    startIndex: this.startIndex,
+                    endIndex: this.endIndex,
+                    indent: this.indent,
+                    ...optionalData,
+                    children: this.children.map(each=>each.toJSON()),
+                }
+            } else {
+                return {
+                    type: this.type,
+                    typeId: this.typeId,
+                    startPosition: this.startPosition,
+                    startIndex: this.startIndex,
+                    endPosition: this.endPosition,
+                    startIndex: this.startIndex,
+                    endIndex: this.endIndex,
+                    indent: this.indent,
+                    ...optionalData,
+                    text: this.text,
+                    children: [],
+                }
+            }
+        }
+
+        [Symbol.for("Deno.customInspect")](inspect, options) {
+            const optional = {}
+            if (typeof this.rootLeadingWhitespace == "string") {
+                optional.rootLeadingWhitespace = this.rootLeadingWhitespace
+            }
+            return inspect(
+                {
+                    type: this.type,
+                    typeId: this.typeId,
+                    startPosition: this.startPosition,
+                    startIndex: this.startIndex,
+                    endPosition: this.endPosition,
+                    startIndex: this.startIndex,
+                    endIndex: this.endIndex,
+                    indent: this.indent,
+                    ...optional,
+                    hasChildren: this.hasChildren,
+                    children: [...(this.children || [])],
+                },
+                options
+            )
+        }
+    }
+// 
 // 
 // all the wasm setup stuff
 // 
@@ -1098,8 +1196,9 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             return s
         }
     }
-    export class HardNode {
+    export class HardNode extends Node {
         constructor(t, _) {
+            super({})
             assertInternal(t), (this.tree = _)
         }
         get typeId() {
@@ -1270,16 +1369,6 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             return marshalNode(this), C._ts_node_parent_wasm(this.tree[0]), unmarshalNode(this.tree)
         }
 
-        get depth() {
-            if (this._depth == null) {
-                if (this.parent == null) {
-                    this._depth = 0
-                } else {
-                    this._depth = this.parent.depth + 1
-                }
-            }
-            return this._depth
-        }
         descendantForIndex(t, _ = t) {
             if (typeof t != "number" || typeof _ != "number") throw new Error("Arguments must be numbers")
             marshalNode(this)
@@ -1313,9 +1402,6 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 _ = AsciiToString(t)
             return C._free(t), _
         }
-        get hasChildren() {
-            return (this.children?.length || 0) > 0
-        }
         *traverse(arg = { _parentNodes: [] }) {
             const { _parentNodes } = arg
             const parentNodes = [this, ..._parentNodes]
@@ -1334,70 +1420,6 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 }
                 yield [_parentNodes, this, "<-"]
             }
-        }
-        toJSON() {
-            const optionalData = {}
-            if (typeof this.rootLeadingWhitespace == "string") {
-                optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
-            }
-            if (this.children && this.children.length) {
-                return {
-                    type: this.type,
-                    typeId: this.typeId,
-                    startPosition: this.startPosition,
-                    startIndex: this.startIndex,
-                    endPosition: this.endPosition,
-                    startIndex: this.startIndex,
-                    endIndex: this.endIndex,
-                    indent: this.indent,
-                    textOverride: this.textOverride,
-                    ...optionalData,
-                    children: this.children.map((each) => each.toJSON()),
-                }
-            } else {
-                return {
-                    type: this.type,
-                    typeId: this.typeId,
-                    startPosition: this.startPosition,
-                    startIndex: this.startIndex,
-                    endPosition: this.endPosition,
-                    startIndex: this.startIndex,
-                    endIndex: this.endIndex,
-                    indent: this.indent,
-                    textOverride: this.textOverride,
-                    ...optionalData,
-                    text: this.text,
-                    children: [],
-                }
-            }
-        }
-        [Symbol.for("Deno.customInspect")](inspect, options) {
-            const optional = {}
-            if (typeof this.rootLeadingWhitespace == "string") {
-                optional.rootLeadingWhitespace = this.rootLeadingWhitespace
-            }
-            return inspect(
-                {
-                    type: this.type,
-                    typeId: this.typeId,
-                    startPosition: this.startPosition,
-                    startIndex: this.startIndex,
-                    endPosition: this.endPosition,
-                    startIndex: this.startIndex,
-                    endIndex: this.endIndex,
-                    indent: this.indent,
-                    ...optional,
-                    hasChildren: this.hasChildren,
-                    children: [...(this.children || [])],
-                },
-                options
-            )
-        }
-        *[Symbol.iterator]() {
-            yield* this.children
-        }
-        get length() {
-            return this.children.length
         }
         /**
          * Query
