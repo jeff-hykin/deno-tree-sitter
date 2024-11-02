@@ -11,6 +11,9 @@ import { pureBinaryify } from "https://deno.land/x/binaryify@2.4.1.0/tools.js"
 const deno = Deno.execPath()
 
 // TODO: the following has been hand-done but needs to be automated:
+    // rename Node to HardNode
+    // make HardNode extend Node
+
     // - see git tag "prev_hand_modified_commit"
     // - handle enumerable/configurable/writable: true
     // - replace parse args with parse(inputString, previousTree, options)
