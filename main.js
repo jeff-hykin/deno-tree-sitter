@@ -1,4 +1,5 @@
 import ParserClass from "./tree_sitter.js"
+import { Node } from "./tree_sitter.js" 
 await ParserClass.init()
 
 // modyify the .parse method to handle "withWhitespace"
@@ -51,43 +52,22 @@ export function flatNodeList(node) {
     return [ node, ...(node.children||[]).map(flatNodeList) ].flat(Infinity)
 }
 
-export class WhitespaceNode {
-    constructor(data) {
-        Object.assign(this, data)
+export class TextNode extends Node {
+    constructor({parent, ...data}) {
+        super({...data, type: "text", typeId: -2})
+        this._parent = parent
     }
-    toJSON() {
-        const optionalData = {}
-        if (typeof this.rootLeadingWhitespace == 'string') {
-            optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
-        }
-        if (this.children && this.children.length) {
-            return {
-                type: this.type,
-                typeId: this.typeId,
-                startPosition: this.startPosition,
-                startIndex: this.startIndex,
-                endPosition: this.endPosition,
-                startIndex: this.startIndex,
-                endIndex: this.endIndex,
-                indent: this.indent,
-                ...optionalData,
-                children: this.children.map(each=>each.toJSON()),
-            }
-        } else {
-            return {
-                type: this.type,
-                typeId: this.typeId,
-                startPosition: this.startPosition,
-                startIndex: this.startIndex,
-                endPosition: this.endPosition,
-                startIndex: this.startIndex,
-                endIndex: this.endIndex,
-                indent: this.indent,
-                ...optionalData,
-                text: this.text,
-                children: [],
-            }
-        }
+    get parent() {
+        return this._parent
+    }
+}
+export class WhitespaceNode extends Node {
+    constructor({parent, ...data}) {
+        super({...data, type: "whitespace", typeId: -1})
+        this._parent = parent
+    }
+    get parent() {
+        return this._parent
     }
 }
 
@@ -114,20 +94,31 @@ export const addWhitespaceNodes = ({tree, string})=>{
             let firstChild = childrenCopy.shift()
             // preceding whitespace
             if (eachNode.startIndex != firstChild.startIndex) {
-                const whitespaceText = string.slice(eachNode.startIndex, firstChild.startIndex)
-                if (whitespaceText.match(/\n/)) {
-                    indent = whitespaceText.split(/\n/).slice(-1)[0]
+                const gapText = string.slice(eachNode.startIndex, firstChild.startIndex)
+                if (gapText.match(/^\s*$/)) {
+                    const whitespaceText = gapText
+                    if (whitespaceText.match(/\n/)) {
+                        indent = whitespaceText.split(/\n/).slice(-1)[0]
+                    }
+                    newChildren.push(new WhitespaceNode({
+                        text: whitespaceText,
+                        startIndex: eachNode.startIndex,
+                        endIndex: firstChild.startIndex,
+                        indent,
+                        children: [],
+                        parent: eachNode,
+                    }))
+                // sometimes the gap isn't always whitespace
+                } else {
+                    newChildren.push(new TextNode({
+                        text: gapText,
+                        startIndex: eachNode.startIndex,
+                        endIndex: firstChild.startIndex,
+                        indent,
+                        children: [],
+                        parent: eachNode,
+                    }))
                 }
-                newChildren.push(new WhitespaceNode({
-                    typeId: -1,
-                    type: "whitespace",
-                    text: whitespaceText,
-                    startIndex: eachNode.startIndex,
-                    endIndex: firstChild.startIndex,
-                    indent,
-                    hasChildren: false,
-                    children: [],
-                }))
             }
             firstChild.indent = indent
             newChildren.push(firstChild)
@@ -135,20 +126,31 @@ export const addWhitespaceNodes = ({tree, string})=>{
             let prevChild = firstChild
             for (const eachSecondaryNode of childrenCopy) {
                 if (prevChild.endIndex != eachSecondaryNode.startIndex) {
-                    const whitespaceText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
-                    if (whitespaceText.match(/\n/)) {
-                        indent = whitespaceText.split(/\n/).slice(-1)[0]
+                    const gapText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
+                    if (gapText.match(/^\s*$/)) {
+                        const whitespaceText = gapText
+                        if (whitespaceText.match(/\n/)) {
+                            indent = whitespaceText.split(/\n/).slice(-1)[0]
+                        }
+                        newChildren.push(new WhitespaceNode({
+                            text: whitespaceText,
+                            startIndex: prevChild.startIndex,
+                            endIndex: eachSecondaryNode.startIndex,
+                            indent,
+                            children: [],
+                            parent: eachNode,
+                        }))
+                    // sometimes the gap isn't always whitespace
+                    } else {
+                        newChildren.push(new TextNode({
+                            text: gapText,
+                            startIndex: prevChild.startIndex,
+                            endIndex: eachSecondaryNode.startIndex,
+                            indent,
+                            children: [],
+                            parent: eachNode,
+                        }))
                     }
-                    newChildren.push(new WhitespaceNode({
-                        typeId: -1,
-                        type: "whitespace",
-                        text: whitespaceText,
-                        startIndex: prevChild.endIndex,
-                        endIndex: eachSecondaryNode.startIndex,
-                        indent,
-                        hasChildren: false,
-                        children: [],
-                    }))
                 }
                 eachSecondaryNode.indent = indent
                 newChildren.push(eachSecondaryNode)
