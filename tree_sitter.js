@@ -44,6 +44,14 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             return this.children.filter(each=>each instanceof HardNode)
         }
 
+        get fields() {
+            return {}
+        }
+        
+        get fieldNames() {
+            return {}
+        }
+        
         toJSON() {
             const optionalData = {}
             if (typeof this.rootLeadingWhitespace == 'string') {
@@ -53,6 +61,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 return {
                     type: this.type,
                     typeId: this.typeId,
+                    fieldNames: this.fieldNames,
                     startPosition: this.startPosition,
                     startIndex: this.startIndex,
                     endPosition: this.endPosition,
@@ -66,6 +75,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 return {
                     type: this.type,
                     typeId: this.typeId,
+                    fieldNames: this.fieldNames,
                     startPosition: this.startPosition,
                     startIndex: this.startIndex,
                     endPosition: this.endPosition,
@@ -1688,6 +1698,23 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 oldEndPosition: originalEnd,
                 newEndPosition: { row: newEndRow, column: originalStart.column + addedLines } 
             })
+        }
+        get fields() {
+            if (!this._fields) {
+                this._fields = {}
+                let index = -1
+                for (let each of this.children) {
+                    index++
+                    const name = each.fieldNameForChild(index)
+                    if (name) {
+                        this._fields[name] = each
+                    }
+                }
+            }
+            return this._fields
+        }
+        get fieldNames() {
+            return Object.keys(this.fields)
         }
     }
     export class TreeCursor {
