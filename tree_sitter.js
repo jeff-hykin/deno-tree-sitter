@@ -96,8 +96,10 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
             }
             return inspect(
                 {
+                    '<textPreview>': this.text < 60 ? this.text : this.text.slice(0, 30) + "..." + this.text.slice(-27),
                     type: this.type,
                     typeId: this.typeId,
+                    fieldNames: this.fieldNames,
                     startPosition: this.startPosition,
                     startIndex: this.startIndex,
                     endPosition: this.endPosition,
