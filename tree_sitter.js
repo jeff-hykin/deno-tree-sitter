@@ -49,7 +49,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
         }
         
         get fieldNames() {
-            return {}
+            return []
         }
         
         toJSON() {
@@ -1215,6 +1215,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
     export class HardNode extends Node {
         constructor(t, _) {
             super({})
+            this._fields = null
             assertInternal(t), (this.tree = _)
         }
         get typeId() {
@@ -1707,7 +1708,7 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
                 let index = -1
                 for (let each of this.children) {
                     index++
-                    const name = each.fieldNameForChild(index)
+                    const name = this.fieldNameForChild(index)
                     if (name) {
                         this._fields[name] = each
                     }
