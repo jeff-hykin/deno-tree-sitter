@@ -5,8 +5,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "a",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 4 },
           startIndex: 4,
           endPosition: { row: 0, column: 5 },
@@ -24,8 +26,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "b",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 14 },
           startIndex: 14,
           endPosition: { row: 0, column: 15 },
@@ -43,8 +47,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "c",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 24 },
           startIndex: 24,
           endPosition: { row: 0, column: 25 },
@@ -64,8 +70,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "a",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 4 },
           startIndex: 4,
           endPosition: { row: 0, column: 5 },
@@ -83,8 +91,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "b",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 14 },
           startIndex: 14,
           endPosition: { row: 0, column: 15 },
@@ -102,8 +112,10 @@
       {
         name: "blahBlahBlah",
         node: {
+          "": "c",
           type: "identifier",
           typeId: 1,
+          fieldNames: [],
           startPosition: { row: 0, column: 24 },
           startIndex: 24,
           endPosition: { row: 0, column: 25 },
