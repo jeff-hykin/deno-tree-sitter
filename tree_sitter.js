@@ -1,5 +1,6 @@
 import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
-import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
+import { zip } from "https://esm.sh/gh/jeff-hykin/good-js@1.7.1.1/source/array.js"
+
 // 
 // helper modifications
 // 
@@ -122,8 +123,20 @@ import { zip } from "https://deno.land/x/good@1.7.1.1/array.js"
     import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
     // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
     var __Process$ = { versions: { node: "1" }, argv: [import.meta.href] }
-    import * as fs from "https://deno.land/std@0.177.0/node/fs.ts"
-    import * as nodePath from "https://deno.land/std@0.177.0/node/path.ts"
+    const fs = {
+        readFileSync(e) {
+        },
+        readFile(e, t) {
+        },
+    }
+    const nodePath = {
+        normalize(e) {
+            return e
+        },
+        dirname(e) {
+            return e.split("/").slice(0, -1).join("/")
+        }
+    }
 
     var Module = {}
     var moduleOverrides = Object.assign({}, Module),
