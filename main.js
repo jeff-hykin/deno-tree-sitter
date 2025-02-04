@@ -38,11 +38,7 @@ export const Parser = (...args)=>{
  *
  */
 export const parserFromWasm = async (wasmUint8ArrayOrFilePath)=>{
-    let bytes = wasmUint8ArrayOrFilePath
-    if (typeof wasmUint8ArrayOrFilePath == 'string') {
-        bytes = await Deno.readFile(wasmUint8ArrayOrFilePath)
-    }
-    const language = await ParserClass.Language.load(bytes)
+    const language = await ParserClass.Language.load(wasmUint8ArrayOrFilePath)
     const parser = new ParserClass()
     parser.setLanguage(language)
     return parser

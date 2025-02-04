@@ -2051,13 +2051,17 @@ import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to
                 if (t.length > roughButNotPerfectMaxPathLengthUnix) {
                     console.warn(`I (tree sitter) received a string arg to load. I always assuming the string is a path, but it was longer than ${roughButNotPerfectMaxPathLengthUnix} (actual length=${t.length}). If you get an error in a moment, that is probably why.`)
                 }
-                if (globalThis.fetch) {
-                    if (!(t.startsWith("http://") || t.startsWith("https://"))) {
+                const seemsToBeAUrl = t.startsWith("http://") || t.startsWith("https://")
+                
+                if (!seemsToBeAUrl && globalThis.Deno && globalThis.Deno.readFile) {
+                    _ = globalThis.Deno.readFile(t)
+                } else if (globalThis.fetch) {
+                    if (!seemsToBeAUrl) {
                         // TODO: not sure what happens on windows
                         // encodeURIComponent is necessary for encoding unusual chars such as "#", otherwise they'll fail
                         t = `file://${t.split("/").map(encodeURIComponent).join("/")}`
                     }
-                    _ = fetch(s).then((r) =>
+                    _ = fetch(t).then((r) =>
                         r.arrayBuffer().then((a) => {
                             if (r.ok) return new Uint8Array(a)
                             {

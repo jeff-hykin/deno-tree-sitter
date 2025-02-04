@@ -50,36 +50,40 @@ const deno = Deno.execPath()
     // - ALSO WORKS^
     
     // change the load function to have this:
-            // else if (typeof t == "string") {
-            //     const roughButNotPerfectMaxPathLengthUnix = 4096
-            //     if (t.length > roughButNotPerfectMaxPathLengthUnix) {
-            //         console.warn(`I (tree sitter) received a string arg to load. I always assuming the string is a path, but it was longer than ${roughButNotPerfectMaxPathLengthUnix} (actual length=${t.length}). If you get an error in a moment, that is probably why.`)
-            //     }
-            //     if (globalThis.fetch) {
-            //         if (!(t.startsWith("http://") || t.startsWith("https://"))) {
-            //             // TODO: not sure what happens on windows
-            //             // encodeURIComponent is necessary for encoding unusual chars such as "#", otherwise they'll fail
-            //             t = `file://${t.split("/").map(encodeURIComponent).join("/")}`
-            //         }
-            //         _ = fetch(s).then((r) =>
-            //             r.arrayBuffer().then((a) => {
-            //                 if (r.ok) return new Uint8Array(a)
-            //                 {
-            //                     let o = new TextDecoder("utf-8").decode(a)
-            //                     throw new Error(`Language.load failed with status ${r.status}.\n\n${o}`)
-            //                 }
-            //             })
-            //         )
-            //     // probably node
-            //     } else if (typeof __Process$ < "u" && __Process$.versions && __Process$.versions.node) {
-            //         let r = require("fs")
-            //         _ = Promise.resolve(r.readFileSync(s))
-            //     } else {
-            //         throw new Error(`Tree sitter was trying to load a string argument, however there was no global fetch function available, and the runtime doesn't appear to be node. So I don't know how to load this file path. Try passing the loaded file as a Uint8Array to get around this problem`, )
-            //     }
-            // } else {
-            //     throw new Error(`You're trying to load something that's not a string or Uint8Array. The arg I was given is: ${toRepresentation(t)}`, )
-            // }
+        // else if (typeof t == "string") {
+        //     const roughButNotPerfectMaxPathLengthUnix = 4096
+        //     if (t.length > roughButNotPerfectMaxPathLengthUnix) {
+        //         console.warn(`I (tree sitter) received a string arg to load. I always assuming the string is a path, but it was longer than ${roughButNotPerfectMaxPathLengthUnix} (actual length=${t.length}). If you get an error in a moment, that is probably why.`)
+        //     }
+        //     const seemsToBeAUrl = t.startsWith("http://") || t.startsWith("https://")
+        // 
+        //     if (!seemsToBeAUrl && globalThis.Deno && globalThis.Deno.readFile) {
+        //         _ = globalThis.Deno.readFile(t)
+        //     } else if (globalThis.fetch) {
+        //         if (!seemsToBeAUrl) {
+        //             // TODO: not sure what happens on windows
+        //             // encodeURIComponent is necessary for encoding unusual chars such as "#", otherwise they'll fail
+        //             t = `file://${t.split("/").map(encodeURIComponent).join("/")}`
+        //         }
+        //         _ = fetch(t).then((r) =>
+        //             r.arrayBuffer().then((a) => {
+        //                 if (r.ok) return new Uint8Array(a)
+        //                 {
+        //                     let o = new TextDecoder("utf-8").decode(a)
+        //                     throw new Error(`Language.load failed with status ${r.status}.\n\n${o}`)
+        //                 }
+        //             })
+        //         )
+        //     // probably node
+        //     } else if (typeof __Process$ < "u" && __Process$.versions && __Process$.versions.node) {
+        //         let r = require("fs")
+        //         _ = Promise.resolve(r.readFileSync(s))
+        //     } else {
+        //         throw new Error(`Tree sitter was trying to load a string argument, however there was no global fetch function available, and the runtime doesn't appear to be node. So I don't know how to load this file path. Try passing the loaded file as a Uint8Array to get around this problem`, )
+        //     }
+        // } else {
+        //     throw new Error(`You're trying to load something that's not a string or Uint8Array. The arg I was given is: ${toRepresentation(t)}`, )
+        // }
 
 const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
 const treeSitterWasmPath = `${FileSystem.thisFolder}/../tree_sitter.wasm.binaryified.js`
