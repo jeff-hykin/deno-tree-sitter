@@ -1,5 +1,6 @@
 import "data:text/javascript;base64,IWdsb2JhbFRoaXMuRGVubyAmJiAoZ2xvYmFsVGhpcy5EZW5vID0ge2FyZ3M6IFtdLGJ1aWxkOiB7b3M6ICJsaW51eCIsYXJjaDogIng4Nl82NCIsdmVyc2lvbjogIiIsfSxwaWQ6IDEsZW52OiB7Z2V0KF8pIHtyZXR1cm4gbnVsbDt9LHNldChfLCBfXykge3JldHVybiBudWxsO30sfSx9KTs="
 import { zip } from "https://esm.sh/gh/jeff-hykin/good-js@1.7.1.1/source/array.js"
+import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to_representation.js"
 
 // 
 // helper modifications
@@ -2045,12 +2046,17 @@ import { zip } from "https://esm.sh/gh/jeff-hykin/good-js@1.7.1.1/source/array.j
         static load(t) {
             let _
             if (t instanceof Uint8Array) _ = Promise.resolve(t)
-            else {
-                let s = t
-                if (typeof __Process$ < "u" && __Process$.versions && __Process$.versions.node) {
-                    let r = Z("fs")
-                    _ = Promise.resolve(r.readFileSync(s))
-                } else
+            else if (typeof t == "string") {
+                const roughButNotPerfectMaxPathLengthUnix = 4096
+                if (t.length > roughButNotPerfectMaxPathLengthUnix) {
+                    console.warn(`I (tree sitter) received a string arg to load. I always assuming the string is a path, but it was longer than ${roughButNotPerfectMaxPathLengthUnix} (actual length=${t.length}). If you get an error in a moment, that is probably why.`)
+                }
+                if (globalThis.fetch) {
+                    if (!(t.startsWith("http://") || t.startsWith("https://"))) {
+                        // TODO: not sure what happens on windows
+                        // encodeURIComponent is necessary for encoding unusual chars such as "#", otherwise they'll fail
+                        t = `file://${t.split("/").map(encodeURIComponent).join("/")}`
+                    }
                     _ = fetch(s).then((r) =>
                         r.arrayBuffer().then((a) => {
                             if (r.ok) return new Uint8Array(a)
@@ -2060,6 +2066,15 @@ import { zip } from "https://esm.sh/gh/jeff-hykin/good-js@1.7.1.1/source/array.j
                             }
                         })
                     )
+                // probably node
+                } else if (typeof __Process$ < "u" && __Process$.versions && __Process$.versions.node) {
+                    let r = require("fs")
+                    _ = Promise.resolve(r.readFileSync(s))
+                } else {
+                    throw new Error(`Tree sitter was trying to load a string argument, however there was no global fetch function available, and the runtime doesn't appear to be node. So I don't know how to load this file path. Try passing the loaded file as a Uint8Array to get around this problem`, )
+                }
+            } else {
+                throw new Error(`You're trying to load something that's not a string or Uint8Array. The arg I was given is: ${toRepresentation(t)}`, )
             }
             return _.then((s) => loadWebAssemblyModule(s, { loadAsync: true })).then((s) => {
                 let r = Object.keys(s),
