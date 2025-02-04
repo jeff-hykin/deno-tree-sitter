@@ -43,6 +43,18 @@ const parser = await parserFromWasm('./path/to/javascript.wasm')
 const tree = parser.parse('let x = 1;')
 ```
 
+Alternatively-alternatively load from a URL!:
+
+```js
+import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter@0.2.8.5/main.js"
+
+// see https://github.com/jeff-hykin/common_tree_sitter_languages
+// for getting wasm files for different languages
+const parser = await parserFromWasm('https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.wasm')
+// NOTE: the ending is .wasm not .js (in contrast with the first example)
+const tree = parser.parse('let x = 1;')
+```
+
 
 ### Data Structure
 
