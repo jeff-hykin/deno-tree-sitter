@@ -2078,7 +2078,7 @@ import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to
                     throw new Error(`Tree sitter was trying to load a string argument, however there was no global fetch function available, and the runtime doesn't appear to be node. So I don't know how to load this file path. Try passing the loaded file as a Uint8Array to get around this problem`, )
                 }
             } else {
-                throw new Error(`You're trying to load something that's not a string or Uint8Array. The arg I was given is: ${toRepresentation(t)}`, )
+                throw new Error(`When calling tree sitter load, the arg wasn't a Uint8Array (Uint8Array of wasm file) or a string (path to wasm file). The arg I was given is: ${toRepresentation(t)}`, )
             }
             return _.then((s) => loadWebAssemblyModule(s, { loadAsync: true })).then((s) => {
                 let r = Object.keys(s),
