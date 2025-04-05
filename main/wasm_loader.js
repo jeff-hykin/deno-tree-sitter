@@ -462,6 +462,9 @@ export default async function (Module) {
         var ret = ___heap_base
         var end = ret + alignMemory(size, 16)
         ___heap_base = end
+        // fix race condition that seems to only show up when loaded in the browser (not this was carried over from older loader so unsure if race condition still exists)
+        // note: this change should be ok even if nothing was wrong in the first place (just inits GOT.__heap_base)
+        (!GOT.__heap_base)&&GOTHandler.get(wasmImports, "__heap_base")
         GOT["__heap_base"].value = end
         return ret
     }, "getMemory")
