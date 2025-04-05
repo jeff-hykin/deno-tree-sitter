@@ -1,4 +1,4 @@
-import { Node } from "../tree_sitter/node.js"
+import { Node } from "./node_extended.js"
 
 export class BaseNode {
     // type = ""

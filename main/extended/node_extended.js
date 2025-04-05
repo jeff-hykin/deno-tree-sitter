@@ -350,3 +350,7 @@ class HardNode {
 
 // extend the Node class itself
 Object.assign(Node.prototype, HardNode.prototype)
+
+export {
+    Node
+}
