@@ -1,9 +1,13 @@
 import { Parser } from "../tree_sitter/parser.js"
 import { addSoftNodes } from "./add_soft_nodes.js"
 import "./node_extended.js" // note: redundant but might not be redundant in the future
-await Parser.init()
 
-export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=false }={}) {
+let hasBeenLoaded = false
+export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=false, moduleOptions }={}) {
+    if (!hasBeenLoaded) {
+        hasBeenLoaded = true
+        await Parser.init(moduleOptions)
+    }
     const language = await Parser.Language.load(wasmUint8ArrayOrFilePath)
     const parser = new Parser()
     parser.setLanguage(language)
