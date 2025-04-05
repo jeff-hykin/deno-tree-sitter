@@ -42,7 +42,62 @@ for (const eachFileName of sourceFileNames) {
     let data = await (await fetch(`https://raw.githubusercontent.com/tree-sitter/tree-sitter/refs/heads/master/lib/binding_web/src/${eachFileName}`)).arrayBuffer()
     data = new TextDecoder().decode(new Uint8Array(data))
     await FileSystem.write({
-        data: tsBlankSpace(data),
+        data: tsBlankSpace(data).replace(
+            // this is cause tsBlankSpace doesnt fully do it's job
+            /\bpublic(?= \w)/g,""
+        // these are because the tree sitter parser doesn't fully do its job marking things as type-imports instead of normal imports
+        ).replace(
+            /((?:import|export) *\{.* )ParseState,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )ParseOptions,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )Internal,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )Point,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )Edit,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )ParseCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )ProgressCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )LogCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )Range,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryCapture,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryOptions,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryState,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryProperties,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryPredicate,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )QueryMatch,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )CaptureQuantifier,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ).replace(
+            /((?:import|export) *\{.* )PredicateStep,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+            "$1$2"
+        ),
         path:`${srcParentPath}/${eachFileName.replace(/\.ts$/,".js")}`,
     })
 }
