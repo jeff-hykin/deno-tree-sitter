@@ -110,4 +110,10 @@ export class BaseNode {
             options
         )
     }
+    *iterFlattened() {
+        
+    }
+    flattened() {
+        return []
+    }
 }

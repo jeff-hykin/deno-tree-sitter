@@ -1,0 +1,1 @@
+- fix this.children sometimes not being iterable

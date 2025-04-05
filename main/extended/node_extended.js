@@ -1,9 +1,6 @@
 import { Node } from "../tree_sitter/node.js"
 import { BaseNode } from "./base_node.js"
 
-// force it to inherit from BaseNode
-Object.setPrototypeOf(Node.prototype, BaseNode)
-
 class HardNode {
     *traverse(arg = { _parentNodes: [] }) {
         const { _parentNodes } = arg
@@ -43,14 +40,14 @@ class HardNode {
                 if (filter(each)) {
                     yield each
                 }
-                for (const eachGrandChild of each.iterFlattened(filter)) {
+                for (const eachGrandChild of each.iterFlattened({filter})) {
                     yield each
                 }
             }
         } else {
             for (const each of this.children||[]) {
                 yield each
-                for (const eachGrandChild of each.iterFlattened()) {
+                for (const eachGrandChild of each.iterFlattened({filter})) {
                     yield each
                 }
             }
@@ -366,6 +363,8 @@ for (const each of Object.getOwnPropertyNames(HardNode.prototype)) {
         Node.prototype[each] = HardNode.prototype[each]
     }
 }
+// force it to inherit from BaseNode
+Object.setPrototypeOf(Node.prototype, BaseNode.prototype)
 
 export {
     Node
