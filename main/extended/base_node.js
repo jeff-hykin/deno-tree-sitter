@@ -1,4 +1,4 @@
-import { Node } from "./node_extended.js"
+import { Node } from "../tree_sitter/node.js"
 
 export class BaseNode {
     // type = ""
@@ -38,7 +38,7 @@ export class BaseNode {
     }
     
     get hardChildren() {
-        return this.children.filter(each=>each instanceof HardNode)
+        return this.children.filter(each=>each instanceof Node)
     }
 
     get fields() {

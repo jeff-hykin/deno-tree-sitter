@@ -12,7 +12,7 @@ class HardNode {
             yield [_parentNodes, this, "-"]
         } else {
             yield [_parentNodes, this, "->"]
-            for (const each of this.children) {
+            for (const each of this.children||[]) {
                 if (each instanceof Node) {
                     for (const eachInner of each.traverse({ _parentNodes: parentNodes })) {
                         yield eachInner
@@ -29,39 +29,50 @@ class HardNode {
     * A generator function that flattens the hierarchical structure of `children` and their descendants.
     * It yields each child and their flattened descendants recursively.
     *
-    * @param {Function} filter - A function to filter the flattened elements.
+    * @param {Function} opts.filter - A function to filter the flattened elements.
+    * @param {Boolean} opts.includeSelf - 
     * @generator
     * @yields {Node} The current child or grandchild in the structure.
     */
-    *iterFlatten(filter) {
+    *iterFlattened({filter, includeSelf=false}={}) {
+        if (includeSelf) {
+            yield this
+        }
         if (typeof filter == "function") {
-            for (const each of this.children) {
+            for (const each of this.children||[]) {
                 if (filter(each)) {
                     yield each
                 }
-                for (const eachGrandChild of each.flattened(filter)) {
+                for (const eachGrandChild of each.iterFlattened(filter)) {
                     yield each
                 }
             }
         } else {
-            for (const each of this.children) {
+            for (const each of this.children||[]) {
                 yield each
-                for (const eachGrandChild of each.flattened()) {
+                for (const eachGrandChild of each.iterFlattened()) {
                     yield each
                 }
             }
         }
+    }
+    iterFlatten() {
+        throw Error(`did you mean iterFlattened instead of iterFlatten?`)
     }
     
     /**
     * Flattens the structure of `children` using the provided filter function.
     * This method returns an array containing the flattened elements.
     *
-    * @param {Function} filter - A function to filter the flattened elements.
+    * @param {Function} opts.filter - A function to filter the flattened elements.
+    * @param {Boolean} opts.includeSelf - 
     * @returns {Array} An array containing the flattened elements that pass the filter.
     */
-    flatten(filter) {
-        return [...this.iterFlatten(filter)]
+    flattened({filter, includeSelf=false}={}) {
+        return [...this.iterFlattened({filter, includeSelf})]
+    }
+    flatten() {
+        throw Error(`did you mean flattened instead of flatten?`)
     }
     
     /**
@@ -305,7 +316,7 @@ class HardNode {
         if (!this._fields) {
             this._fields = {}
             let index = -1
-            for (let each of this.children) {
+            for (let each of this.children||[]) {
                 index++
                 const name = this.fieldNameForChild(index)
                 if (name) {
@@ -350,6 +361,11 @@ class HardNode {
 
 // extend the Node class itself
 Object.assign(Node.prototype, HardNode.prototype)
+for (const each of Object.getOwnPropertyNames(HardNode.prototype)) {
+    if (each!="constructor") {
+        Node.prototype[each] = HardNode.prototype[each]
+    }
+}
 
 export {
     Node

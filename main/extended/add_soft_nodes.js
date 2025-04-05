@@ -1,5 +1,6 @@
 import { WhitespaceNode } from "./whitespace_node.js"
 import { SoftTextNode } from "./soft_text_node.js"
+import { Node } from "./node_extended.js"
 
 // flatNodeList
 export const addSoftNodes = ({tree, string})=>{
@@ -9,7 +10,7 @@ export const addSoftNodes = ({tree, string})=>{
     // get the indent of the root
     let indent = rootNode.indent
     // mutate nodes
-    for (const eachNode of tree.rootNode.iterFlatten()) {
+    for (const eachNode of tree.rootNode.iterFlattened()) {
         if (eachNode.hasChildren) {
             const newChildren = []
             const childrenCopy = [...eachNode.children]
