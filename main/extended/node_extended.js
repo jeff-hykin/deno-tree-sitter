@@ -27,6 +27,45 @@ Object.assign(Node.prototype, {
     },
 
     /**
+    * A generator function that flattens the hierarchical structure of `children` and their descendants.
+    * It yields each child and their flattened descendants recursively.
+    *
+    * @param {Function} filter - A function to filter the flattened elements.
+    * @generator
+    * @yields {Node} The current child or grandchild in the structure.
+    */
+    *iterFlatten(filter) {
+        if (typeof filter == "function") {
+            for (const each of this.children) {
+                if (filter(each)) {
+                    yield each
+                }
+                for (const eachGrandChild of each.flattened(filter)) {
+                    yield each
+                }
+            }
+        } else {
+            for (const each of this.children) {
+                yield each
+                for (const eachGrandChild of each.flattened()) {
+                    yield each
+                }
+            }
+        }
+    },
+    
+    /**
+    * Flattens the structure of `children` using the provided filter function.
+    * This method returns an array containing the flattened elements.
+    *
+    * @param {Function} filter - A function to filter the flattened elements.
+    * @returns {Array} An array containing the flattened elements that pass the filter.
+    */
+    flatten(filter) {
+        return [...this.iterFlatten(filter)]
+    },
+    
+    /**
     * Query
     *
     * @example
