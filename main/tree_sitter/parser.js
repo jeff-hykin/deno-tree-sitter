@@ -1,8 +1,8 @@
-import { C, INTERNAL,    SIZE_OF_INT, SIZE_OF_RANGE, setModule } from "./constants.js";
-import { Language } from "./language.js";
-import { marshalRange, unmarshalRange } from "./marshal.js";
-import { checkModule, initializeBinding } from "./bindings.js";
-import { Tree } from "./tree.js";
+import { C, INTERNAL, SIZE_OF_INT, SIZE_OF_RANGE, setModule } from "./constants.js"
+import { Language } from "./language.js"
+import { marshalRange, unmarshalRange } from "./marshal.js"
+import { checkModule, initializeBinding } from "./bindings.js"
+import { Tree } from "./tree.js"
 
 /**
  * Options for parsing
@@ -15,55 +15,16 @@ import { Tree } from "./tree.js";
  *
  * See {@link Parser#parse} for more information.
  */
-;                              
-     
-                                           
-                                                                              
-    
-                                                                              
-                                                                      
-                                                                    
-                                                                       
-                                                            
-                                                                   
-                                                                        
-                                                                       
-                                          
-            
-                                                       
-        
-     
-                           
-
-     
-                                                                   
-                                                                          
-                                                                                
-                                                                                    
-                                                                                    
-                         
-     
-                                                 
- 
-
 /**
  * A stateful object that is passed into the progress callback {@link ParseOptions#progressCallback}
  * to provide the current state of the parser.
  */
-;                            
-                                                               
-                        
-
-                                                                              
-                    
- 
-
 /**
  * @internal
  *
  * Global variable for transferring data across the FFI boundary
  */
-export let TRANSFER_BUFFER        ;
+export let TRANSFER_BUFFER
 
 /**
  * The latest ABI version that is supported by the current version of the
@@ -74,252 +35,239 @@ export let TRANSFER_BUFFER        ;
  * The Tree-sitter library is generally backwards-compatible with languages
  * generated using older CLI versions, but is not forwards-compatible.
  */
-export let LANGUAGE_VERSION        ;
+export let LANGUAGE_VERSION
 
 /**
  * The earliest ABI version that is supported by the current version of the
  * library.
  */
-export let MIN_COMPATIBLE_VERSION        ;
+export let MIN_COMPATIBLE_VERSION
 
 /**
  * A stateful object that is used to produce a {@link Tree} based on some
  * source code.
  */
 export class Parser {
-  /** @internal */
-  ;       [0] = 0; // Internal handle for WASM
+    /** @internal */
+    [0] = 0; // Internal handle for WASM
 
-  /** @internal */
-  ;       [1] = 0; // Internal handle for WASM
+    /** @internal */
+    [1] = 0 // Internal handle for WASM
 
-  /** @internal */
-          logCallback                     = null;
+    /** @internal */
+    logCallback = null
 
-  /** The parser's current language. */
-  language                  = null;
+    /** The parser's current language. */
+    language = null
 
-  /**
-   * This must always be called before creating a Parser.
-   *
-   * You can optionally pass in options to configure the WASM module, the most common
-   * one being `locateFile` to help the module find the `.wasm` file.
-   */
-  static async init(moduleOptions                   ) {
-    setModule(await initializeBinding(moduleOptions));
-    TRANSFER_BUFFER = C._ts_init();
-    LANGUAGE_VERSION = C.getValue(TRANSFER_BUFFER, 'i32');
-    MIN_COMPATIBLE_VERSION = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, 'i32');
-  }
-
-  /**
-   * Create a new parser.
-   */
-  constructor() {
-    this.initialize();
-  }
-
-  /** @internal */
-  initialize() {
-    if (!checkModule()) {
-      throw new Error("cannot construct a Parser before calling `init()`");
-    }
-    C._ts_parser_new_wasm();
-    this[0] = C.getValue(TRANSFER_BUFFER, 'i32');
-    this[1] = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, 'i32');
-  }
-
-  /** Delete the parser, freeing its resources. */
-  delete() {
-    C._ts_parser_delete(this[0]);
-    C._free(this[1]);
-    this[0] = 0;
-    this[1] = 0;
-  }
-
-  /**
-   * Set the language that the parser should use for parsing.
-   *
-   * If the language was not successfully assigned, an error will be thrown.
-   * This happens if the language was generated with an incompatible
-   * version of the Tree-sitter CLI. Check the language's version using
-   * {@link Language#version} and compare it to this library's
-   * {@link LANGUAGE_VERSION} and {@link MIN_COMPATIBLE_VERSION} constants.
-   */
-  setLanguage(language                 )       {
-    let address        ;
-    if (!language) {
-      address = 0;
-      this.language = null;
-    } else if (language.constructor === Language) {
-      address = language[0];
-      const version = C._ts_language_version(address);
-      if (version < MIN_COMPATIBLE_VERSION || LANGUAGE_VERSION < version) {
-        throw new Error(
-          `Incompatible language version ${version}. ` +
-          `Compatibility range ${MIN_COMPATIBLE_VERSION} through ${LANGUAGE_VERSION}.`
-        );
-      }
-      this.language = language;
-    } else {
-      throw new Error('Argument must be a Language');
+    /**
+     * This must always be called before creating a Parser.
+     *
+     * You can optionally pass in options to configure the WASM module, the most common
+     * one being `locateFile` to help the module find the `.wasm` file.
+     */
+    static async init(moduleOptions) {
+        setModule(await initializeBinding(moduleOptions))
+        TRANSFER_BUFFER = C._ts_init()
+        LANGUAGE_VERSION = C.getValue(TRANSFER_BUFFER, "i32")
+        MIN_COMPATIBLE_VERSION = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32")
     }
 
-    C._ts_parser_set_language(this[0], address);
-    return this;
-  }
-
-  /**
-   * Parse a slice of UTF8 text.
-   *
-   * @param {string | ParseCallback} callback - The UTF8-encoded text to parse or a callback function.
-   *
-   * @param {Tree | null} [oldTree] - A previous syntax tree parsed from the same document. If the text of the
-   *   document has changed since `oldTree` was created, then you must edit `oldTree` to match
-   *   the new text using {@link Tree#edit}.
-   *
-   * @param {ParseOptions} [options] - Options for parsing the text.
-   *  This can be used to set the included ranges, or a progress callback.
-   *
-   * @returns {Tree | null} A {@link Tree} if parsing succeeded, or `null` if:
-   *  - The parser has not yet had a language assigned with {@link Parser#setLanguage}.
-   *  - The progress callback returned true.
-   */
-  parse(
-    callback                        ,
-    oldTree              ,
-    options               ,
-  )              {
-    if (typeof callback === 'string') {
-      C.currentParseCallback = (index        ) => callback.slice(index);
-    } else if (typeof callback === 'function') {
-      C.currentParseCallback = callback;
-    } else {
-      throw new Error('Argument must be a string or a function');
+    /**
+     * Create a new parser.
+     */
+    constructor() {
+        this.initialize()
     }
 
-    if (options?.progressCallback) {
-      C.currentProgressCallback = options.progressCallback;
-    } else {
-      C.currentProgressCallback = null;
+    /** @internal */
+    initialize() {
+        if (!checkModule()) {
+            throw new Error("cannot construct a Parser before calling `init()`")
+        }
+        C._ts_parser_new_wasm()
+        this[0] = C.getValue(TRANSFER_BUFFER, "i32")
+        this[1] = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32")
     }
 
-    if (this.logCallback) {
-      C.currentLogCallback = this.logCallback;
-      C._ts_parser_enable_logger_wasm(this[0], 1);
-    } else {
-      C.currentLogCallback = null;
-      C._ts_parser_enable_logger_wasm(this[0], 0);
+    /** Delete the parser, freeing its resources. */
+    delete() {
+        C._ts_parser_delete(this[0])
+        C._free(this[1])
+        this[0] = 0
+        this[1] = 0
     }
 
-    let rangeCount = 0;
-    let rangeAddress = 0;
-    if (options?.includedRanges) {
-      rangeCount = options.includedRanges.length;
-      rangeAddress = C._calloc(rangeCount, SIZE_OF_RANGE);
-      let address = rangeAddress;
-      for (let i = 0; i < rangeCount; i++) {
-        marshalRange(address, options.includedRanges[i]);
-        address += SIZE_OF_RANGE;
-      }
+    /**
+     * Set the language that the parser should use for parsing.
+     *
+     * If the language was not successfully assigned, an error will be thrown.
+     * This happens if the language was generated with an incompatible
+     * version of the Tree-sitter CLI. Check the language's version using
+     * {@link Language#version} and compare it to this library's
+     * {@link LANGUAGE_VERSION} and {@link MIN_COMPATIBLE_VERSION} constants.
+     */
+    setLanguage(language) {
+        let address
+        if (!language) {
+            address = 0
+            this.language = null
+        } else if (language.constructor === Language) {
+            address = language[0]
+            const version = C._ts_language_version(address)
+            if (version < MIN_COMPATIBLE_VERSION || LANGUAGE_VERSION < version) {
+                throw new Error(`Incompatible language version ${version}. ` + `Compatibility range ${MIN_COMPATIBLE_VERSION} through ${LANGUAGE_VERSION}.`)
+            }
+            this.language = language
+        } else {
+            throw new Error("Argument must be a Language")
+        }
+
+        C._ts_parser_set_language(this[0], address)
+        return this
     }
 
-    const treeAddress = C._ts_parser_parse_wasm(
-      this[0],
-      this[1],
-      oldTree ? oldTree[0] : 0,
-      rangeAddress,
-      rangeCount
-    );
+    /**
+     * Parse a slice of UTF8 text.
+     *
+     * @param {string | ParseCallback} callback - The UTF8-encoded text to parse or a callback function.
+     *
+     * @param {Tree | null} [oldTree] - A previous syntax tree parsed from the same document. If the text of the
+     *   document has changed since `oldTree` was created, then you must edit `oldTree` to match
+     *   the new text using {@link Tree#edit}.
+     *
+     * @param {ParseOptions} [options] - Options for parsing the text.
+     *  This can be used to set the included ranges, or a progress callback.
+     *
+     * @returns {Tree | null} A {@link Tree} if parsing succeeded, or `null` if:
+     *  - The parser has not yet had a language assigned with {@link Parser#setLanguage}.
+     *  - The progress callback returned true.
+     */
+    parse(callback, oldTree, options) {
+        if (typeof callback === "string") {
+            C.currentParseCallback = (index) => callback.slice(index)
+        } else if (typeof callback === "function") {
+            C.currentParseCallback = callback
+        } else {
+            throw new Error("Argument must be a string or a function")
+        }
 
-    if (!treeAddress) {
-      C.currentParseCallback = null;
-      C.currentLogCallback = null;
-      C.currentProgressCallback = null;
-      return null;
+        if (options?.progressCallback) {
+            C.currentProgressCallback = options.progressCallback
+        } else {
+            C.currentProgressCallback = null
+        }
+
+        if (this.logCallback) {
+            C.currentLogCallback = this.logCallback
+            C._ts_parser_enable_logger_wasm(this[0], 1)
+        } else {
+            C.currentLogCallback = null
+            C._ts_parser_enable_logger_wasm(this[0], 0)
+        }
+
+        let rangeCount = 0
+        let rangeAddress = 0
+        if (options?.includedRanges) {
+            rangeCount = options.includedRanges.length
+            rangeAddress = C._calloc(rangeCount, SIZE_OF_RANGE)
+            let address = rangeAddress
+            for (let i = 0; i < rangeCount; i++) {
+                marshalRange(address, options.includedRanges[i])
+                address += SIZE_OF_RANGE
+            }
+        }
+
+        const treeAddress = C._ts_parser_parse_wasm(this[0], this[1], oldTree ? oldTree[0] : 0, rangeAddress, rangeCount)
+
+        if (!treeAddress) {
+            C.currentParseCallback = null
+            C.currentLogCallback = null
+            C.currentProgressCallback = null
+            return null
+        }
+
+        if (!this.language) {
+            throw new Error("Parser must have a language to parse")
+        }
+
+        const result = new Tree(INTERNAL, treeAddress, this.language, C.currentParseCallback)
+        C.currentParseCallback = null
+        C.currentLogCallback = null
+        C.currentProgressCallback = null
+        return result
     }
 
-    if (!this.language) {
-      throw new Error('Parser must have a language to parse');
+    /**
+     * Instruct the parser to start the next parse from the beginning.
+     *
+     * If the parser previously failed because of a timeout, cancellation,
+     * or callback, then by default, it will resume where it left off on the
+     * next call to {@link Parser#parse} or other parsing functions.
+     * If you don't want to resume, and instead intend to use this parser to
+     * parse some other document, you must call `reset` first.
+     */
+    reset() {
+        C._ts_parser_reset(this[0])
     }
 
-    const result = new Tree(INTERNAL, treeAddress, this.language, C.currentParseCallback);
-    C.currentParseCallback = null;
-    C.currentLogCallback = null;
-    C.currentProgressCallback = null;
-    return result;
-  }
+    /** Get the ranges of text that the parser will include when parsing. */
+    getIncludedRanges() {
+        C._ts_parser_included_ranges_wasm(this[0])
+        const count = C.getValue(TRANSFER_BUFFER, "i32")
+        const buffer = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, "i32")
+        const result = new Array(count)
 
-  /**
-   * Instruct the parser to start the next parse from the beginning.
-   *
-   * If the parser previously failed because of a timeout, cancellation,
-   * or callback, then by default, it will resume where it left off on the
-   * next call to {@link Parser#parse} or other parsing functions.
-   * If you don't want to resume, and instead intend to use this parser to
-   * parse some other document, you must call `reset` first.
-   */
-  reset()       {
-    C._ts_parser_reset(this[0]);
-  }
+        if (count > 0) {
+            let address = buffer
+            for (let i = 0; i < count; i++) {
+                result[i] = unmarshalRange(address)
+                address += SIZE_OF_RANGE
+            }
+            C._free(buffer)
+        }
 
-  /** Get the ranges of text that the parser will include when parsing. */
-  getIncludedRanges()          {
-    C._ts_parser_included_ranges_wasm(this[0]);
-    const count = C.getValue(TRANSFER_BUFFER, 'i32');
-    const buffer = C.getValue(TRANSFER_BUFFER + SIZE_OF_INT, 'i32');
-    const result = new Array       (count);
-
-    if (count > 0) {
-      let address = buffer;
-      for (let i = 0; i < count; i++) {
-        result[i] = unmarshalRange(address);
-        address += SIZE_OF_RANGE;
-      }
-      C._free(buffer);
+        return result
     }
 
-    return result;
-  }
-
-  /**
-   * @deprecated since version 0.25.0, prefer passing a progress callback to {@link Parser#parse}
-   *
-   * Get the duration in microseconds that parsing is allowed to take.
-   *
-   * This is set via {@link Parser#setTimeoutMicros}.
-   */
-  getTimeoutMicros()         {
-    return C._ts_parser_timeout_micros(this[0]);
-  }
-
-  /**
-   * @deprecated since version 0.25.0, prefer passing a progress callback to {@link Parser#parse}
-   *
-   * Set the maximum duration in microseconds that parsing should be allowed
-   * to take before halting.
-   *
-   * If parsing takes longer than this, it will halt early, returning `null`.
-   * See {@link Parser#parse} for more information.
-   */
-  setTimeoutMicros(timeout        )       {
-    C._ts_parser_set_timeout_micros(this[0], 0, timeout);
-  }
-
-  /** Set the logging callback that a parser should use during parsing. */
-  setLogger(callback                              )       {
-    if (!callback) {
-      this.logCallback = null;
-    } else if (typeof callback !== 'function') {
-      throw new Error('Logger callback must be a function');
-    } else {
-      this.logCallback = callback;
+    /**
+     * @deprecated since version 0.25.0, prefer passing a progress callback to {@link Parser#parse}
+     *
+     * Get the duration in microseconds that parsing is allowed to take.
+     *
+     * This is set via {@link Parser#setTimeoutMicros}.
+     */
+    getTimeoutMicros() {
+        return C._ts_parser_timeout_micros(this[0])
     }
-    return this;
-  }
 
-  /** Get the parser's current logger. */
-  getLogger()                     {
-    return this.logCallback;
-  }
+    /**
+     * @deprecated since version 0.25.0, prefer passing a progress callback to {@link Parser#parse}
+     *
+     * Set the maximum duration in microseconds that parsing should be allowed
+     * to take before halting.
+     *
+     * If parsing takes longer than this, it will halt early, returning `null`.
+     * See {@link Parser#parse} for more information.
+     */
+    setTimeoutMicros(timeout) {
+        C._ts_parser_set_timeout_micros(this[0], 0, timeout)
+    }
+
+    /** Set the logging callback that a parser should use during parsing. */
+    setLogger(callback) {
+        if (!callback) {
+            this.logCallback = null
+        } else if (typeof callback !== "function") {
+            throw new Error("Logger callback must be a function")
+        } else {
+            this.logCallback = callback
+        }
+        return this
+    }
+
+    /** Get the parser's current logger. */
+    getLogger() {
+        return this.logCallback
+    }
 }
