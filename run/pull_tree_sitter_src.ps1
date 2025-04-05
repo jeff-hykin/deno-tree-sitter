@@ -6,6 +6,8 @@ import { FileSystem } from "https://deno.land/x/quickr@0.7.6/main/file_system.js
 import { Console, bold, lightRed, yellow } from "https://deno.land/x/quickr@0.7.6/main/console.js"
 import $ from "https://deno.land/x/dax@0.39.2/mod.ts"
 import { pureBinaryify } from "https://deno.land/x/binaryify@2.5.5.0/tools.js"
+import { toEsm } from "https://deno.land/x/to_esm@0.0.4.0/main/impure_api.js"
+
 
 const deno = Deno.execPath()
 // 
@@ -21,7 +23,7 @@ if (!versionMatch || !versionMatch[1]) {
 // 
 // get all the source files
 // 
-for (const eachFileName of [
+const sourceFileNames = [
     "bindings.ts",
     "constants.ts",
     "index.ts",
@@ -33,13 +35,45 @@ for (const eachFileName of [
     "query.ts",
     "tree.ts",
     "tree_cursor.ts",
-]) {
+]
+const srcParentPath = `${FileSystem.thisFolder}/../main/tree_sitter/`
+for (const eachFileName of sourceFileNames) {
     // https://raw.githubusercontent.com/tree-sitter/tree-sitter/refs/heads/master/lib/binding_web/src/index.ts
     let data = await (await fetch(`https://raw.githubusercontent.com/tree-sitter/tree-sitter/refs/heads/master/lib/binding_web/src/${eachFileName}`)).arrayBuffer()
     data = new Uint8Array(data)
     await FileSystem.write({
         data,
-        path:`${FileSystem.thisFolder}/../main/tree_sitter/${eachFileName}`,
+        path:`${srcParentPath}/${eachFileName}`,
+    })
+}
+
+// 
+// fix the import paths (they're not fully qualified)
+// 
+for (const eachFileName of sourceFileNames) {
+    const eachPath = `${srcParentPath}/${eachFileName}`
+    await FileSystem.write({
+        path: eachPath,
+        data: await toEsm({
+            path: eachPath, 
+            // customConverter: (importPathString, path) => {
+            //     // convert all npm stuff to esm.sh
+            //     if (importPathString.startsWith("npm:")) {
+            //         return JSON.stringify("https://esm.sh/${importPathString.slice(4)}")
+            //     }
+            //     if (importPathString === "b") {
+            //         return JSON.stringify("https://deno.land/x/a@1.2.3/mod.js")+" // CHECKME "
+            //     } 
+            // },
+            // if you want to hack an edge case for your own project
+            handleUnhandlable: (requireArgs, statementText, statement) => {
+                // if the require args are "b" or 'b'
+                // if (requireArgs.match(/("|')b(\1)/)) {
+                //     return `import { a } from "https://deno.land/x/a@1.2.3/mod.js" // CHECKME`
+                // }
+                console.debug(`requireArgs is:`,requireArgs)
+            },
+        }),
     })
 }
 
@@ -47,20 +81,20 @@ for (const eachFileName of [
 // 
 // get the wasm
 // 
-// fetch(`https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`)
-let url = `https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`
-let data
-try {
-    data = await (await fetch(url)).arrayBuffer()
-} catch (error) {
-    throw Error(`I tried to download the wasm file for the tree sitter version ${version}, but it failed. Make sure the URL exists: ${url}`)
-}
+    // // fetch(`https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`)
+    // let url = `https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`
+    // let data
+    // try {
+    //     data = await (await fetch(url)).arrayBuffer()
+    // } catch (error) {
+    //     throw Error(`I tried to download the wasm file for the tree sitter version ${version}, but it failed. Make sure the URL exists: ${url}`)
+    // }
 
-// const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
-const treeSitterWasmPath = `${FileSystem.thisFolder}/../main/tree_sitter_wasm.js`
-FileSystem.write({
-    path: treeSitterWasmPath,
-    data: pureBinaryify(data),
-})
+    // // const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
+    // const treeSitterWasmPath = `${FileSystem.thisFolder}/../main/tree_sitter_wasm.js`
+    // FileSystem.write({
+    //     path: treeSitterWasmPath,
+    //     data: pureBinaryify(data),
+    // })
 
 // (this comment is part of deno-guillotine, dont remove) #>
