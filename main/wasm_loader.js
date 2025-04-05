@@ -2,6 +2,7 @@
     // unlike the normal tree sitter code, this code allows for arguments to be given
     // which allows it to be run on Deno, Web, Webworkers, and Node
     // there is no platform-dependant code in here
+
 const __name = (thing, name)=>thing
 const defaults = {
         arguments: [],
@@ -1411,11 +1412,11 @@ export default async function (Module) {
                 // 
                 if (!instantiationResult) {
                     try {
-                        var binaryArray
+                        var binaryArray = wasmBinary
                         // 
                         // get binary async
                         // 
-                        if (!wasmBinary) { // argument of main function
+                        if (!binaryArray) { // argument of main function
                             try {
                                 binaryArray = new Uint8Array(
                                     await readAsync(binaryFilePath)
