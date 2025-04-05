@@ -4,8 +4,7 @@ import { BaseNode } from "./base_node.js"
 // force it to inherit from BaseNode
 Object.setPrototypeOf(Node.prototype, BaseNode)
 
-// extend the Node class itself
-Object.assign(Node.prototype, {
+class HardNode {
     *traverse(arg = { _parentNodes: [] }) {
         const { _parentNodes } = arg
         const parentNodes = [this, ..._parentNodes]
@@ -14,7 +13,7 @@ Object.assign(Node.prototype, {
         } else {
             yield [_parentNodes, this, "->"]
             for (const each of this.children) {
-                if (each instanceof HardNode) {
+                if (each instanceof Node) {
                     for (const eachInner of each.traverse({ _parentNodes: parentNodes })) {
                         yield eachInner
                     }
@@ -24,7 +23,7 @@ Object.assign(Node.prototype, {
             }
             yield [_parentNodes, this, "<-"]
         }
-    },
+    }
 
     /**
     * A generator function that flattens the hierarchical structure of `children` and their descendants.
@@ -52,7 +51,7 @@ Object.assign(Node.prototype, {
                 }
             }
         }
-    },
+    }
     
     /**
     * Flattens the structure of `children` using the provided filter function.
@@ -63,7 +62,7 @@ Object.assign(Node.prototype, {
     */
     flatten(filter) {
         return [...this.iterFlatten(filter)]
-    },
+    }
     
     /**
     * Query
@@ -151,7 +150,7 @@ Object.assign(Node.prototype, {
         const realMaxResultDepth = maxResultDepth == null ? Infinity : maxResultDepth
         const result = this.tree.language.query(queryString).matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
         return result.filter((each) => each.captures.every((each) => each.node.depth - this.depth <= realMaxResultDepth))
-    },
+    }
     /**
     * quickQuery
     *
@@ -266,7 +265,7 @@ Object.assign(Node.prototype, {
                 getPrototypeOf: Reflect.getPrototypeOf,
             })
         })
-    },
+    }
     /**
     * quickQueryFirst
     *
@@ -301,7 +300,7 @@ Object.assign(Node.prototype, {
     */
     quickQueryFirst(queryString, options) {
         return this.quickQuery(queryString, { ...options, matchLimit: 1 })[0]
-    },
+    }
     get fields() {
         if (!this._fields) {
             this._fields = {}
@@ -315,10 +314,10 @@ Object.assign(Node.prototype, {
             }
         }
         return this._fields
-    },
+    }
     get fieldNames() {
         return Object.keys(this.fields)
-    },
+    }
     // while gutWith has every reason to work, I think something with tree sitter internals causes it not to work. May not play nice with SoftNodes either so its disabled for now
     // gutWith(stringOrNode) {
     //     const oldTree = this.tree
@@ -346,5 +345,8 @@ Object.assign(Node.prototype, {
     //         oldEndPosition: originalEnd,
     //         newEndPosition: { row: newEndRow, column: originalStart.column + addedLines } 
     //     })
-    // },
-})
+    // }
+}
+
+// extend the Node class itself
+Object.assign(Node.prototype, HardNode.prototype)
