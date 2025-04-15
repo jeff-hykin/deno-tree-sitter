@@ -1696,12 +1696,12 @@ import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to
                 stringOrNode = stringOrNode?.text||""
             }
             const addedLines = stringOrNode.match(/\n/g)?.length || 0
-            
             let newEndRow = originalStart.row
+            let newEndCol = originalStart.column // <-- column is actually the character in line
             if (addedLines == 0) {
-                newEndRow = originalStart.row + stringOrNode.length
+                newEndCol = originalStart.row + stringOrNode.length
             } else {
-                newEndRow = stringOrNode.split("\n").slice(-1)[0].length
+                newEndCol = stringOrNode.split("\n").slice(-1)[0].length
             }
             const newString = this.tree.string.slice(0, originalStartIndex) + stringOrNode + this.tree.string.slice(originalEndIndex) 
             // update the .text of all the nodes
@@ -1713,7 +1713,7 @@ import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to
                 newEndIndex: originalStartIndex + stringOrNode.length,
                 startPosition: originalStart,
                 oldEndPosition: originalEnd,
-                newEndPosition: { row: newEndRow, column: originalStart.column + addedLines } 
+                newEndPosition: { row: originalStart.row + addedLines, column: newEndCol } 
             })
         }
         get fields() {
