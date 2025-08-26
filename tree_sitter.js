@@ -121,9 +121,80 @@ import { toRepresentation } from "https://deno.land/x/good@1.14.2.1/flattened/to
 // all the wasm setup stuff
 // 
 // 
+    import { getTracePaths } from 'https://esm.sh/gh/jeff-hykin/good-js@1.17.0.0/source/flattened/get_trace_paths.js'
+    import { pathPieces } from 'https://esm.sh/gh/jeff-hykin/good-js@1.17.0.0/source/flattened/path_pieces.js'
+
+    function thisFile(){
+        try {
+            const paths = getTracePaths().slice(1) // first element is this path (file_system.js)
+            // we only want real file paths
+            const urlLikes = paths.filter(each=>each.match(/^(file|ftp|ipfs|https?):\/\//))
+            for (let each of urlLikes) {
+                // if url, then return basename
+                if (!each.startsWith("file://")) {
+                    try {
+                        return (new URL(each)).pathname
+                    } catch (error) {
+                        // this shouldn't ever happen, but just in case
+                        return each
+                    }
+                // if file://
+                } else {
+                    // NOTE: even though these look like URL's they are not
+                    // Deno (at least as of 2.2.11) doesnt escape any characters, like hashes or spaces or newlines in this URL-looking path
+                    each = each.slice(7) // remove "file://"
+                    // NOTE: a hash postfix can be present at the end, and its impossible to know if its part of the file name
+                    // so we assume it is, and check if the file exists
+                    // ex: as an import the # needs to be escaped as %23,
+                    // for example: import "./quickr/test%23a/file%23thing.js#thing"
+                    // but it will be outputed here as: "file:///Users/username/repos/quickr/test#a/file#thing.js#thing"
+                    // same with ?
+                    // that said, we know the path needs to end with .js/.ts
+                    // so, if it doesn't, we can be confident the # is a query system
+                    // NOTE: this system is not (cannot be) bulletproof
+                    const [ folders, itemName, itemExtensionWithDot ] = pathPieces(each)
+                    const parentPath = Path.join(...folders)
+                    let name = itemName+itemExtensionWithDot
+                    while (name.match(/#|\?/)) {
+                        const isDefinitelyExtra = name.match(/(#|\?)[^#\?]*$(?<!\.(js|ts|jsx|tsx|mjs|wasm|json|jsonc|cjs))/)
+                        if (!isDefinitelyExtra) {
+                            name = name.slice(0,isDefinitelyExtra.index)
+                            continue
+                        }
+                        const actualPath = `${parentPath}/${name}`
+                        try {
+                            if (Deno.statSync(actualPath).isFile) {
+                                return actualPath
+                            }
+                        } catch (error) {}
+                        // shave off one at the end
+                        name = name.split(/(?=#|\?)/g).slice(0,-1).join("")
+                    }
+                    // final check (all #'s removed)
+                    const actualPath = `${parentPath}/${name}`
+                    try {
+                        if (Deno.statSync(actualPath).isFile) {
+                            return actualPath
+                        }
+                    } catch (error) {}
+                }
+            }
+            // none of them worked, fallback on first entry
+            if (paths.length>0) {
+                return paths[0]
+            }
+            // none of them worked
+            return "<unknown>"
+        } catch (error) {
+            return "<unknown>"
+        }
+    }
     import uint8ArrayOfWasmTreeSitter from "./tree_sitter.wasm.binaryified.js"
     // https://esm.sh/v135/web-tree-sitter@0.22.5/denonext/web-tree-sitter.mjs
-    var __Process$ = { versions: { node: "1" }, argv: [import.meta.href] }
+    var __Process$ = { versions: { node: "1" }, argv: [
+        // import.meta.href
+        thisFile(), // import.meta doesn't work in all contexts, and because its sytnax it can't be patched easily
+    ] }
     const fs = {
         readFileSync(e) {
         },
