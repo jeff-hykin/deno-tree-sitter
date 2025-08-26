@@ -41,14 +41,14 @@ class HardNode {
                     yield each
                 }
                 for (const eachGrandChild of each.iterFlattened({filter})) {
-                    yield each
+                    yield eachGrandChild
                 }
             }
         } else {
             for (const each of this.children||[]) {
                 yield each
                 for (const eachGrandChild of each.iterFlattened({filter})) {
-                    yield each
+                    yield eachGrandChild
                 }
             }
         }
