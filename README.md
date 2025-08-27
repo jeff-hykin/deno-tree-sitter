@@ -211,9 +211,9 @@ import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languag
 const parser = await parserFromWasm(javascript)
 const tree = parser.parse({string: 'let x = 1;', withWhitespace: true })
 // NOTE:
-    // 1. theres 1 edgecase: the root node will have a rootLeadingWhitespace attribute
-    //    because there isn't a practical way of inserting a whitespace node infront of the
-    //    root node. (But whitespace can appead infront of the root node)
+    // 1. there is 1 edgecase: the root node will have a rootLeadingWhitespace attribute
+    //    because there isn't a practical way of inserting a whitespace node in front of the
+    //    root node. (But whitespace can appear in front of the root node)
     // 2. the rest of the tree will contain whitespace nodes
     // 3. existing nodes will have an "indent" attribute
     //    Every node on an indented line has the non-empty indent value, not just the first node
