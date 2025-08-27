@@ -33,20 +33,18 @@ export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=fal
 // parser class
 // 
 const realParseFunction = Parser.prototype.parse
-Parser.prototype.parse = function(codeOrCallback, oldTree, options) {
-    let tree
-    if (this.disableSoftNodes) {
-        tree = realParseFunction.apply(this, [codeOrCallback, oldTree, options])
-        tree._codeOrCallback = codeOrCallback
-    } else {
-        // tree sitter allows this (not me)
-        let string = codeOrCallback
-        if (typeof codeOrCallback == "function") {
-            string = codeOrCallback()
-        }
-        tree = realParseFunction.apply(this, [codeOrCallback, oldTree, options])
-        tree._codeOrCallback = codeOrCallback
-        tree._enableSoftNodes = true
+Parser.prototype.parse = function(code, oldTree, options) {
+    if (typeof code == "function") {
+        console.warn("When calling .parse() the source code was a function instead of a string. The original tree sitter supports giving a function as a means of supporting edits (see: https://github.com/tree-sitter/tree-sitter/discussions/2553 ).\nHowever, this library supports edits directly (use node.replaceInnards(``))\nThe downside of making edits easy is that .parse() doesn't really accept a function argument. I'm just going to evaluate that function to grab the string once at the beginning. Use tree.codeString if you want to get the full string after a .replaceInnards() call.")
+        code = code(0)
     }
+    const tree = realParseFunction.apply(this, [
+        (index)=>(code||tree.codeString).slice(index),
+        oldTree,
+        options
+    ])
+    tree.codeString = code
+    code = null
+    tree._enableSoftNodes = !this.disableSoftNodes
     return tree
 }

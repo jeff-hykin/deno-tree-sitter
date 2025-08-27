@@ -1,59 +1,123 @@
 should be "function" : function
-before gutting: <program text="function thing(arg1) {\n            let a = 10\n        }\n    " indent=undefined />
-    <function_declaration text="function thing(arg1) {\n            let a = 10\n        }" indent=undefined />
+should be "10" : {
+  "": "10",
+  type: "number",
+  typeId: 109,
+  fieldNames: [],
+  startPosition: { row: 2, column: 16 },
+  startIndex: 44,
+  endPosition: { row: 2, column: 18 },
+  endIndex: 46,
+  indent: "        ",
+  hasChildren: false,
+  children: []
+}
+should be "=" : {
+  "": "=",
+  type: "=",
+  typeId: 39,
+  fieldNames: [],
+  startPosition: { row: 2, column: 14 },
+  startIndex: 42,
+  endPosition: { row: 2, column: 15 },
+  endIndex: 43,
+  indent: "        ",
+  hasChildren: false,
+  children: []
+}
+before gutting: <program text="function thing(arg1) {\n        let a = 10\n    }\n" />
+    <function_declaration text="function thing(arg1) {\n        let a = 10\n    }" />
         <function text="function" />
+        </function>
+        <whitespace text=" " />
         <identifier text="thing" />
-        <formal_parameters text="(arg1)" indent=undefined />
+        </identifier>
+        <formal_parameters text="(arg1)" />
             <"(" text="(" />
+            </"(">
             <identifier text="arg1" />
+            </identifier>
             <")" text=")" />
+            </")">
         </formal_parameters>
-        <statement_block text="{\n            let a = 10\n        }" indent=undefined />
+        <whitespace text=" " />
+        <statement_block text="{\n        let a = 10\n    }" />
             <"{" text="{" />
-            <lexical_declaration text="let a = 10" indent=undefined />
+            </"{">
+            <whitespace text="\n        " />
+            <lexical_declaration text="let a = 10" />
                 <let text="let" />
-                <variable_declarator text="a = 10" indent=undefined />
+                </let>
+                <whitespace text=" " />
+                <variable_declarator text="a = 10" />
                     <identifier text="a" />
+                    </identifier>
+                    <whitespace text=" " />
                     <"=" text="=" />
+                    </"=">
+                    <whitespace text=" " />
                     <number text="10" />
+                    </number>
                 </variable_declarator>
             </lexical_declaration>
+            <whitespace text="\n    " />
             <"}" text="}" />
+            </"}">
         </statement_block>
     </function_declaration>
+    <whitespace text="\n" />
 </program>
 
-tree.string is: 
-        function thing(arg1) {
-            let a = 10
-        }
-    
-after gutting: <program text="async function thing(arg1) {\n            let a = 10\n        }\n    " indent=undefined />
-    <function_declaration text="async function thing(arg1) {\n            let a = 10\n        }" indent=undefined />
+tree.codeString is: 
+    function thing(arg1) {
+        let a = 10
+    }
+
+after gutting: <program text="async function thing(arg1) {\n        let a += 999\n    }\n" />
+    <function_declaration text="async function thing(arg1) {\n        let a += 999\n    }" />
         <function text="async function" />
+        </function>
+        <whitespace text=" " />
         <identifier text="thing" />
-        <formal_parameters text="(arg1)" indent=undefined />
+        </identifier>
+        <formal_parameters text="(arg1)" />
             <"(" text="(" />
+            </"(">
             <identifier text="arg1" />
+            </identifier>
             <")" text=")" />
+            </")">
         </formal_parameters>
-        <statement_block text="{\n            let a = 10\n        }" indent=undefined />
+        <whitespace text=" " />
+        <statement_block text="{\n        let a += 999\n    }" />
             <"{" text="{" />
-            <lexical_declaration text="let a = 10" indent=undefined />
+            </"{">
+            <whitespace text="\n        " />
+            <lexical_declaration text="let a += 999" />
                 <let text="let" />
-                <variable_declarator text="a = 10" indent=undefined />
+                </let>
+                <whitespace text=" " />
+                <variable_declarator text="a += 999" />
                     <identifier text="a" />
-                    <"=" text="=" />
-                    <number text="10" />
+                    </identifier>
+                    <whitespace text=" " />
+                    <"=" text="+=" />
+                    </"=">
+                    <whitespace text=" " />
+                    <number text="999" />
+                    </number>
                 </variable_declarator>
             </lexical_declaration>
+            <whitespace text="\n    " />
             <"}" text="}" />
+            </"}">
         </statement_block>
     </function_declaration>
+    <whitespace text="\n" />
 </program>
 
-tree.string is: 
-        async function thing(arg1) {
-            let a = 10
-        }
-    
+tree.codeString is: 
+    async function thing(arg1) {
+        let a += 999
+    }
+

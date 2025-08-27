@@ -8,22 +8,13 @@ import { _getQueryCaptureTargets } from "../extras/misc.js"
 const originalChildrenGetter = Object.getOwnPropertyDescriptor(Node.prototype, "children").get
 
 class HardNode {
-    get _treeSource() {
-        if (typeof this.tree?._codeOrCallback == "string") {
-            return this.tree._codeOrCallback
-        } else if (typeof this.tree?._codeOrCallback == "function") {
-            return this.tree._codeOrCallback()
-        }
-    }
-
     get children() {
         if (!this._children) {
             // will set this._children
             this._children = originalChildrenGetter.call(this)
             // add soft nodes if needed
-            const source = this._treeSource
-            if (typeof source == "string" && this.tree._enableSoftNodes) {
-                this._children = _childrenWithSoftNodes(this, this._children, source)
+            if (this.tree._enableSoftNodes) {
+                this._children = _childrenWithSoftNodes(this, this._children, this.tree.codeString)
             }
         }
         return this._children
@@ -35,8 +26,8 @@ class HardNode {
 
     get rootLeadingWhitespace() {
         // only works for the root node, and only if the tree's source is a string
-        if (this.parent == null && typeof this.tree?._codeOrCallback == "string") {
-            return this.tree._codeOrCallback.slice(0,this.startIndex)
+        if (this.parent == null && typeof this.tree?.code == "string") {
+            return this.tree.codeString.slice(0,this.startIndex)
         }
     }
 
@@ -205,7 +196,7 @@ class HardNode {
         }
         const result = query.matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
         const results = result.filter((each) => each.captures.every((each) => each.node.depth - this.depth <= realMaxResultDepth))
-        const codeOrCallback = this.tree._codeOrCallback
+        const codeOrCallback = this.tree.codeString
         // without this soft nodes will be missing
         for (const eachResult of results) {
             for (const eachCapture of eachResult.captures) {
@@ -329,34 +320,40 @@ class HardNode {
     get fieldNames() {
         return Object.keys(this.fields)
     }
-    // while gutWith has every reason to work, I think something with tree sitter internals causes it not to work. May not play nice with SoftNodes either so its disabled for now
-    // gutWith(stringOrNode) {
-    //     const oldTree = this.tree
-    //     const { startPosition: originalStart, endPosition: originalEnd, startIndex: originalStartIndex, endIndex: originalEndIndex } = this
-    //     if (typeof stringOrNode != "string") {
-    //         stringOrNode = stringOrNode?.text||""
-    //     }
-    //     const addedLines = stringOrNode.match(/\n/g)?.length || 0
-        
-    //     let newEndRow = originalStart.row
-    //     if (addedLines == 0) {
-    //         newEndRow = originalStart.row + stringOrNode.length
-    //     } else {
-    //         newEndRow = stringOrNode.split("\n").slice(-1)[0].length
-    //     }
-    //     const newString = this.tree.string.slice(0, originalStartIndex) + stringOrNode + this.tree.string.slice(originalEndIndex) 
-    //     // update the .text of all the nodes
-    //     this.tree.string = newString
-    //     // update all the indices
-    //     oldTree.edit({
-    //         startIndex: originalStartIndex,
-    //         oldEndIndex: originalEndIndex,
-    //         newEndIndex: originalStartIndex + stringOrNode.length,
-    //         startPosition: originalStart,
-    //         oldEndPosition: originalEnd,
-    //         newEndPosition: { row: newEndRow, column: originalStart.column + addedLines } 
-    //     })
-    // }
+
+    replaceInnards(replacement) {
+        const tree = this.tree
+        const sourceCode = this.tree.codeString
+        const node = this
+        // get the node position info
+        const {
+            startPosition: originalStart,
+            endPosition: originalEnd,
+            startIndex: originalStartIndex,
+            endIndex: originalEndIndex,
+        } = node
+
+        // compute what the new row-column will be
+        const newNumberOfLines = replacement.match(/\n/g)?.length || 0
+        let newEndCol = originalStart.column;
+        if (newNumberOfLines == 0) {
+            newEndCol = originalStart.column + replacement.length
+        } else {
+            newEndCol = replacement.split("\n").slice(-1)[0].length
+        }
+
+        // updates all the indices of all the nodes
+        tree.edit({
+            startIndex: originalStartIndex,
+            oldEndIndex: originalEndIndex,
+            newEndIndex: originalStartIndex + replacement.length,
+            startPosition: originalStart,
+            oldEndPosition: originalEnd,
+            newEndPosition: { row: originalStart.row + newNumberOfLines, column: newEndCol },
+        })
+
+        this.tree.codeString = sourceCode.slice(0, originalStartIndex) + replacement + sourceCode.slice(originalEndIndex)
+    }
 }
 
 // patch Node with all HardNode properties
