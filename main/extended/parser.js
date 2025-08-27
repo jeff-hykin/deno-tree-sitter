@@ -1,7 +1,9 @@
+import { Node } from "../tree_sitter/node.js"
 import { Tree } from "../tree_sitter/tree.js"
 import { Parser } from "../tree_sitter/parser.js"
 import { Language } from "../tree_sitter/language.js"
 import "./node_extended.js" // note: redundant but might not be redundant in the future
+import { _shadows, _childrenWithSoftNodes } from "./node_extended.js"
 
 const langCache = new Map()
 let hasBeenLoaded = false
@@ -45,6 +47,53 @@ export async function createParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=
 }
 
 const realParseFunction = Parser.prototype.parse
+
+const realRootNodeGetter = Object.getOwnPropertyDescriptor(Tree.prototype, "rootNode").get
+// 
+// complicated override in order to make the root node pretend to contain soft nodes (ex: leading and trailing whitespace)
+// 
+Object.defineProperty(Tree.prototype, "rootNode", {
+    get() {
+        const rootNode = realRootNodeGetter.call(this)
+        const rootShadow = {}
+        Object.setPrototypeOf(rootShadow, Object.getPrototypeOf(rootNode))
+        const descriptors = Object.assign(Object.getOwnPropertyDescriptors(Node.prototype), Object.getOwnPropertyDescriptors(rootNode))
+        const newDescriptors = {}
+        for (const [key, setting] of Object.entries(descriptors)) {
+            if (key == "startIndex" || key == "startPosition") {
+                continue
+            } else if (key == "text" || key == "replaceInnards") {
+                // use the faked .startIndex for these methods/getters
+                newDescriptors[key] = setting
+            } else {
+                // use the real .startIndex for these methods/getters (get it from the real thing)
+                // (otherwise stuff breaks when there is a whitespace prefix)
+                newDescriptors[key] = {
+                    get: ()=>{
+                        const output = rootNode[key]
+                        if (typeof output == "function") {
+                            return (...args)=>output.apply(rootNode, args)
+                        }
+                        return output
+                    },
+                    set: (value)=>rootNode[key] = value,
+                    enumerable: setting.enumerable,    
+                    configurable: setting.configurable,
+                }
+            }
+        }
+        Object.setPrototypeOf(rootShadow, Node.prototype)
+        Object.defineProperties(rootShadow, newDescriptors)
+        rootShadow.startIndex = 0
+        rootShadow.startPosition = { row: 0, column: 0 }
+        // if the original file is just whitespace or non-matched text, then fill it with soft nodes even though it'd normally have no children
+        if (rootShadow.children == null && rootShadow.endIndex != 0) {
+            rootShadow._children = _childrenWithSoftNodes(rootShadow, [{startIndex: rootShadow.endIndex, endIndex: rootShadow.endIndex, endPosition: rootShadow.endPosition}], rootNode.tree.codeString).slice(0,-1)
+        }
+        _shadows[rootNode.id] = rootShadow
+        return rootShadow
+    }
+})
 
 /**
  * Parse a slice of UTF8 text.

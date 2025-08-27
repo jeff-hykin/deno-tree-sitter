@@ -1,4 +1,4 @@
-export { newParser } from "./extended/parser.js"
+export { createParser } from "./extended/parser.js"
 export { BaseNode } from "./extended/base_node.js"
 export { Node } from "./extended/node_extended.js"
 export { SoftNode } from "./extended/soft_node.js"
