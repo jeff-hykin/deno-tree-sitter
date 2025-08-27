@@ -50,7 +50,7 @@ export class BaseNode {
     }
     
     get indent() {
-        return this.tree.code.match(new RegExp(`^(?:.*\\r?\\n){${this.startPosition.row}}\\s*`))[0]
+        return this.tree.code.match(new RegExp(`^(?:.*\\r?\\n){${this.startPosition.row}}(\\s*)`))[1]
         // equivalent but usually faster than:
         // return this.tree.code.split("\n")[this.startPosition.row].match(/^\s*/)[0]
     }
