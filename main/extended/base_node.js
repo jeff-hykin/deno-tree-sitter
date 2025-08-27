@@ -50,10 +50,9 @@ export class BaseNode {
     }
     
     get indent() {
-        // only works if the tree's source is a string
-        if (typeof this.tree?._codeOrCallback == "string") {
-            return this.tree._codeOrCallback.split("\n")[this.startPosition.row].match(/^\s*/)[0]
-        }
+        return this.tree.code.match(new RegExp(`^(?:.*\\r?\\n){${this.startPosition.row}}\\s*`))[0]
+        // equivalent but usually faster than:
+        // return this.tree.code.split("\n")[this.startPosition.row].match(/^\s*/)[0]
     }
     
     toJSON() {
