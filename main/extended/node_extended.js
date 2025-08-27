@@ -377,29 +377,59 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         const childrenCopy = [...children]
         let firstChild = childrenCopy.shift()
         // helper
-        const handleGaps = (gapText, start, parentNode) => {
+        const handleGaps = (gapText, start, startPosition, parentNode) => {
             const chunks = gapText.split(/(?<!\s)(?=\s+)/g)
+            let colOffset = startPosition.column
+            let rowOffset = startPosition.row
             for (const eachGap of chunks) {
                 if (eachGap.length == 0) {
                     continue
                 }
                 const end = start + eachGap.length
                 if (eachGap.match(/^\s/)) {
+                    const rowOffsetBefore = rowOffset
+                    const colOffsetBefore = colOffset
+                    rowOffset += (eachGap.match(/\n/g)||[]).length
+                    // reset column offset on new row
+                    if (rowOffsetBefore != rowOffset) {
+                        colOffset = eachGap.split("\n").slice(-1)[0].length
+                    }
                     newChildren.push(new WhitespaceNode({
                         text: eachGap,
                         startIndex: start,
                         endIndex: end,
                         children: [],
                         parent: parentNode,
+                        tree: node.tree,
+                        startPosition: {
+                            row: rowOffsetBefore,
+                            column: colOffsetBefore,
+                        },
+                        endPosition: {
+                            row: rowOffset,
+                            column: colOffset,
+                        },
                     }))
                 // sometimes the gap isn't always whitespace
                 } else {
+
+                    const colOffsetBefore = colOffset
+                    colOffset += eachGap.length
                     newChildren.push(new SoftTextNode({
                         text: eachGap,
+                        startPosition: {
+                            row: rowOffset,
+                            column: colOffsetBefore,
+                        },
                         startIndex: start,
+                        endPosition: {
+                            row: rowOffset,
+                            column: colOffset,
+                        },
                         endIndex: end,
                         children: [],
                         parent: parentNode,
+                        tree: node.tree,
                     }))
                 }
                 start = end
@@ -409,7 +439,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         if (node.startIndex != firstChild.startIndex) {
             const gapText = string.slice(node.startIndex, firstChild.startIndex)
             // whitespace and non-whitespace chunks
-            handleGaps(gapText, node.startIndex, node)
+            handleGaps(gapText, node.startIndex, node.startPosition, node)
         }
         // firstChild.indent = indent
         newChildren.push(firstChild)
@@ -418,7 +448,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         for (const eachSecondaryNode of childrenCopy) {
             if (prevChild.endIndex != eachSecondaryNode.startIndex) {
                 const gapText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
-                handleGaps(gapText, prevChild.startIndex, node)
+                handleGaps(gapText, prevChild.startIndex, prevChild.startPosition, node)
             }
             // eachSecondaryNode.indent = indent
             newChildren.push(eachSecondaryNode)
@@ -428,7 +458,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         // gap between last child and parent
         if (prevChild.endIndex != node.endIndex) {
             const gapText = string.slice(prevChild.endIndex, node.endIndex)
-            handleGaps(gapText, prevChild.startIndex, node)
+            handleGaps(gapText, prevChild.startIndex, prevChild.startPosition, node)
         }
         
         return newChildren
