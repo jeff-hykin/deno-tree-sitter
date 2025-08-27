@@ -1,7 +1,9 @@
+import { Tree } from "../tree_sitter/tree.js"
 import { Parser } from "../tree_sitter/parser.js"
 import { Language } from "../tree_sitter/language.js"
 import "./node_extended.js" // note: redundant but might not be redundant in the future
 
+const langCache = new Map()
 let hasBeenLoaded = false
 /**
  * Creates and returns a new parser instance, loading a language from a WebAssembly binary or file path.
@@ -13,7 +15,7 @@ let hasBeenLoaded = false
  * @param {boolean} [options.disableSoftNodes=false] - Whether to disable soft nodes in the parser (default is `false`).
  * @returns {Promise<Parser>} A promise that resolves to the created parser instance.
  */
-export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=false, moduleOptions }={}) {
+export async function createParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=false, moduleOptions }={}) {
     // download if given a url
     if (typeof wasmUint8ArrayOrFilePath == "string" && wasmUint8ArrayOrFilePath.match(/^https?:\/\//)) {
         wasmUint8ArrayOrFilePath = await fetch(wasmUint8ArrayOrFilePath).then(async r=>new Uint8Array(await r.arrayBuffer()))
@@ -22,17 +24,44 @@ export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=fal
         hasBeenLoaded = true
         await Parser.init(moduleOptions)
     }
-    const language = await Language.load(wasmUint8ArrayOrFilePath)
+    // this is a workaround for the a bug in the loader where loading the same language twice causes a freeze
+    // see: "WebAssembly.instantiate(binary, info).then" inside wasm_loader.js
+    let language
+    if (wasmUint8ArrayOrFilePath instanceof Uint8Array) {
+        const hashString = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", wasmUint8ArrayOrFilePath))).map((b) => b.toString(16).padStart(2, "0")).join("")
+        if (langCache.has(hashString)) {
+            language = langCache.get(hashString)
+        } else {
+            language = await Language.load(wasmUint8ArrayOrFilePath)
+            langCache.set(hashString, language)
+        }
+    } else {
+        language = await Language.load(wasmUint8ArrayOrFilePath)
+    }
     const parser = new Parser()
     parser.setLanguage(language)
     parser.disableSoftNodes = disableSoftNodes
     return parser
 }
 
-// 
-// parser class
-// 
 const realParseFunction = Parser.prototype.parse
+
+/**
+ * Parse a slice of UTF8 text.
+ *
+ * @param {string | ParseCallback} callback - Source code to parse
+ *
+ * @param {Tree | null} [oldTree] - A previous syntax tree parsed from the same document. If the text of the
+ *   document has changed since `oldTree` was created, then you must edit `oldTree` to match
+ *   the new text using {@link Tree#edit}.
+ *
+ * @param {ParseOptions} [options] - Options for parsing the text.
+ *  This can be used to set the included ranges, or a progress callback.
+ *
+ * @returns {Tree | null} A {@link Tree} if parsing succeeded, or `null` if:
+ *  - The parser has not yet had a language assigned with {@link Parser#setLanguage}.
+ *  - The progress callback returned true.
+ */
 Parser.prototype.parse = function(code, oldTree, options) {
     if (typeof code == "function") {
         console.warn("When calling .parse() the source code was a function instead of a string. The original tree sitter supports giving a function as a means of supporting edits (see: https://github.com/tree-sitter/tree-sitter/discussions/2553 ).\nHowever, this library supports edits directly (use node.replaceInnards(``))\nThe downside of making edits easy is that .parse() doesn't really accept a function argument. I'm just going to evaluate that function to grab the string once at the beginning. Use tree.codeString if you want to get the full string after a .replaceInnards() call.")
