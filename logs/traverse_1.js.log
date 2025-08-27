@@ -1,48 +1,86 @@
 <program>
     <function_declaration>
-        <function text="function" />
-        <identifier text="thing" />
+        <function>
+        </function>
+        <whitespace text=" " />
+        <identifier>
+        </identifier>
         <formal_parameters>
-            <"(" text="(" />
-            <identifier text="arg1" />
-            <")" text=")" />
+            <"(">
+            </"(">
+            <identifier>
+            </identifier>
+            <")">
+            </")">
         </formal_parameters>
+        <whitespace text=" " />
         <statement_block>
-            <"{" text="{" />
+            <"{">
+            </"{">
+            <whitespace text="\n    " />
             <lexical_declaration>
-                <let text="let" />
+                <let>
+                </let>
+                <whitespace text=" " />
                 <variable_declarator>
-                    <identifier text="a" />
-                    <"=" text="=" />
-                    <number text="10" />
+                    <identifier>
+                    </identifier>
+                    <whitespace text=" " />
+                    <"=">
+                    </"=">
+                    <whitespace text=" " />
+                    <number>
+                    </number>
                 </variable_declarator>
             </lexical_declaration>
-            <"}" text="}" />
+            <whitespace text="\n" />
+            <"}">
+            </"}">
         </statement_block>
     </function_declaration>
+    <whitespace text="\n" />
 </program>
 
-<program text="function thing(arg1) {\n            let a = 10\n        }\n    " />
-    <function_declaration text="function thing(arg1) {\n            let a = 10\n        }" />
-        <function text="function" />
-        <identifier text="thing" />
-        <formal_parameters text="(arg1)" />
-            <"(" text="(" />
-            <identifier text="arg1" />
-            <")" text=")" />
+<program text="function thing(arg1) {\n    let a = 10\n}\n" indent="" />
+    <function_declaration text="function thing(arg1) {\n    let a = 10\n}" indent="" />
+        <function text="function" indent="" />
+        </function>
+        <whitespace text=" " />
+        <identifier text="thing" indent="" />
+        </identifier>
+        <formal_parameters text="(arg1)" indent="" />
+            <"(" text="(" indent="" />
+            </"(">
+            <identifier text="arg1" indent="" />
+            </identifier>
+            <")" text=")" indent="" />
+            </")">
         </formal_parameters>
-        <statement_block text="{\n            let a = 10\n        }" />
-            <"{" text="{" />
-            <lexical_declaration text="let a = 10" />
-                <let text="let" />
-                <variable_declarator text="a = 10" />
-                    <identifier text="a" />
-                    <"=" text="=" />
-                    <number text="10" />
+        <whitespace text=" " />
+        <statement_block text="{\n    let a = 10\n}" indent="" />
+            <"{" text="{" indent="" />
+            </"{">
+            <whitespace text="\n    " />
+            <lexical_declaration text="let a = 10" indent="    " />
+                <let text="let" indent="    " />
+                </let>
+                <whitespace text=" " />
+                <variable_declarator text="a = 10" indent="    " />
+                    <identifier text="a" indent="    " />
+                    </identifier>
+                    <whitespace text=" " />
+                    <"=" text="=" indent="    " />
+                    </"=">
+                    <whitespace text=" " />
+                    <number text="10" indent="    " />
+                    </number>
                 </variable_declarator>
             </lexical_declaration>
-            <"}" text="}" />
+            <whitespace text="\n" />
+            <"}" text="}" indent="" />
+            </"}">
         </statement_block>
     </function_declaration>
+    <whitespace text="\n" />
 </program>
 

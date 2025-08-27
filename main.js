@@ -357,7 +357,7 @@ export function xmlStylePreview(startNode, { alwaysShowTextAttr = false } = {}) 
         } else {
             if (direction == "->") {
                 if (alwaysShowTextAttr) {
-                    output += indent+`<${quoteIfNeeded(node.type)} text=${JSON.stringify(node.text)} />\n`
+                    output += indent+`<${quoteIfNeeded(node.type)} text=${JSON.stringify(node.text)} indent=${JSON.stringify(node.indent)} />\n`
                 } else {
                     output += indent+`<${quoteIfNeeded(node.type)}>\n`
                 }

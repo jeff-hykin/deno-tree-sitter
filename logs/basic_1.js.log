@@ -1,5 +1,788 @@
-error: Uncaught (in promise) TypeError: allNodes[0][Symbol.for(...)] is not a function
-console.debug(`allNodes[0][Symbol.for("Deno.customInspect")]() is:`,allNodes[0][Symbol.for("Deno.customInspect")]())
-                                                                                                                 ^
-    at file:///Users/jeffhykin/repos/deno-tree-sitter/tests/basic_1.js:30:114
-    at eventLoopTick (ext:core/01_core.js:169:7)
+allNodes[0] is: {
+  "": "let x = 1;",
+  type: "program",
+  typeId: 125,
+  fieldNames: [],
+  startPosition: { row: 0, column: 0 },
+  startIndex: 0,
+  endPosition: { row: 0, column: 10 },
+  endIndex: 10,
+  indent: "",
+  rootLeadingWhitespace: "",
+  hasChildren: true,
+  children: [
+    {
+      "": "let x = 1;",
+      type: "lexical_declaration",
+      typeId: 138,
+      fieldNames: [ "kind" ],
+      startPosition: { row: 0, column: 0 },
+      startIndex: 0,
+      endPosition: { row: 0, column: 10 },
+      endIndex: 10,
+      indent: "",
+      hasChildren: true,
+      children: [
+        {
+          "": "let",
+          type: "let",
+          typeId: 13,
+          fieldNames: [],
+          startPosition: { row: 0, column: 0 },
+          startIndex: 0,
+          endPosition: { row: 0, column: 3 },
+          endIndex: 3,
+          indent: "",
+          hasChildren: false,
+          children: []
+        },
+        {
+          "": " ",
+          type: "whitespace",
+          typeId: -1,
+          fieldNames: [],
+          startPosition: undefined,
+          startIndex: 0,
+          endPosition: undefined,
+          endIndex: 1,
+          indent: undefined,
+          hasChildren: false,
+          children: []
+        },
+        {
+          "": "x = 1",
+          type: "variable_declarator",
+          typeId: 139,
+          fieldNames: [ "name", "value" ],
+          startPosition: { row: 0, column: 4 },
+          startIndex: 4,
+          endPosition: { row: 0, column: 9 },
+          endIndex: 9,
+          indent: "",
+          hasChildren: true,
+          children: [
+            {
+              "": "x",
+              type: "identifier",
+              typeId: 1,
+              fieldNames: [],
+              startPosition: { row: 0, column: 4 },
+              startIndex: 4,
+              endPosition: { row: 0, column: 5 },
+              endIndex: 5,
+              indent: "",
+              hasChildren: false,
+              children: []
+            },
+            {
+              "": " ",
+              type: "whitespace",
+              typeId: -1,
+              fieldNames: [],
+              startPosition: undefined,
+              startIndex: 4,
+              endPosition: undefined,
+              endIndex: 5,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              "": "=",
+              type: "=",
+              typeId: 39,
+              fieldNames: [],
+              startPosition: { row: 0, column: 6 },
+              startIndex: 6,
+              endPosition: { row: 0, column: 7 },
+              endIndex: 7,
+              indent: "",
+              hasChildren: false,
+              children: []
+            },
+            {
+              "": " ",
+              type: "whitespace",
+              typeId: -1,
+              fieldNames: [],
+              startPosition: undefined,
+              startIndex: 6,
+              endPosition: undefined,
+              endIndex: 7,
+              indent: undefined,
+              hasChildren: false,
+              children: []
+            },
+            {
+              "": "1",
+              type: "number",
+              typeId: 109,
+              fieldNames: [],
+              startPosition: { row: 0, column: 8 },
+              startIndex: 8,
+              endPosition: { row: 0, column: 9 },
+              endIndex: 9,
+              indent: "",
+              hasChildren: false,
+              children: []
+            }
+          ]
+        },
+        {
+          "": ";",
+          type: ";",
+          typeId: 33,
+          fieldNames: [],
+          startPosition: { row: 0, column: 9 },
+          startIndex: 9,
+          endPosition: { row: 0, column: 10 },
+          endIndex: 10,
+          indent: "",
+          hasChildren: false,
+          children: []
+        }
+      ]
+    }
+  ]
+}
+[
+  {
+    "": "let x = 1;",
+    type: "program",
+    typeId: 125,
+    fieldNames: [],
+    startPosition: { row: 0, column: 0 },
+    startIndex: 0,
+    endPosition: { row: 0, column: 10 },
+    endIndex: 10,
+    indent: "",
+    rootLeadingWhitespace: "",
+    hasChildren: true,
+    children: [
+      {
+        "": "let x = 1;",
+        type: "lexical_declaration",
+        typeId: 138,
+        fieldNames: [ "kind" ],
+        startPosition: { row: 0, column: 0 },
+        startIndex: 0,
+        endPosition: { row: 0, column: 10 },
+        endIndex: 10,
+        indent: "",
+        hasChildren: true,
+        children: [
+          {
+            "": "let",
+            type: "let",
+            typeId: 13,
+            fieldNames: [],
+            startPosition: { row: 0, column: 0 },
+            startIndex: 0,
+            endPosition: { row: 0, column: 3 },
+            endIndex: 3,
+            indent: "",
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": " ",
+            type: "whitespace",
+            typeId: -1,
+            fieldNames: [],
+            startPosition: undefined,
+            startIndex: 0,
+            endPosition: undefined,
+            endIndex: 1,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": "x = 1",
+            type: "variable_declarator",
+            typeId: 139,
+            fieldNames: [ "name", "value" ],
+            startPosition: { row: 0, column: 4 },
+            startIndex: 4,
+            endPosition: { row: 0, column: 9 },
+            endIndex: 9,
+            indent: "",
+            hasChildren: true,
+            children: [
+              {
+                "": "x",
+                type: "identifier",
+                typeId: 1,
+                fieldNames: [],
+                startPosition: { row: 0, column: 4 },
+                startIndex: 4,
+                endPosition: { row: 0, column: 5 },
+                endIndex: 5,
+                indent: "",
+                hasChildren: false,
+                children: []
+              },
+              {
+                "": " ",
+                type: "whitespace",
+                typeId: -1,
+                fieldNames: [],
+                startPosition: undefined,
+                startIndex: 4,
+                endPosition: undefined,
+                endIndex: 5,
+                indent: undefined,
+                hasChildren: false,
+                children: []
+              },
+              {
+                "": "=",
+                type: "=",
+                typeId: 39,
+                fieldNames: [],
+                startPosition: { row: 0, column: 6 },
+                startIndex: 6,
+                endPosition: { row: 0, column: 7 },
+                endIndex: 7,
+                indent: "",
+                hasChildren: false,
+                children: []
+              },
+              {
+                "": " ",
+                type: "whitespace",
+                typeId: -1,
+                fieldNames: [],
+                startPosition: undefined,
+                startIndex: 6,
+                endPosition: undefined,
+                endIndex: 7,
+                indent: undefined,
+                hasChildren: false,
+                children: []
+              },
+              {
+                "": "1",
+                type: "number",
+                typeId: 109,
+                fieldNames: [],
+                startPosition: { row: 0, column: 8 },
+                startIndex: 8,
+                endPosition: { row: 0, column: 9 },
+                endIndex: 9,
+                indent: "",
+                hasChildren: false,
+                children: []
+              }
+            ]
+          },
+          {
+            "": ";",
+            type: ";",
+            typeId: 33,
+            fieldNames: [],
+            startPosition: { row: 0, column: 9 },
+            startIndex: 9,
+            endPosition: { row: 0, column: 10 },
+            endIndex: 10,
+            indent: "",
+            hasChildren: false,
+            children: []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "": "let x = 1;",
+    type: "lexical_declaration",
+    typeId: 138,
+    fieldNames: [ "kind" ],
+    startPosition: { row: 0, column: 0 },
+    startIndex: 0,
+    endPosition: { row: 0, column: 10 },
+    endIndex: 10,
+    indent: "",
+    hasChildren: true,
+    children: [
+      {
+        "": "let",
+        type: "let",
+        typeId: 13,
+        fieldNames: [],
+        startPosition: { row: 0, column: 0 },
+        startIndex: 0,
+        endPosition: { row: 0, column: 3 },
+        endIndex: 3,
+        indent: "",
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": " ",
+        type: "whitespace",
+        typeId: -1,
+        fieldNames: [],
+        startPosition: undefined,
+        startIndex: 0,
+        endPosition: undefined,
+        endIndex: 1,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": "x = 1",
+        type: "variable_declarator",
+        typeId: 139,
+        fieldNames: [ "name", "value" ],
+        startPosition: { row: 0, column: 4 },
+        startIndex: 4,
+        endPosition: { row: 0, column: 9 },
+        endIndex: 9,
+        indent: "",
+        hasChildren: true,
+        children: [
+          {
+            "": "x",
+            type: "identifier",
+            typeId: 1,
+            fieldNames: [],
+            startPosition: { row: 0, column: 4 },
+            startIndex: 4,
+            endPosition: { row: 0, column: 5 },
+            endIndex: 5,
+            indent: "",
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": " ",
+            type: "whitespace",
+            typeId: -1,
+            fieldNames: [],
+            startPosition: undefined,
+            startIndex: 4,
+            endPosition: undefined,
+            endIndex: 5,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": "=",
+            type: "=",
+            typeId: 39,
+            fieldNames: [],
+            startPosition: { row: 0, column: 6 },
+            startIndex: 6,
+            endPosition: { row: 0, column: 7 },
+            endIndex: 7,
+            indent: "",
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": " ",
+            type: "whitespace",
+            typeId: -1,
+            fieldNames: [],
+            startPosition: undefined,
+            startIndex: 6,
+            endPosition: undefined,
+            endIndex: 7,
+            indent: undefined,
+            hasChildren: false,
+            children: []
+          },
+          {
+            "": "1",
+            type: "number",
+            typeId: 109,
+            fieldNames: [],
+            startPosition: { row: 0, column: 8 },
+            startIndex: 8,
+            endPosition: { row: 0, column: 9 },
+            endIndex: 9,
+            indent: "",
+            hasChildren: false,
+            children: []
+          }
+        ]
+      },
+      {
+        "": ";",
+        type: ";",
+        typeId: 33,
+        fieldNames: [],
+        startPosition: { row: 0, column: 9 },
+        startIndex: 9,
+        endPosition: { row: 0, column: 10 },
+        endIndex: 10,
+        indent: "",
+        hasChildren: false,
+        children: []
+      }
+    ]
+  },
+  {
+    "": "let",
+    type: "let",
+    typeId: 13,
+    fieldNames: [],
+    startPosition: { row: 0, column: 0 },
+    startIndex: 0,
+    endPosition: { row: 0, column: 3 },
+    endIndex: 3,
+    indent: "",
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": " ",
+    type: "whitespace",
+    typeId: -1,
+    fieldNames: [],
+    startPosition: undefined,
+    startIndex: 0,
+    endPosition: undefined,
+    endIndex: 1,
+    indent: undefined,
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": "x = 1",
+    type: "variable_declarator",
+    typeId: 139,
+    fieldNames: [ "name", "value" ],
+    startPosition: { row: 0, column: 4 },
+    startIndex: 4,
+    endPosition: { row: 0, column: 9 },
+    endIndex: 9,
+    indent: "",
+    hasChildren: true,
+    children: [
+      {
+        "": "x",
+        type: "identifier",
+        typeId: 1,
+        fieldNames: [],
+        startPosition: { row: 0, column: 4 },
+        startIndex: 4,
+        endPosition: { row: 0, column: 5 },
+        endIndex: 5,
+        indent: "",
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": " ",
+        type: "whitespace",
+        typeId: -1,
+        fieldNames: [],
+        startPosition: undefined,
+        startIndex: 4,
+        endPosition: undefined,
+        endIndex: 5,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": "=",
+        type: "=",
+        typeId: 39,
+        fieldNames: [],
+        startPosition: { row: 0, column: 6 },
+        startIndex: 6,
+        endPosition: { row: 0, column: 7 },
+        endIndex: 7,
+        indent: "",
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": " ",
+        type: "whitespace",
+        typeId: -1,
+        fieldNames: [],
+        startPosition: undefined,
+        startIndex: 6,
+        endPosition: undefined,
+        endIndex: 7,
+        indent: undefined,
+        hasChildren: false,
+        children: []
+      },
+      {
+        "": "1",
+        type: "number",
+        typeId: 109,
+        fieldNames: [],
+        startPosition: { row: 0, column: 8 },
+        startIndex: 8,
+        endPosition: { row: 0, column: 9 },
+        endIndex: 9,
+        indent: "",
+        hasChildren: false,
+        children: []
+      }
+    ]
+  },
+  {
+    "": "x",
+    type: "identifier",
+    typeId: 1,
+    fieldNames: [],
+    startPosition: { row: 0, column: 4 },
+    startIndex: 4,
+    endPosition: { row: 0, column: 5 },
+    endIndex: 5,
+    indent: "",
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": " ",
+    type: "whitespace",
+    typeId: -1,
+    fieldNames: [],
+    startPosition: undefined,
+    startIndex: 4,
+    endPosition: undefined,
+    endIndex: 5,
+    indent: undefined,
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": "=",
+    type: "=",
+    typeId: 39,
+    fieldNames: [],
+    startPosition: { row: 0, column: 6 },
+    startIndex: 6,
+    endPosition: { row: 0, column: 7 },
+    endIndex: 7,
+    indent: "",
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": " ",
+    type: "whitespace",
+    typeId: -1,
+    fieldNames: [],
+    startPosition: undefined,
+    startIndex: 6,
+    endPosition: undefined,
+    endIndex: 7,
+    indent: undefined,
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": "1",
+    type: "number",
+    typeId: 109,
+    fieldNames: [],
+    startPosition: { row: 0, column: 8 },
+    startIndex: 8,
+    endPosition: { row: 0, column: 9 },
+    endIndex: 9,
+    indent: "",
+    hasChildren: false,
+    children: []
+  },
+  {
+    "": ";",
+    type: ";",
+    typeId: 33,
+    fieldNames: [],
+    startPosition: { row: 0, column: 9 },
+    startIndex: 9,
+    endPosition: { row: 0, column: 10 },
+    endIndex: 10,
+    indent: "",
+    hasChildren: false,
+    children: []
+  }
+]
+{
+    "type": "program",
+    "typeId": 125,
+    "fieldNames": [],
+    "startPosition": {
+        "row": 0,
+        "column": 0
+    },
+    "startIndex": 0,
+    "endPosition": {
+        "row": 0,
+        "column": 10
+    },
+    "endIndex": 10,
+    "indent": "",
+    "rootLeadingWhitespace": "",
+    "children": [
+        {
+            "type": "lexical_declaration",
+            "typeId": 138,
+            "fieldNames": [
+                "kind"
+            ],
+            "startPosition": {
+                "row": 0,
+                "column": 0
+            },
+            "startIndex": 0,
+            "endPosition": {
+                "row": 0,
+                "column": 10
+            },
+            "endIndex": 10,
+            "indent": "",
+            "children": [
+                {
+                    "type": "let",
+                    "typeId": 13,
+                    "fieldNames": [],
+                    "startPosition": {
+                        "row": 0,
+                        "column": 0
+                    },
+                    "startIndex": 0,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 3
+                    },
+                    "endIndex": 3,
+                    "indent": "",
+                    "text": "let",
+                    "children": []
+                },
+                {
+                    "type": "whitespace",
+                    "typeId": -1,
+                    "fieldNames": [],
+                    "startIndex": 0,
+                    "endIndex": 1,
+                    "text": " ",
+                    "children": []
+                },
+                {
+                    "type": "variable_declarator",
+                    "typeId": 139,
+                    "fieldNames": [
+                        "name",
+                        "value"
+                    ],
+                    "startPosition": {
+                        "row": 0,
+                        "column": 4
+                    },
+                    "startIndex": 4,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 9
+                    },
+                    "endIndex": 9,
+                    "indent": "",
+                    "children": [
+                        {
+                            "type": "identifier",
+                            "typeId": 1,
+                            "fieldNames": [],
+                            "startPosition": {
+                                "row": 0,
+                                "column": 4
+                            },
+                            "startIndex": 4,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 5
+                            },
+                            "endIndex": 5,
+                            "indent": "",
+                            "text": "x",
+                            "children": []
+                        },
+                        {
+                            "type": "whitespace",
+                            "typeId": -1,
+                            "fieldNames": [],
+                            "startIndex": 4,
+                            "endIndex": 5,
+                            "text": " ",
+                            "children": []
+                        },
+                        {
+                            "type": "=",
+                            "typeId": 39,
+                            "fieldNames": [],
+                            "startPosition": {
+                                "row": 0,
+                                "column": 6
+                            },
+                            "startIndex": 6,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 7
+                            },
+                            "endIndex": 7,
+                            "indent": "",
+                            "text": "=",
+                            "children": []
+                        },
+                        {
+                            "type": "whitespace",
+                            "typeId": -1,
+                            "fieldNames": [],
+                            "startIndex": 6,
+                            "endIndex": 7,
+                            "text": " ",
+                            "children": []
+                        },
+                        {
+                            "type": "number",
+                            "typeId": 109,
+                            "fieldNames": [],
+                            "startPosition": {
+                                "row": 0,
+                                "column": 8
+                            },
+                            "startIndex": 8,
+                            "endPosition": {
+                                "row": 0,
+                                "column": 9
+                            },
+                            "endIndex": 9,
+                            "indent": "",
+                            "text": "1",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "type": ";",
+                    "typeId": 33,
+                    "fieldNames": [],
+                    "startPosition": {
+                        "row": 0,
+                        "column": 9
+                    },
+                    "startIndex": 9,
+                    "endPosition": {
+                        "row": 0,
+                        "column": 10
+                    },
+                    "endIndex": 10,
+                    "indent": "",
+                    "text": ";",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

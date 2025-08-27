@@ -26,7 +26,7 @@ export class BaseNode {
     }
 
     get length() {
-        return this.children.length
+        return this.children?.length
     }
     
     *[Symbol.iterator]() {
@@ -47,6 +47,13 @@ export class BaseNode {
     
     get fieldNames() {
         return []
+    }
+    
+    get indent() {
+        // only works if the tree's source is a string
+        if (typeof this.tree?._codeOrCallback == "string") {
+            return this.tree._codeOrCallback.split("\n")[this.startPosition.row].match(/^\s*/)[0]
+        }
     }
     
     toJSON() {
@@ -91,9 +98,18 @@ export class BaseNode {
         if (typeof this.rootLeadingWhitespace == "string") {
             optional.rootLeadingWhitespace = this.rootLeadingWhitespace
         }
+        let text
+        try {
+            text = this.text
+        } catch (error) {
+            text = undefined
+        }
+        if (text == undefined) {
+            return this
+        }
         return inspect(
             {
-                '': this.text.length < 60 ? this.text : this.text.slice(0, 30) + "..." + this.text.slice(-27),
+                '': text.length < 60 ? text : text.slice(0, 30) + "..." + text.slice(-27),
                 type: this.type,
                 typeId: this.typeId,
                 fieldNames: this.fieldNames,

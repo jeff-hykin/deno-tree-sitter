@@ -1,18 +1,18 @@
 should be "function" : function
-before gutting: <program text="function thing(arg1) {\n            let a = 10\n        }\n    " />
-    <function_declaration text="function thing(arg1) {\n            let a = 10\n        }" />
+before gutting: <program text="function thing(arg1) {\n            let a = 10\n        }\n    " indent=undefined />
+    <function_declaration text="function thing(arg1) {\n            let a = 10\n        }" indent=undefined />
         <function text="function" />
         <identifier text="thing" />
-        <formal_parameters text="(arg1)" />
+        <formal_parameters text="(arg1)" indent=undefined />
             <"(" text="(" />
             <identifier text="arg1" />
             <")" text=")" />
         </formal_parameters>
-        <statement_block text="{\n            let a = 10\n        }" />
+        <statement_block text="{\n            let a = 10\n        }" indent=undefined />
             <"{" text="{" />
-            <lexical_declaration text="let a = 10" />
+            <lexical_declaration text="let a = 10" indent=undefined />
                 <let text="let" />
-                <variable_declarator text="a = 10" />
+                <variable_declarator text="a = 10" indent=undefined />
                     <identifier text="a" />
                     <"=" text="=" />
                     <number text="10" />
@@ -28,20 +28,20 @@ tree.string is:
             let a = 10
         }
     
-after gutting: <program text="async function thing(arg1) {\n            let a = 10\n        }\n    " />
-    <function_declaration text="async function thing(arg1) {\n            let a = 10\n        }" />
+after gutting: <program text="async function thing(arg1) {\n            let a = 10\n        }\n    " indent=undefined />
+    <function_declaration text="async function thing(arg1) {\n            let a = 10\n        }" indent=undefined />
         <function text="async function" />
         <identifier text="thing" />
-        <formal_parameters text="(arg1)" />
+        <formal_parameters text="(arg1)" indent=undefined />
             <"(" text="(" />
             <identifier text="arg1" />
             <")" text=")" />
         </formal_parameters>
-        <statement_block text="{\n            let a = 10\n        }" />
+        <statement_block text="{\n            let a = 10\n        }" indent=undefined />
             <"{" text="{" />
-            <lexical_declaration text="let a = 10" />
+            <lexical_declaration text="let a = 10" indent=undefined />
                 <let text="let" />
-                <variable_declarator text="a = 10" />
+                <variable_declarator text="a = 10" indent=undefined />
                     <identifier text="a" />
                     <"=" text="=" />
                     <number text="10" />

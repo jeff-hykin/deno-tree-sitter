@@ -1,11 +1,49 @@
 import { Node } from "../tree_sitter/node.js"
 import { BaseNode } from "./base_node.js"
+import { WhitespaceNode } from "./whitespace_node.js"
+import { SoftTextNode } from "./soft_text_node.js"
+import { Query, QueryError } from "../tree_sitter/query.js"
+import { _getQueryCaptureTargets } from "../extras/misc.js"
+
+const originalChildrenGetter = Object.getOwnPropertyDescriptor(Node.prototype, "children").get
 
 class HardNode {
+    get _treeSource() {
+        if (typeof this.tree?._codeOrCallback == "string") {
+            return this.tree._codeOrCallback
+        } else if (typeof this.tree?._codeOrCallback == "function") {
+            return this.tree._codeOrCallback()
+        }
+    }
+
+    get children() {
+        if (!this._children) {
+            // will set this._children
+            this._children = originalChildrenGetter.call(this)
+            // add soft nodes if needed
+            const source = this._treeSource
+            if (typeof source == "string" && this.tree._enableSoftNodes) {
+                this._children = _childrenWithSoftNodes(this, this._children, source)
+            }
+        }
+        return this._children
+    }
+    
+    set children(value) {
+        this._children = value
+    }
+
+    get rootLeadingWhitespace() {
+        // only works for the root node, and only if the tree's source is a string
+        if (this.parent == null && typeof this.tree?._codeOrCallback == "string") {
+            return this.tree._codeOrCallback.slice(0,this.startIndex)
+        }
+    }
+
     *traverse(arg = { _parentNodes: [] }) {
         const { _parentNodes } = arg
         const parentNodes = [this, ..._parentNodes]
-        if (this.children.length == 0) {
+        if (this.children?.length == 0) {
             yield [_parentNodes, this, "-"]
         } else {
             yield [_parentNodes, this, "->"]
@@ -77,7 +115,7 @@ class HardNode {
     *
     * @example
     * ```js
-    * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
     * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -156,7 +194,24 @@ class HardNode {
     query(queryString, options) {
         const { matchLimit, startPosition, endPosition, maxResultDepth } = options || {}
         const realMaxResultDepth = maxResultDepth == null ? Infinity : maxResultDepth
-        const result = this.tree.language.query(queryString).matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
+        let query
+        try {
+            query = new Query(this.tree.language, queryString)
+        } catch (error) {
+            if (error instanceof QueryError) {
+                error.message = `${error.message} in the following query: ${JSON.stringify(queryString)}`
+            }
+            throw error
+        }
+        const result = query.matches(this, startPosition || this.startPosition, endPosition || this.endPosition, matchLimit)
+        const results = result.filter((each) => each.captures.every((each) => each.node.depth - this.depth <= realMaxResultDepth))
+        const codeOrCallback = this.tree._codeOrCallback
+        // without this soft nodes will be missing
+        for (const eachResult of results) {
+            for (const eachCapture of eachResult.captures) {
+                eachCapture.node.children = _childrenWithSoftNodes(eachCapture.node, eachCapture.node.children, codeOrCallback)
+            }
+        }
         return result.filter((each) => each.captures.every((each) => each.node.depth - this.depth <= realMaxResultDepth))
     }
     /**
@@ -164,7 +219,7 @@ class HardNode {
     *
     * @example
     * ```js
-    * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * //import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
     * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -195,91 +250,39 @@ class HardNode {
     *
     */
     quickQuery(queryString, options) {
-        let topLevelVarname = ""
-        let thereMightBeIssues = true
-        while (thereMightBeIssues) {
-            topLevelVarname = `${topLevelVarname}_`
-            thereMightBeIssues = queryString.includes(`@${topLevelVarname} `) || queryString.includes(`@${topLevelVarname}\t`) || queryString.endsWith(`@${topLevelVarname}`)
+        const possibleCaptureTargets = _getQueryCaptureTargets(queryString)
+        // 
+        // get a base capture name
+        // 
+        let baseCaptureName = "_"
+        while (possibleCaptureTargets.includes(baseCaptureName)) {
+            // append until it doesn't conflict
+            baseCaptureName = `${baseCaptureName}_`
         }
-        // add the top-level extraction always
-        queryString = `${queryString} @${topLevelVarname}`
-        const output = this.query(queryString, options).map((each) => Object.fromEntries(each.captures.map((each) => [each.name, each.node])))
-        // combine the top-level extraction and the named extractions using proxies
-        return output.map((eachMatch) => {
-            const topLevel = eachMatch[topLevelVarname]
-            delete eachMatch[topLevelVarname]
-            const keys = Object.keys(eachMatch)
-            if (keys.length == 0) {
-                return topLevel
+        
+        // add the base capture always
+        queryString = `${queryString} @${baseCaptureName}`
+        const output = this.query(queryString, options).map((each) => {
+            const nodesByCaptureName = Object.fromEntries(each.captures.map((each) => [each.name, each.node]))
+            // no capture targets means just return the base
+            if (possibleCaptureTargets.length == 0) {
+                return nodesByCaptureName[baseCaptureName]
+            // return named targets
+            } else {
+                // 0 is not allowed as a capture name, so it will never conflict
+                nodesByCaptureName[0] = nodesByCaptureName[baseCaptureName]
+                delete nodesByCaptureName[baseCaptureName]
+                return nodesByCaptureName
             }
-            return new Proxy(topLevel, {
-                ownKeys(original, ...args) {
-                    return keys.concat(Reflect.ownKeys(original, ...args))
-                },
-                getOwnPropertyDescriptor(original, prop) {
-                    return {
-                        enumerable: true,
-                        configurable: true,
-                    }
-                },
-                get(original, key, ...args) {
-                    // replace the inspect and toJSON
-                    if (key == Symbol.for("Deno.customInspect") || key == "toJSON") {
-                        return (inspect = (a) => a, options = {}) => {
-                            const optional = {}
-                            if (typeof original.rootLeadingWhitespace == "string") {
-                                optional.rootLeadingWhitespace = original.rootLeadingWhitespace
-                            }
-                            return inspect(
-                                {
-                                    ...Object.fromEntries(keys.map((eachKey) => [eachKey, eachMatch[eachKey]])),
-                                    type: original.type,
-                                    typeId: original.typeId,
-                                    startPosition: original.startPosition,
-                                    startIndex: original.startIndex,
-                                    endPosition: original.endPosition,
-                                    startIndex: original.startIndex,
-                                    endIndex: original.endIndex,
-                                    indent: original.indent,
-                                    ...optional,
-                                    hasChildren: original.hasChildren,
-                                    children: [...(original.children || [])],
-                                },
-                                options
-                            )
-                        }
-                    }
-                    return keys.includes(key) ? eachMatch[key] : Reflect.get(original, key, ...args)
-                },
-                set(original, key, value) {
-                    if (keys.includes(key)) {
-                        eachMatch[key] = value
-                    }
-                    return Reflect.set(original, key, value)
-                },
-                has(target, key) {
-                    return keys.includes(key) || Reflect.has(target, key)
-                },
-                deleteProperty(target, key) {
-                    if (keys.includes(key)) {
-                        delete keys[keys.indexOf(key)]
-                    }
-                    return Reflect.deleteProperty(target, key)
-                },
-                isExtensible: Reflect.isExtensible,
-                preventExtensions: Reflect.preventExtensions,
-                setPrototypeOf: Reflect.setPrototypeOf,
-                defineProperty: Reflect.defineProperty,
-                getPrototypeOf: Reflect.getPrototypeOf,
-            })
         })
+        return output
     }
     /**
     * quickQueryFirst
     *
     * @example
     * ```js
-    * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
     * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -356,16 +359,78 @@ class HardNode {
     // }
 }
 
-// extend the Node class itself
-Object.assign(Node.prototype, HardNode.prototype)
-for (const each of Object.getOwnPropertyNames(HardNode.prototype)) {
-    if (each!="constructor") {
-        Node.prototype[each] = HardNode.prototype[each]
-    }
-}
+// patch Node with all HardNode properties
+const descriptors = Object.getOwnPropertyDescriptors(HardNode.prototype)
+delete descriptors.constructor
+Object.defineProperties(Node.prototype, descriptors)
 // force it to inherit from BaseNode
 Object.setPrototypeOf(Node.prototype, BaseNode.prototype)
 
 export {
     Node
+}
+
+// helper
+export const _childrenWithSoftNodes = (node, children, string)=>{
+    if (node.children?.length > 0) {
+        const newChildren = []
+        const childrenCopy = [...children]
+        let firstChild = childrenCopy.shift()
+        // helper
+        const handleGaps = (gapText, start, parentNode) => {
+            const chunks = gapText.split(/(?<!\s)(?=\s+)/g)
+            for (const eachGap of chunks) {
+                if (eachGap.length == 0) {
+                    continue
+                }
+                const end = start + eachGap.length
+                if (eachGap.match(/^\s/)) {
+                    newChildren.push(new WhitespaceNode({
+                        text: eachGap,
+                        startIndex: start,
+                        endIndex: end,
+                        children: [],
+                        parent: parentNode,
+                    }))
+                // sometimes the gap isn't always whitespace
+                } else {
+                    newChildren.push(new SoftTextNode({
+                        text: eachGap,
+                        startIndex: start,
+                        endIndex: end,
+                        children: [],
+                        parent: parentNode,
+                    }))
+                }
+                start = end
+            }
+        }
+        // preceding whitespace
+        if (node.startIndex != firstChild.startIndex) {
+            const gapText = string.slice(node.startIndex, firstChild.startIndex)
+            // whitespace and non-whitespace chunks
+            handleGaps(gapText, node.startIndex, node)
+        }
+        // firstChild.indent = indent
+        newChildren.push(firstChild)
+        // gaps between sibilings
+        let prevChild = firstChild
+        for (const eachSecondaryNode of childrenCopy) {
+            if (prevChild.endIndex != eachSecondaryNode.startIndex) {
+                const gapText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
+                handleGaps(gapText, prevChild.startIndex, node)
+            }
+            // eachSecondaryNode.indent = indent
+            newChildren.push(eachSecondaryNode)
+            prevChild = eachSecondaryNode
+        }
+
+        // gap between last child and parent
+        if (prevChild.endIndex != node.endIndex) {
+            const gapText = string.slice(prevChild.endIndex, node.endIndex)
+            handleGaps(gapText, prevChild.startIndex, node)
+        }
+        
+        return newChildren
+    }
 }

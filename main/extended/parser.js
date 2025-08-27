@@ -1,6 +1,5 @@
 import { Parser } from "../tree_sitter/parser.js"
 import { Language } from "../tree_sitter/language.js"
-import { addSoftNodes } from "./add_soft_nodes.js"
 import "./node_extended.js" // note: redundant but might not be redundant in the future
 
 let hasBeenLoaded = false
@@ -15,6 +14,10 @@ let hasBeenLoaded = false
  * @returns {Promise<Parser>} A promise that resolves to the created parser instance.
  */
 export async function newParser(wasmUint8ArrayOrFilePath, { disableSoftNodes=false, moduleOptions }={}) {
+    // download if given a url
+    if (typeof wasmUint8ArrayOrFilePath == "string" && wasmUint8ArrayOrFilePath.match(/^https?:\/\//)) {
+        wasmUint8ArrayOrFilePath = await fetch(wasmUint8ArrayOrFilePath).then(async r=>new Uint8Array(await r.arrayBuffer()))
+    }
     if (!hasBeenLoaded) {
         hasBeenLoaded = true
         await Parser.init(moduleOptions)
@@ -34,17 +37,16 @@ Parser.prototype.parse = function(codeOrCallback, oldTree, options) {
     let tree
     if (this.disableSoftNodes) {
         tree = realParseFunction.apply(this, [codeOrCallback, oldTree, options])
+        tree._codeOrCallback = codeOrCallback
     } else {
         // tree sitter allows this (not me)
         let string = codeOrCallback
         if (typeof codeOrCallback == "function") {
             string = codeOrCallback()
         }
-
-        tree = addSoftNodes({
-            tree: realParseFunction.apply(this, [codeOrCallback, oldTree, options]),
-            string,
-        })
+        tree = realParseFunction.apply(this, [codeOrCallback, oldTree, options])
+        tree._codeOrCallback = codeOrCallback
+        tree._enableSoftNodes = true
     }
     return tree
 }
