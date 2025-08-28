@@ -1,2 +1,17 @@
-tree.rootNode.text is:     
-tree.rootNode.text after is: 				a
+tree.rootNode.text is: "    "
+tree.rootNode.children is: [
+  {
+    "": "    ",
+    type: "whitespace",
+    typeId: -1,
+    fieldNames: [],
+    startPosition: { row: 0, column: 0 },
+    startIndex: 0,
+    endPosition: { row: 0, column: 4 },
+    endIndex: 4,
+    indent: "    ",
+    hasChildren: false,
+    children: []
+  }
+]
+tree.rootNode.text after is: "\t\t\t\ta"

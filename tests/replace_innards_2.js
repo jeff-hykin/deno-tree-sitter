@@ -6,7 +6,7 @@ import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw
 var parser = await createParser(rust)
 // tree.rootNode.replaceInnards('fn main() { }')
 var tree = parser.parse('    ')
-console.debug(`tree.rootNode.text is:`,tree.rootNode.text)
+console.debug(`tree.rootNode.text is:`,JSON.stringify(tree.rootNode.text))
 try {
     tree.rootNode.children[0].fields.parameters.text
     throw Error(`This should have failed`)
@@ -14,5 +14,6 @@ try {
     
 }
 
+console.debug(`tree.rootNode.children is:`,tree.rootNode.children)
 tree.rootNode.children[0].replaceInnards("\t\t\t\ta")
-console.debug(`tree.rootNode.text after is:`,tree.rootNode.text)
+console.debug(`tree.rootNode.text after is:`,JSON.stringify(tree.rootNode.text))

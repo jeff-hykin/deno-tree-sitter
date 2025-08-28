@@ -29,41 +29,30 @@ should be "=" : {
 before gutting: <program text="\n    function thing(arg1) {\n        let a = 10\n    }\n" />
     <function_declaration text="function thing(arg1) {\n        let a = 10\n    }" />
         <function text="function" />
-        </function>
         <whitespace text=" " />
         <identifier text="thing" />
-        </identifier>
         <formal_parameters text="(arg1)" />
             <"(" text="(" />
-            </"(">
             <identifier text="arg1" />
-            </identifier>
             <")" text=")" />
-            </")">
         </formal_parameters>
         <whitespace text=" " />
         <statement_block text="{\n        let a = 10\n    }" />
             <"{" text="{" />
-            </"{">
             <whitespace text="\n        " />
             <lexical_declaration text="let a = 10" />
                 <let text="let" />
-                </let>
                 <whitespace text=" " />
                 <variable_declarator text="a = 10" />
                     <identifier text="a" />
-                    </identifier>
                     <whitespace text=" " />
                     <"=" text="=" />
-                    </"=">
                     <whitespace text=" " />
                     <number text="10" />
-                    </number>
                 </variable_declarator>
             </lexical_declaration>
             <whitespace text="\n    " />
             <"}" text="}" />
-            </"}">
         </statement_block>
     </function_declaration>
     <whitespace text="\n" />
@@ -78,41 +67,30 @@ tree.rootNode.children[0].children[5].children[2].children[2].getQueryForSelf() 
 after gutting: <program text="\n    async function thing(arg1) {\n        let a += 999\n    }\n" />
     <function_declaration text="async function thing(arg1) {\n        let a += 999\n    }" />
         <function text="async function" />
-        </function>
         <whitespace text=" " />
         <identifier text="thing" />
-        </identifier>
         <formal_parameters text="(arg1)" />
             <"(" text="(" />
-            </"(">
             <identifier text="arg1" />
-            </identifier>
             <")" text=")" />
-            </")">
         </formal_parameters>
         <whitespace text=" " />
         <statement_block text="{\n        let a += 999\n    }" />
             <"{" text="{" />
-            </"{">
             <whitespace text="\n        " />
             <lexical_declaration text="let a += 999" />
                 <let text="let" />
-                </let>
                 <whitespace text=" " />
                 <variable_declarator text="a += 999" />
                     <identifier text="a" />
-                    </identifier>
                     <whitespace text=" " />
                     <"=" text="+=" />
-                    </"=">
                     <whitespace text=" " />
                     <number text="999" />
-                    </number>
                 </variable_declarator>
             </lexical_declaration>
             <whitespace text="\n    " />
             <"}" text="}" />
-            </"}">
         </statement_block>
     </function_declaration>
     <whitespace text="\n" />

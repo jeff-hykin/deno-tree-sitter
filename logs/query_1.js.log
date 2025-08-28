@@ -1,8 +1,10 @@
 🚀 ~ file: query_1.js:12 ~ results: [
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "a",
@@ -13,17 +15,22 @@
           startIndex: 4,
           endPosition: { row: 0, column: 5 },
           endIndex: 5,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   },
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "b",
@@ -34,17 +41,22 @@
           startIndex: 14,
           endPosition: { row: 0, column: 15 },
           endIndex: 15,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   },
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "c",
@@ -55,19 +67,24 @@
           startIndex: 24,
           endPosition: { row: 0, column: 25 },
           endIndex: 25,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   }
 ]
 🚀 ~ file: query_1.js:13 ~ results: [
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "a",
@@ -78,17 +95,22 @@
           startIndex: 4,
           endPosition: { row: 0, column: 5 },
           endIndex: 5,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   },
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "b",
@@ -99,17 +121,22 @@
           startIndex: 14,
           endPosition: { row: 0, column: 15 },
           endIndex: 15,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   },
   {
     pattern: 0,
+    patternIndex: 0,
     captures: [
       {
+        patternIndex: 0,
         name: "blahBlahBlah",
         node: {
           "": "c",
@@ -120,11 +147,14 @@
           startIndex: 24,
           endPosition: { row: 0, column: 25 },
           endIndex: 25,
-          indent: undefined,
+          indent: "",
           hasChildren: false,
           children: []
         }
       }
-    ]
+    ],
+    setProperties: undefined,
+    assertedProperties: undefined,
+    refutedProperties: undefined
   }
 ]

@@ -48,7 +48,7 @@ Object.defineProperty(Tree.prototype, "rootNode", {
         rootShadow.startIndex = 0
         rootShadow.startPosition = { row: 0, column: 0 }
         // if the original file is just whitespace or non-matched text, then fill it with soft nodes even though it'd normally have no children
-        if (rootShadow.children == null && rootShadow.endIndex != 0) {
+        if (rootShadow.children.length == 0 && rootShadow.endIndex != 0) {
             rootShadow._children = _childrenWithSoftNodes(rootShadow, [{startIndex: rootShadow.endIndex, endIndex: rootShadow.endIndex, endPosition: rootShadow.endPosition}], rootNode.tree.codeString).slice(0,-1)
         }
         _shadows[rootNode.id] = rootShadow

@@ -1,4 +1,3 @@
-import { _shadows } from "./base_node.js"
 import { Node } from "../tree_sitter/node.js"
 import { Tree } from "../tree_sitter/tree.js"
 import { Parser } from "../tree_sitter/parser.js"
