@@ -149,10 +149,10 @@ export class HardNode extends BaseNode {
             this._children = originalChildrenGetter.call(this)
             // add soft nodes if needed
             if (this.tree._enableSoftNodes) {
-                this._children = _childrenWithSoftNodes(this, this._children, this.tree.codeString)
+                this._children = _childrenWithSoftNodes(this, this._children||[], this.tree.codeString)
             }
         }
-        return this._children
+        return this._children || []
     }
     
     set children(value) {

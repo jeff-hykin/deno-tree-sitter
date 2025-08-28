@@ -2,6 +2,7 @@ import { BaseNode } from "./base_node.js"
 
 // HardNode extends BaseNode as well (indirectly)
 export class SoftNode extends BaseNode {
+    children = []
     constructor(data) {
         super(data)
     }

@@ -31,7 +31,7 @@ const Parser = require('web-tree-sitter');
 ### The New Way ✨
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
 
 const parser = await createParser(javascript) // path or Uint8Array or URL
@@ -47,7 +47,7 @@ const tree = parser.parse('let x = 1;')
 
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascriptUint8Array from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
 
 // ex: uint8array
@@ -89,7 +89,7 @@ import treeSitterQuery from "https://github.com/jeff-hykin/common_tree_sitter_la
 #### The Tree Data Structure
 
 ```js
-import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import rust from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/rust.js"
 
 const parser = await createParser(rust)
@@ -138,7 +138,7 @@ If you want to use j-query like approach to an AST, you're in luck. There is a w
 // 
 // setup
 // 
-import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 var parser = await createParser(javascript) // path or Uint8Array
 var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -250,7 +250,7 @@ results == [
 It is surprisingly handy to be able to iterate over every node (at any depth) in order.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
 const tree = parser.parse(`
@@ -309,7 +309,7 @@ If you're making a formatter or a code refactoring tool, it would normally be a 
 Typically tree sitter languages don't have whitespace nodes at all (and sometimes they even skip normal code!). This means there's text that is stored outside of the nodes in the AST. This library solves that problem by auto injecting "soft nodes" back into the AST. Most of the time they are just whitespace nodes, but sometimes they can be other syntax depending on your grammar.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -330,7 +330,7 @@ However:
 2. `.replaceInnards()` does not trigger a re-parse. You can dump completely invalid syntax into the tree, all the non-child nodes will stay as-is. If you want to re-parse there is a fast way! Pass the old tree into the parse function (ex: `let newTree = parser.parse(oldTree.codeString, oldTree)`). Note: when a new tree is created there is ZERO OVERLAP between old nodes and new nodes. This is a tree sitter limitation.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -358,7 +358,7 @@ console.log(tree.rootNode.text)
 For quick analysis and debugging, its always nice to convert a parsed document to JSON.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -545,7 +545,7 @@ Sometimes you want to know what the tree looks like, but without the verbose str
 NOTE: It is NOT valid XML, just very XML-like
 
 ```js
-import { createParser, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
+import { createParser, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/a1c34a3a73a173f82657e25468efc76e9e593843/main/javascript.js"
 
 const parser = await createParser(javascript)

@@ -1,1 +1,9 @@
-- fix this.children sometimes not being iterable
+- DONE: fix .text on rootNode
+- DONE: fix the whitespace offset on the root node with a fake root node and wrapper
+- DONE: make replaceInnards work on soft nodes too
+- DONE: add getQueryForSelf
+- DONE: update readme
+- DONE: fix intellisense
+- DONE: fix toString (add s expression)
+- DONE: fix this.children sometimes not being iterable
+- delete junk

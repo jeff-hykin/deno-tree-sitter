@@ -14,7 +14,8 @@ export class BaseNode {
     constructor(data) {
         Object.assign(this, data)
     }
-
+    
+    /** @type {number} */
     get depth() {
         if (this._depth == null) {
             if (this.parent == null) {
@@ -25,13 +26,14 @@ export class BaseNode {
         }
         return this._depth
     }
-
+    
+    /** @type {number} */
     get length() {
-        return this.children?.length
+        return this.children?.length||0
     }
     
     *[Symbol.iterator]() {
-        yield* this.children
+        yield* this.children||[]
     }
     
     get hasChildren() {
@@ -39,7 +41,7 @@ export class BaseNode {
     }
     
     get hardChildren() {
-        return this.children.filter(each=>each instanceof Node)
+        return (this.children||[]).filter(each=>each instanceof Node)
     }
 
     get fields() {
@@ -50,18 +52,17 @@ export class BaseNode {
         return []
     }
     
+    /** @type {string} */
     get indent() {
         return this.tree.codeString.match(new RegExp(`^(?:.*\\r?\\n){${this.startPosition.row}}(\\s*)`))[1]
         // equivalent but usually faster than:
         // return this.tree.codeString.split("\n")[this.startPosition.row].match(/^\s*/)[0]
     }
     
+    /** @type {Object} */
     toJSON() {
         const optionalData = {}
-        if (typeof this.rootLeadingWhitespace == 'string') {
-            optionalData.rootLeadingWhitespace = this.rootLeadingWhitespace
-        }
-        if (this.children && this.children.length) {
+        if (this.children?.length) {
             return {
                 type: this.type,
                 typeId: this.typeId,
@@ -95,9 +96,6 @@ export class BaseNode {
 
     [Symbol.for("Deno.customInspect")](inspect, options) {
         const optional = {}
-        if (typeof this.rootLeadingWhitespace == "string") {
-            optional.rootLeadingWhitespace = this.rootLeadingWhitespace
-        }
         let text
         try {
             text = this.text
@@ -132,7 +130,12 @@ export class BaseNode {
     flattened() {
         return []
     }
-
+    
+    /**
+     * Destroy the children of this node and replace the .text of this node with the given string.
+     * 
+     * @param {string} replacement - description
+     */
     replaceInnards(replacement) {
         const tree = this.tree
         const sourceCode = this.tree.codeString
