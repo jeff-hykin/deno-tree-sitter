@@ -1,7 +1,7 @@
 allNodes[0] is: {
   "": "let x = 1;",
   type: "program",
-  typeId: 125,
+  typeId: 133,
   fieldNames: [],
   startPosition: { row: 0, column: 0 },
   startIndex: 0,
@@ -13,7 +13,7 @@ allNodes[0] is: {
     {
       "": "let x = 1;",
       type: "lexical_declaration",
-      typeId: 138,
+      typeId: 151,
       fieldNames: [ "kind" ],
       startPosition: { row: 0, column: 0 },
       startIndex: 0,
@@ -25,7 +25,7 @@ allNodes[0] is: {
         {
           "": "let",
           type: "let",
-          typeId: 13,
+          typeId: 14,
           fieldNames: [],
           startPosition: { row: 0, column: 0 },
           startIndex: 0,
@@ -51,7 +51,7 @@ allNodes[0] is: {
         {
           "": "x = 1",
           type: "variable_declarator",
-          typeId: 139,
+          typeId: 152,
           fieldNames: [ "name", "value" ],
           startPosition: { row: 0, column: 4 },
           startIndex: 4,
@@ -115,7 +115,7 @@ allNodes[0] is: {
             {
               "": "1",
               type: "number",
-              typeId: 109,
+              typeId: 113,
               fieldNames: [],
               startPosition: { row: 0, column: 8 },
               startIndex: 8,
@@ -130,7 +130,7 @@ allNodes[0] is: {
         {
           "": ";",
           type: ";",
-          typeId: 33,
+          typeId: 21,
           fieldNames: [],
           startPosition: { row: 0, column: 9 },
           startIndex: 9,
@@ -148,7 +148,7 @@ allNodes[0] is: {
   {
     "": "let x = 1;",
     type: "program",
-    typeId: 125,
+    typeId: 133,
     fieldNames: [],
     startPosition: { row: 0, column: 0 },
     startIndex: 0,
@@ -160,7 +160,7 @@ allNodes[0] is: {
       {
         "": "let x = 1;",
         type: "lexical_declaration",
-        typeId: 138,
+        typeId: 151,
         fieldNames: [ "kind" ],
         startPosition: { row: 0, column: 0 },
         startIndex: 0,
@@ -172,7 +172,7 @@ allNodes[0] is: {
           {
             "": "let",
             type: "let",
-            typeId: 13,
+            typeId: 14,
             fieldNames: [],
             startPosition: { row: 0, column: 0 },
             startIndex: 0,
@@ -198,7 +198,7 @@ allNodes[0] is: {
           {
             "": "x = 1",
             type: "variable_declarator",
-            typeId: 139,
+            typeId: 152,
             fieldNames: [ "name", "value" ],
             startPosition: { row: 0, column: 4 },
             startIndex: 4,
@@ -262,7 +262,7 @@ allNodes[0] is: {
               {
                 "": "1",
                 type: "number",
-                typeId: 109,
+                typeId: 113,
                 fieldNames: [],
                 startPosition: { row: 0, column: 8 },
                 startIndex: 8,
@@ -277,7 +277,7 @@ allNodes[0] is: {
           {
             "": ";",
             type: ";",
-            typeId: 33,
+            typeId: 21,
             fieldNames: [],
             startPosition: { row: 0, column: 9 },
             startIndex: 9,
@@ -294,7 +294,7 @@ allNodes[0] is: {
   {
     "": "let x = 1;",
     type: "lexical_declaration",
-    typeId: 138,
+    typeId: 151,
     fieldNames: [ "kind" ],
     startPosition: { row: 0, column: 0 },
     startIndex: 0,
@@ -306,7 +306,7 @@ allNodes[0] is: {
       {
         "": "let",
         type: "let",
-        typeId: 13,
+        typeId: 14,
         fieldNames: [],
         startPosition: { row: 0, column: 0 },
         startIndex: 0,
@@ -332,7 +332,7 @@ allNodes[0] is: {
       {
         "": "x = 1",
         type: "variable_declarator",
-        typeId: 139,
+        typeId: 152,
         fieldNames: [ "name", "value" ],
         startPosition: { row: 0, column: 4 },
         startIndex: 4,
@@ -396,7 +396,7 @@ allNodes[0] is: {
           {
             "": "1",
             type: "number",
-            typeId: 109,
+            typeId: 113,
             fieldNames: [],
             startPosition: { row: 0, column: 8 },
             startIndex: 8,
@@ -411,7 +411,7 @@ allNodes[0] is: {
       {
         "": ";",
         type: ";",
-        typeId: 33,
+        typeId: 21,
         fieldNames: [],
         startPosition: { row: 0, column: 9 },
         startIndex: 9,
@@ -426,7 +426,7 @@ allNodes[0] is: {
   {
     "": "let",
     type: "let",
-    typeId: 13,
+    typeId: 14,
     fieldNames: [],
     startPosition: { row: 0, column: 0 },
     startIndex: 0,
@@ -452,7 +452,7 @@ allNodes[0] is: {
   {
     "": "x = 1",
     type: "variable_declarator",
-    typeId: 139,
+    typeId: 152,
     fieldNames: [ "name", "value" ],
     startPosition: { row: 0, column: 4 },
     startIndex: 4,
@@ -516,7 +516,7 @@ allNodes[0] is: {
       {
         "": "1",
         type: "number",
-        typeId: 109,
+        typeId: 113,
         fieldNames: [],
         startPosition: { row: 0, column: 8 },
         startIndex: 8,
@@ -583,7 +583,7 @@ allNodes[0] is: {
   {
     "": "1",
     type: "number",
-    typeId: 109,
+    typeId: 113,
     fieldNames: [],
     startPosition: { row: 0, column: 8 },
     startIndex: 8,
@@ -596,7 +596,7 @@ allNodes[0] is: {
   {
     "": ";",
     type: ";",
-    typeId: 33,
+    typeId: 21,
     fieldNames: [],
     startPosition: { row: 0, column: 9 },
     startIndex: 9,
@@ -609,7 +609,7 @@ allNodes[0] is: {
 ]
 {
     "type": "program",
-    "typeId": 125,
+    "typeId": 133,
     "fieldNames": [],
     "startPosition": {
         "row": 0,
@@ -625,7 +625,7 @@ allNodes[0] is: {
     "children": [
         {
             "type": "lexical_declaration",
-            "typeId": 138,
+            "typeId": 151,
             "fieldNames": [
                 "kind"
             ],
@@ -643,7 +643,7 @@ allNodes[0] is: {
             "children": [
                 {
                     "type": "let",
-                    "typeId": 13,
+                    "typeId": 14,
                     "fieldNames": [],
                     "startPosition": {
                         "row": 0,
@@ -679,7 +679,7 @@ allNodes[0] is: {
                 },
                 {
                     "type": "variable_declarator",
-                    "typeId": 139,
+                    "typeId": 152,
                     "fieldNames": [
                         "name",
                         "value"
@@ -770,7 +770,7 @@ allNodes[0] is: {
                         },
                         {
                             "type": "number",
-                            "typeId": 109,
+                            "typeId": 113,
                             "fieldNames": [],
                             "startPosition": {
                                 "row": 0,
@@ -790,7 +790,7 @@ allNodes[0] is: {
                 },
                 {
                     "type": ";",
-                    "typeId": 33,
+                    "typeId": 21,
                     "fieldNames": [],
                     "startPosition": {
                         "row": 0,

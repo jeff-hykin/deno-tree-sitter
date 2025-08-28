@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-all
 import { createParser, BaseNode } from "../main/main.js"
-import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
+// import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
 var parser = await createParser(
-    "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.wasm",
+    "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.wasm",
     {
         disableSoftNodes: false,
     }
