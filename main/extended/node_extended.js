@@ -243,9 +243,9 @@ export class HardNode extends BaseNode {
     *
     * @example
     * ```js
-    * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * import { createParser } from "https://deno.land/x/deno_tree_sitter/main/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
-    * const parser = await parserFromWasm(javascript) // path or Uint8Array
+    * const parser = await createParser(javascript) // path or Uint8Array
     * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
     *
     * tree.rootNode.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
@@ -347,9 +347,9 @@ export class HardNode extends BaseNode {
     *
     * @example
     * ```js
-    * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * import { createParser } from "https://deno.land/x/deno_tree_sitter/main/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
-    * const parser = await parserFromWasm(javascript) // path or Uint8Array
+    * const parser = await createParser(javascript) // path or Uint8Array
     * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
     * // ex1: no capture names
     * const nodes = tree.rootNode.quickQuery(
@@ -405,9 +405,9 @@ export class HardNode extends BaseNode {
     *
     * @example
     * ```js
-    * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * import { createParser } from "https://deno.land/x/deno_tree_sitter/main/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
-    * const parser = await parserFromWasm(javascript) // path or Uint8Array
+    * const parser = await createParser(javascript) // path or Uint8Array
     * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
     *
     * // ex1: no capture names

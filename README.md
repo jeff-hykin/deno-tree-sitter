@@ -1,6 +1,6 @@
 # The Tree Sitter for Deno!
 
-This is a patched+enhanced version of the [web-tree-sitter](https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web) made to run on Deno.
+This is a patched+extended version of the [web-tree-sitter](https://github.com/tree-sitter/tree-sitter/tree/master/lib/binding_web) made to run on Deno, the web, while being bundler-friendly.
 
 # Usage: How do I __ ?
 
@@ -705,6 +705,115 @@ parser.parse(sourceCode).rootNode.namedDescendantForPosition(t, r=t)
 parser.parse(sourceCode).rootNode.walk() 
 ```
  -->
+ 
+# Extras
+
+Here's a few tools
+
+### Indent
+
+The `.indent` of a node is based on the whitespace indentation of the line it is on.
+```js
+const myVar = parser.parse(`   let myVar = 1;`).quickQueryFirst(`(identifier)`)
+myVar.indent // "   " 
+```
+
+### Debug with XML Style Preview
+
+If you want to look at an AST in a human-readable format, try the `xmlStylePreview` function.
+
+```js
+import { xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/extras/xml_style_preview.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
+import bash from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/bash.js"
+const parser = await createParser(javascript) // path or Uint8Array
+const tree = parser.parse(`
+function thing(arg1) {
+    let a = 10
+}
+`)
+
+// NOTE: this is not valid XML, just very XML-like
+console.log(xmlStylePreview(tree.rootNode, { alwaysShowTextAttr: false }))
+// NOTE: setting alwaysShowTextAttr to true will output A LOT of text, be wary
+// output:
+`<program>
+    <function_declaration>
+        <function text="function" />
+        <whitespace text=" " />
+        <identifier text="thing" />
+        <formal_parameters>
+            <"(" text="(" />
+            <identifier text="arg1" />
+            <")" text=")" />
+        </formal_parameters>
+        <whitespace text=" " />
+        <statement_block>
+            <"{" text="{" />
+            <whitespace text="\\n    " />
+            <lexical_declaration>
+                <let text="let" />
+                <whitespace text=" " />
+                <variable_declarator>
+                    <identifier text="a" />
+                    <whitespace text=" " />
+                    <"=" text="=" />
+                    <whitespace text=" " />
+                    <number text="10" />
+                </variable_declarator>
+            </lexical_declaration>
+            <whitespace text="\\n" />
+            <"}" text="}" />
+        </statement_block>
+    </function_declaration>
+    <whitespace text="\\n" />
+</program>`
+```
+
+### Theme/Colors Via HTML
+
+If you want to do some basic text-styling and colors, try the `applyThemeGetHtml` function.
+
+```js
+import { applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/extras/apply_theme_get_html.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.0/main/main.js"
+import bash from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/bash.js"
+const parser = await createParser(javascript) // path or Uint8Array
+const sourceCode = `function thing(arg1, arg2) {
+    let a = 10
+}`
+var tree = parser.parse(sourceCode)
+
+console.log(applyThemeGetHtml({
+    themeRules: [
+        { query: `(number) @target`, style: `color:salmon;` },
+        { query: `(identifier) @target`, style: `color:cornflowerblue;`, class: "animate-pulse" },
+        // parameters
+        { query: `(formal_parameters (",") @target)`, style: `color:purple;`, },
+        // function declaration name
+        { query: `(function_declaration (identifier) @target)`, style: `color:aqua; font-weight:bold;` },
+    ],
+    tree: tree,
+    string: sourceCode,
+    tagForBaseElements: "code",
+    tagForStyledElements: "span", // can create a hierarchy (e.g. don't use "p")
+}))
+// output:
+`<code>function </code>
+<span style="color: aqua; font-weight: bold"><code>thing</code></span>
+<code>(</code>
+<span style="color: cornflowerblue" class="animate-pulse"><code>arg1</code></span>
+<span style="color: purple"><code>,</code></span>
+<code> </code>
+<span style="color: cornflowerblue" class="animate-pulse"><code>arg2</code></span>
+<code>) {
+    let </code>
+<span style="color: cornflowerblue" class="animate-pulse"><code>a</code></span>
+<code> = </code>
+<span style="color: salmon"><code>10</code></span>
+<code>
+}</code>`
+```
 
 # Contributing
 
