@@ -1,5 +1,6 @@
 import { Node } from "../tree_sitter/node.js"
 
+export const _shadows = {}
 export class BaseNode {
     // type = ""
     // typeId = 0
@@ -130,5 +131,43 @@ export class BaseNode {
     }
     flattened() {
         return []
+    }
+
+    replaceInnards(replacement) {
+        const tree = this.tree
+        const sourceCode = this.tree.codeString
+        const node = _shadows[this.id] || this
+        // clear out children (innards) because of replacement
+        node._children = []
+        node._fields = {}
+        // get the node position info
+        const {
+            startPosition: originalStart,
+            endPosition: originalEnd,
+            startIndex: originalStartIndex,
+            endIndex: originalEndIndex,
+        } = node
+
+        // compute what the new row-column will be
+        const newNumberOfLines = replacement.match(/\n/g)?.length || 0
+        let newEndCol = originalStart.column;
+        if (newNumberOfLines == 0) {
+            newEndCol = originalStart.column + replacement.length
+        } else {
+            newEndCol = replacement.split("\n").slice(-1)[0].length
+        }
+        console.debug(`originalStartIndex is:`,originalStartIndex)
+        console.debug(`originalEndIndex is:`,originalEndIndex)
+        // updates all the indices of all the nodes
+        tree.edit({
+            startIndex: originalStartIndex,
+            oldEndIndex: originalEndIndex,
+            newEndIndex: originalStartIndex + replacement.length,
+            startPosition: originalStart,
+            oldEndPosition: originalEnd,
+            newEndPosition: { row: originalStart.row + newNumberOfLines, column: newEndCol },
+        })
+
+        this.tree.codeString = sourceCode.slice(0, originalStartIndex) + replacement + sourceCode.slice(originalEndIndex)
     }
 }

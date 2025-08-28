@@ -25,7 +25,7 @@ should be "=" : {
   hasChildren: false,
   children: []
 }
-before gutting: <program text="function thing(arg1) {\n        let a = 10\n    }\n" />
+before gutting: <program text="\n    function thing(arg1) {\n        let a = 10\n    }\n" />
     <function_declaration text="function thing(arg1) {\n        let a = 10\n    }" />
         <function text="function" />
         </function>
@@ -73,7 +73,13 @@ tree.codeString is:
         let a = 10
     }
 
-after gutting: <program text="async function thing(arg1) {\n        let a += 999\n    }\n" />
+originalStartIndex is: 5
+originalEndIndex is: 13
+originalStartIndex is: 50
+originalEndIndex is: 52
+originalStartIndex is: 48
+originalEndIndex is: 49
+after gutting: <program text="\n    async function thing(arg1) {\n        let a += 999\n    }\n" />
     <function_declaration text="async function thing(arg1) {\n        let a += 999\n    }" />
         <function text="async function" />
         </function>

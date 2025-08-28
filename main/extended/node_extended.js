@@ -1,5 +1,5 @@
 import { Node } from "../tree_sitter/node.js"
-import { BaseNode } from "./base_node.js"
+import { BaseNode, _shadows } from "./base_node.js"
 import { WhitespaceNode } from "./whitespace_node.js"
 import { SoftTextNode } from "./soft_text_node.js"
 import { Query, QueryError } from "../tree_sitter/query.js"
@@ -12,7 +12,6 @@ const originalEndPosition = originalDescriptors.endPosition.get
 const originalParent = originalDescriptors.parent.get
 const originalTextGetter = originalDescriptors.text.get
 
-export const _shadows = {}
 class HardNode {
     get parent() {
         const rawParent = originalParent.call(this)
@@ -348,43 +347,6 @@ class HardNode {
     get fieldNames() {
         return Object.keys(this.fields)
     }
-
-    replaceInnards(replacement) {
-        const tree = this.tree
-        const sourceCode = this.tree.codeString
-        const node = _shadows[this.id] || this
-        // clear out children (innards) because of replacement
-        node._children = []
-        node._fields = {}
-        // get the node position info
-        const {
-            startPosition: originalStart,
-            endPosition: originalEnd,
-            startIndex: originalStartIndex,
-            endIndex: originalEndIndex,
-        } = node
-
-        // compute what the new row-column will be
-        const newNumberOfLines = replacement.match(/\n/g)?.length || 0
-        let newEndCol = originalStart.column;
-        if (newNumberOfLines == 0) {
-            newEndCol = originalStart.column + replacement.length
-        } else {
-            newEndCol = replacement.split("\n").slice(-1)[0].length
-        }
-
-        // updates all the indices of all the nodes
-        tree.edit({
-            startIndex: originalStartIndex,
-            oldEndIndex: originalEndIndex,
-            newEndIndex: originalStartIndex + replacement.length,
-            startPosition: originalStart,
-            oldEndPosition: originalEnd,
-            newEndPosition: { row: originalStart.row + newNumberOfLines, column: newEndCol },
-        })
-
-        this.tree.codeString = sourceCode.slice(0, originalStartIndex) + replacement + sourceCode.slice(originalEndIndex)
-    }
 }
 
 // patch Node with all HardNode properties
@@ -405,9 +367,10 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         const childrenCopy = [...children]
         let firstChild = childrenCopy.shift()
         // helper
-        const handleGaps = (gapText, referenceNode, parentNode) => {
-            let start = referenceNode.endIndex
-            let startPosition = referenceNode.endPosition
+        const handleGaps = (gapText, getReferencePoint, parentNode) => {
+            const { index, position } = getReferencePoint()
+            let start = index
+            let startPosition = position
             const chunks = gapText.split(/(?<!\s)(?=\s+)/g)
             let colOffset = startPosition.column
             let rowOffset = startPosition.row
@@ -423,36 +386,37 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
                     // reset column offset on new row
                     if (rowOffsetBefore != rowOffset) {
                         colOffset = eachGap.split("\n").slice(-1)[0].length
+                    } else {
+                        colOffset += eachGap.length
                     }
                     newChildren.push(new WhitespaceNode({
                         tree: node.tree,
                         parent: parentNode,
-                        referenceNode: referenceNode,
+                        getReferencePoint,
                         text: eachGap,
-                        _startIndexOffset: start-referenceNode.startIndex,
-                        _startRowOffset: rowOffsetBefore-referenceNode.startPosition.row,
-                        _startColOffset: colOffsetBefore-referenceNode.startPosition.column,
-                        _endIndexOffset: end-referenceNode.startIndex,
-                        _endRowOffset: rowOffset-referenceNode.startPosition.row,
-                        _endColOffset: colOffset-referenceNode.startPosition.column,
+                        _startIndexOffset: start-index,
+                        _startRowOffset: rowOffsetBefore-position.row,
+                        _startColOffset: colOffsetBefore-position.column,
+                        _endIndexOffset: end-index,
+                        _endRowOffset: rowOffset-position.row,
+                        _endColOffset: colOffset-position.column,
                         children: [],
                     }))
                 // sometimes the gap isn't always whitespace
                 } else {
-
                     const colOffsetBefore = colOffset
                     colOffset += eachGap.length
                     newChildren.push(new SoftTextNode({
                         tree: node.tree,
                         parent: parentNode,
-                        referenceNode: referenceNode,
+                        getReferencePoint,
                         text: eachGap,
-                        _startIndexOffset: start-referenceNode.startIndex,
-                        _startRowOffset: rowOffset-referenceNode.startPosition.row,
-                        _startColOffset: colOffsetBefore-referenceNode.startPosition.column,
-                        _endIndexOffset: end-referenceNode.startIndex,
-                        _endRowOffset: rowOffset-referenceNode.startPosition.row,
-                        _endColOffset: colOffset-referenceNode.startPosition.column,
+                        _startIndexOffset: start-index,
+                        _startRowOffset: rowOffset-position.row,
+                        _startColOffset: colOffsetBefore-position.column,
+                        _endIndexOffset: end-index,
+                        _endRowOffset: rowOffset-position.row,
+                        _endColOffset: colOffset-position.column,
                         children: [],
                     }))
                 }
@@ -463,7 +427,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         if (node.startIndex != firstChild.startIndex) {
             const gapText = string.slice(node.startIndex, firstChild.startIndex)
             // whitespace and non-whitespace chunks
-            handleGaps(gapText, node, node)
+            handleGaps(gapText, ()=>({index: node.startIndex, position: node.startPosition}), node)
         }
         // firstChild.indent = indent
         newChildren.push(firstChild)
@@ -472,7 +436,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         for (const eachSecondaryNode of childrenCopy) {
             if (prevChild.endIndex != eachSecondaryNode.startIndex) {
                 const gapText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
-                handleGaps(gapText, prevChild, node)
+                handleGaps(gapText, ()=>({index: prevChild.endIndex, position: prevChild.endPosition}), node)
             }
             // eachSecondaryNode.indent = indent
             newChildren.push(eachSecondaryNode)
@@ -482,7 +446,7 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         // gap between last child and parent
         if (prevChild.endIndex != node.endIndex) {
             const gapText = string.slice(prevChild.endIndex, node.endIndex)
-            handleGaps(gapText, prevChild, node)
+            handleGaps(gapText, ()=>({index: prevChild.endIndex, position: prevChild.endPosition}), node)
         }
         
         return newChildren

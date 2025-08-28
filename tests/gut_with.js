@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-all
 import { xmlStylePreview } from "../main/extras/xml_style_preview.js"
-import { newParser, BaseNode } from "../main/main.js"
+import { createParser, BaseNode } from "../main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 
-var parser = await newParser(javascript) // path or Uint8Array
+var parser = await createParser(javascript) // path or Uint8Array
 var tree = parser.parse(`
     function thing(arg1) {
         let a = 10

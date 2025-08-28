@@ -1,9 +1,10 @@
+import { _shadows } from "./base_node.js"
 import { Node } from "../tree_sitter/node.js"
 import { Tree } from "../tree_sitter/tree.js"
 import { Parser } from "../tree_sitter/parser.js"
 import { Language } from "../tree_sitter/language.js"
 import "./node_extended.js" // note: redundant but might not be redundant in the future
-import { _shadows, _childrenWithSoftNodes } from "./node_extended.js"
+import { _childrenWithSoftNodes } from "./node_extended.js"
 
 const langCache = new Map()
 let hasBeenLoaded = false

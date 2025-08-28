@@ -41,7 +41,7 @@
     <whitespace text="\n" />
 </program>
 
-<program text="function thing(arg1) {\n    let a = 10\n}\n" indent="" />
+<program text="\nfunction thing(arg1) {\n    let a = 10\n}\n" indent="" />
     <function_declaration text="function thing(arg1) {\n    let a = 10\n}" indent="" />
         <function text="function" indent="" />
         </function>
