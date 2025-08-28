@@ -1,5 +1,5 @@
-
-        function <span style="color:aqua; font-weight:bold;" class=""><p>thing</p></span><p>(</p><span style="color:cornflowerblue;" class="animate-pulse"><p>arg1</p></span><span style="color:puple;" class=""><p>,</p></span><p> </p><span style="color:cornflowerblue;" class="animate-pulse"><p>arg2</p></span><p>) {
-            let </p><span style="color:cornflowerblue;" class="animate-pulse"><p>a</p></span><p> = </p><span style="color:salmon;" class=""><p>10</p></span><p>
-        }
-    </p>
+<code>
+    function </code><span style="color:aqua; font-weight:bold;"><code>thing</code></span><code>(</code><span style="color:cornflowerblue;" class="animate-pulse"><code>arg1</code></span><span style="color:puple;"><code>,</code></span><code> </code><span style="color:cornflowerblue;" class="animate-pulse"><code>arg2</code></span><code>) {
+        let </code><span style="color:cornflowerblue;" class="animate-pulse"><code>a</code></span><code> = </code><span style="color:salmon;"><code>10</code></span><code>
+    }
+</code>

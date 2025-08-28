@@ -31,6 +31,8 @@ var escapeHtml
  *     ],
  *     tree: parser.parse(string),
  *     string: string,
+ *     tagForBaseElements: "p",
+ *     tagForStyledElements: "span",
  * })
  *
  * console.log(output)
@@ -42,7 +44,7 @@ var escapeHtml
  * @returns {String} output - html string of styled text
  *
  */
-export const applyThemeGetHtml = ({ themeRules, tree, string, tagForStyled = "span", tagForBaseElements = "p" }) => {
+export const applyThemeGetHtml = ({ themeRules, tree, string, tagForStyledElements = "span", tagForBaseElements = "code" }) => {
     const rootNode = tree.rootNode
     const spliceStarts = {}
     const spliceEnds = {}
@@ -88,7 +90,7 @@ export const applyThemeGetHtml = ({ themeRules, tree, string, tagForStyled = "sp
                 // console.debug(`        id is:`, id)
                 // console.debug(`        activated[id] is:`, activated[id])
                 if (activated[id]) {
-                    innerHtml.push(`</${tagForStyled}>`)
+                    innerHtml.push(`</${tagForStyledElements}>`)
                     priorityStack.pop()
                     delete activated[id]
                 }
@@ -104,9 +106,9 @@ export const applyThemeGetHtml = ({ themeRules, tree, string, tagForStyled = "sp
                 if (eachPriority > activePriority) {
                     priorityStack.push(eachPriority)
                     if ((classNames || "").trim().length > 0) {
-                        innerHtml.push(`<${tagForStyled} style="${escapeHtml(style)}" class="${escapeHtml(classNames || "")}">`)
+                        innerHtml.push(`<${tagForStyledElements} style="${escapeHtml(style)}" class="${escapeHtml(classNames || "")}">`)
                     } else {
-                        innerHtml.push(`<${tagForStyled} style="${escapeHtml(style)}">`)
+                        innerHtml.push(`<${tagForStyledElements} style="${escapeHtml(style)}">`)
                     }
                     let id = JSON.stringify([styleAndClass, eachSplicePoint - 0, eachPriority])
                     // console.debug(`    +id is:`, id);

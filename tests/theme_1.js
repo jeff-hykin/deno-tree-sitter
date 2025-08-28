@@ -3,12 +3,12 @@ import { applyThemeGetHtml } from "../main/extras/apply_theme_get_html.js"
 import { createParser } from "../main/main.js"
 import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
-const string = `
-        function thing(arg1, arg2) {
-            let a = 10
-        }
-    `
-var tree = parser.parse(string,)
+const sourceCode = `
+    function thing(arg1, arg2) {
+        let a = 10
+    }
+`
+var tree = parser.parse(sourceCode)
 
 console.log(applyThemeGetHtml({
     themeRules: [
@@ -20,5 +20,5 @@ console.log(applyThemeGetHtml({
         { query: `(function_declaration (identifier) @target)`, style: `color:aqua; font-weight:bold;` },
     ],
     tree: tree,
-    string,
+    string: sourceCode,
 }))
