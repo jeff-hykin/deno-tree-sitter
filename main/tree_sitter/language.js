@@ -18,7 +18,7 @@ export class LanguageMetadata {
  */
 export class Language {
     /** @internal */
-    [0] = 0 // Internal handle for WASM
+    [0] = 0 // Internal handle for Wasm
 
     /**
      * A list of all node types in the language. The index of each type in this
@@ -260,8 +260,7 @@ export class Language {
         } else {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (globalThis.process?.versions.node) {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports
-                const fs = await import("node:fs/promises")
+                const fs = await import("fs/promises")
                 bytes = fs.readFile(input)
             } else {
                 bytes = fetch(input).then((response) =>
@@ -281,8 +280,8 @@ export class Language {
         const symbolNames = Object.keys(mod)
         const functionName = symbolNames.find((key) => LANGUAGE_FUNCTION_REGEX.test(key) && !key.includes("external_scanner_"))
         if (!functionName) {
-            console.log(`Couldn't find language function in WASM file. Symbols:\n${JSON.stringify(symbolNames, null, 2)}`)
-            throw new Error("Language.load failed: no language function found in WASM file")
+            console.log(`Couldn't find language function in Wasm file. Symbols:\n${JSON.stringify(symbolNames, null, 2)}`)
+            throw new Error("Language.load failed: no language function found in Wasm file")
         }
         const languageAddress = mod[functionName]()
         return new Language(INTERNAL, languageAddress)

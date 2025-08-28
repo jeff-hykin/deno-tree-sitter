@@ -300,7 +300,7 @@ function parsePattern(index, stepType, stepValueId, captureNames, stringValues, 
 
 export class Query {
     /** @internal */
-    [0] = 0 // Internal handle for WASM
+    [0] = 0 // Internal handle for Wasm
 
     /** @internal */
     exceededMatchLimit

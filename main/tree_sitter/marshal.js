@@ -28,8 +28,8 @@ export function unmarshalCaptures(query, tree, address, patternIndex, result) {
  *
  * Marshals a {@link Node} to the transfer buffer.
  */
-export function marshalNode(node) {
-    let address = TRANSFER_BUFFER
+export function marshalNode(node, index = 0) {
+    let address = TRANSFER_BUFFER + index * SIZE_OF_NODE
     C.setValue(address, node.id, "i32")
     address += SIZE_OF_INT
     C.setValue(address, node.startIndex, "i32")

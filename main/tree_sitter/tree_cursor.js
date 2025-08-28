@@ -7,16 +7,16 @@ import { getText, Tree } from "./tree.js"
 /** A stateful object for walking a syntax {@link Tree} efficiently. */
 export class TreeCursor {
     /** @internal */
-    [0] = 0; // Internal handle for WASM
+    [0] = 0; // Internal handle for Wasm
 
     /** @internal */
-    [1] = 0; // Internal handle for WASM
+    [1] = 0; // Internal handle for Wasm
 
     /** @internal */
-    [2] = 0; // Internal handle for WASM
+    [2] = 0; // Internal handle for Wasm
 
     /** @internal */
-    [3] = 0 // Internal handle for WASM
+    [3] = 0 // Internal handle for Wasm
 
     /** @internal */
     tree

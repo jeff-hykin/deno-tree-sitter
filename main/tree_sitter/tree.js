@@ -30,7 +30,7 @@ export function getText(tree, startIndex, endIndex, startPosition) {
 /** A tree that represents the syntactic structure of a source code file. */
 export class Tree {
     /** @internal */
-    [0] = 0 // Internal handle for WASM
+    [0] = 0 // Internal handle for Wasm
 
     /** @internal */
     textCallback

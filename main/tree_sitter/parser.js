@@ -49,10 +49,10 @@ export let MIN_COMPATIBLE_VERSION
  */
 export class Parser {
     /** @internal */
-    [0] = 0; // Internal handle for WASM
+    [0] = 0; // Internal handle for Wasm
 
     /** @internal */
-    [1] = 0 // Internal handle for WASM
+    [1] = 0 // Internal handle for Wasm
 
     /** @internal */
     logCallback = null
@@ -63,7 +63,7 @@ export class Parser {
     /**
      * This must always be called before creating a Parser.
      *
-     * You can optionally pass in options to configure the WASM module, the most common
+     * You can optionally pass in options to configure the Wasm module, the most common
      * one being `locateFile` to help the module find the `.wasm` file.
      */
     static async init(moduleOptions) {

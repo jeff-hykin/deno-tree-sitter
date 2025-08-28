@@ -7,7 +7,7 @@ export let Module = null
 /**
  * @internal
  *
- * Initialize the Tree-sitter WASM module. This should only be called by the {@link Parser} class via {@link Parser.init}.
+ * Initialize the Tree-sitter Wasm module. This should only be called by the {@link Parser} class via {@link Parser.init}.
  */
 export async function initializeBinding(moduleOptions) {
     if (!Module) {
@@ -19,7 +19,7 @@ export async function initializeBinding(moduleOptions) {
 /**
  * @internal
  *
- * Checks if the Tree-sitter WASM module has been initialized.
+ * Checks if the Tree-sitter Wasm module has been initialized.
  */
 export function checkModule() {
     return !!Module

@@ -3,7 +3,7 @@ import { Language } from "./language.js"
 
 export class LookaheadIterator {
     /** @internal */
-    [0] = 0 // Internal handle for WASM
+    [0] = 0 // Internal handle for Wasm
 
     /** @internal */
     language

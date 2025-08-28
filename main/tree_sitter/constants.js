@@ -64,7 +64,7 @@ export function isPoint(point) {
 /**
  * @internal
  *
- * Sets the Tree-sitter WASM module. This should only be called by the {@link Parser} class via {@link Parser.init}.
+ * Sets the Tree-sitter Wasm module. This should only be called by the {@link Parser} class via {@link Parser.init}.
  */
 export function setModule(module) {
     C = module
@@ -73,7 +73,7 @@ export function setModule(module) {
 /**
  * @internal
  *
- * `C` is a convenient shorthand for the Tree-sitter WASM module,
+ * `C` is a convenient shorthand for the Tree-sitter Wasm module,
  * which allows us to call all of the exported functions.
  */
 export let C
