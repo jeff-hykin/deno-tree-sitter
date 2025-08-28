@@ -77,8 +77,16 @@ const originalEndPosition = originalDescriptors.endPosition.get
 const originalParent = originalDescriptors.parent.get
 const originalTextGetter = originalDescriptors.text.get
 const originalEquals = originalDescriptors.equals.value
+const originalToString = originalDescriptors.toString.value
 
 export class HardNode extends BaseNode {
+    /** @internal */
+    _children
+    /** @internal */
+    _fields
+    /** @internal */
+    _depth
+
     /** @type {number} */
     id
     /** @type {number} */
@@ -459,6 +467,11 @@ export class HardNode extends BaseNode {
             current = current.parent
         }
         return "(" + chunks.reverse().join(" (") + ")".repeat(chunks.length)
+    }
+    
+    /** @returns {string} */
+    asLispString() {
+        return originalToString.call(this)
     }
 }
 
