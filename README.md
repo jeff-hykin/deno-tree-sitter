@@ -817,4 +817,4 @@ console.log(applyThemeGetHtml({
 
 # Contributing
 
-You can edit the main.js or tree_sitter.js. But, if you edit the tree_sitter.js, you'll need to edit `run/pull_tree_sitter` (which is JavaScript). The `run/pull_tree_sitter` is what allows this repo to stay up to date with the tree-sitter-web. It injects changes into the official tree-sitter codebase, and you'll have to do that for any changes you make as well.
+You can edit anything inside of `main/extended` or `main/extras`. However everything under `main/tree_sitter/` is automatically derived from the upstream tree sitter. To update it, run `run/pull_tree_sitter` in the command line. At time of writing (2025-August) the latest tree sitter version is `0.22.5`, which is what this codebase is based on.

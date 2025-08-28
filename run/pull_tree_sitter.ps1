@@ -37,69 +37,79 @@ const sourceFileNames = [
     "tree.ts",
     "tree_cursor.ts",
 ]
+const patchSourceCode = (code)=>code.replace(
+        // this is cause tsBlankSpace doesnt fully do it's job
+        /\bpublic(?= \w)/g,""
+    ).replace(
+        /await import\(("|')fs\/promises("|')\)/gs, // version 0.22.5 added this for some reason
+        "await import(\"node:fs/promises\")"
+    // these are because the tree sitter parser doesn't fully do its job marking things as type-imports instead of normal imports
+    ).replace(
+        /((?:import|export) *\{.* )ParseState,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )ParseOptions,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )Internal,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )Point,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )Edit,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )ParseCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )ProgressCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )LogCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )Range,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryCapture,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryOptions,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryState,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryProperties,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryPredicate,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )QueryMatch,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )CaptureQuantifier,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    ).replace(
+        /((?:import|export) *\{.* )PredicateStep,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
+        "$1$2"
+    )
 const srcParentPath = `${FileSystem.thisFolder}/../main/tree_sitter/`
 for (const eachFileName of sourceFileNames) {
     // https://raw.githubusercontent.com/tree-sitter/tree-sitter/refs/heads/master/lib/binding_web/src/index.ts
     let data = await (await fetch(`https://raw.githubusercontent.com/tree-sitter/tree-sitter/refs/heads/master/lib/binding_web/src/${eachFileName}`)).arrayBuffer()
     data = new TextDecoder().decode(new Uint8Array(data))
+    // js version
     await FileSystem.write({
-        data: tsBlankSpace(data).replace(
-            // this is cause tsBlankSpace doesnt fully do it's job
-            /\bpublic(?= \w)/g,""
-        // these are because the tree sitter parser doesn't fully do its job marking things as type-imports instead of normal imports
-        ).replace(
-            /((?:import|export) *\{.* )ParseState,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )ParseOptions,?(.*\} *from *("|')\.\/parser(\.js|\.ts)?("|');)/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )Internal,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )Point,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )Edit,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )ParseCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )ProgressCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )LogCallback,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )Range,?(.*\} *from *("|')\.\/constants(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryCapture,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryOptions,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryState,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryProperties,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryPredicate,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )QueryMatch,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )CaptureQuantifier,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ).replace(
-            /((?:import|export) *\{.* )PredicateStep,?(.*\} *from *("|')\.\/query(\.js|\.ts)?("|'))/gs,
-            "$1$2"
-        ),
+        data: patchSourceCode(tsBlankSpace(data)),
         path:`${srcParentPath}/${eachFileName.replace(/\.ts$/,".js")}`,
+    })
+    // typescript version
+    await FileSystem.write({
+        data: patchSourceCode(data),
+        path:`${srcParentPath}/${eachFileName}`,
     })
 }
 
@@ -156,4 +166,5 @@ for (const eachFileName of sourceFileNames) {
         data: pureBinaryify(data),
     })
 
+console.log(`NOTE: use VS Code's document formatter (force) on all the JS files`)
 // (this comment is part of deno-guillotine, dont remove) #>
