@@ -1,9 +1,74 @@
 import { Node } from "../tree_sitter/node.js"
+import { Parser } from "../tree_sitter/parser.js"
 import { BaseNode, _shadows } from "./base_node.js"
 import { WhitespaceNode } from "./whitespace_node.js"
 import { SoftTextNode } from "./soft_text_node.js"
 import { Query, QueryError } from "../tree_sitter/query.js"
 import { _getQueryCaptureTargets } from "../extras/misc.js"
+import { Tree } from "../tree_sitter/tree.js"
+
+// NOTE: the tree override is in here because it has a circular type dependency on HardNode
+const realRootNodeGetter = Object.getOwnPropertyDescriptor(Tree.prototype, "rootNode").get
+// 
+// complicated override in order to make the root node pretend to contain soft nodes (ex: leading and trailing whitespace)
+// 
+    // hard because a normal change to .startIndex/.endIndex breaks internal methods, so we have to selectively choose who sees the real/faked .startIndex/.endIndex
+Object.defineProperty(Tree.prototype, "rootNode", {
+    get() {
+        const rootNode = realRootNodeGetter.call(this)
+        const rootShadow = {}
+        Object.setPrototypeOf(rootShadow, Object.getPrototypeOf(rootNode))
+        const descriptors = Object.assign(Object.getOwnPropertyDescriptors(Node.prototype), Object.getOwnPropertyDescriptors(rootNode))
+        const newDescriptors = {}
+        for (const [key, setting] of Object.entries(descriptors)) {
+            if (key == "startIndex" || key == "startPosition") {
+                continue
+            } else if (key == "text" || key == "replaceInnards") {
+                // use the faked .startIndex for these methods/getters
+                newDescriptors[key] = setting
+            } else {
+                // use the real .startIndex for these methods/getters (get it from the real thing)
+                // (otherwise stuff breaks when there is a whitespace prefix)
+                newDescriptors[key] = {
+                    get: ()=>{
+                        const output = rootNode[key]
+                        if (typeof output == "function") {
+                            return (...args)=>output.apply(rootNode, args)
+                        }
+                        return output
+                    },
+                    set: (value)=>rootNode[key] = value,
+                    enumerable: setting.enumerable,    
+                    configurable: setting.configurable,
+                }
+            }
+        }
+        Object.setPrototypeOf(rootShadow, Node.prototype)
+        Object.defineProperties(rootShadow, newDescriptors)
+        rootShadow.startIndex = 0
+        rootShadow.startPosition = { row: 0, column: 0 }
+        // if the original file is just whitespace or non-matched text, then fill it with soft nodes even though it'd normally have no children
+        if (rootShadow.children == null && rootShadow.endIndex != 0) {
+            rootShadow._children = _childrenWithSoftNodes(rootShadow, [{startIndex: rootShadow.endIndex, endIndex: rootShadow.endIndex, endPosition: rootShadow.endPosition}], rootNode.tree.codeString).slice(0,-1)
+        }
+        _shadows[rootNode.id] = rootShadow
+        return rootShadow
+    }
+})
+
+// this only exists to help with type hints
+export class ExtendedTree extends Tree {
+    /** @type {HardNode} */
+    rootNode
+}
+
+// this only exists to help with type hints
+class Position {
+    /** @type {number} */
+    row
+    /** @type {number} */
+    column
+}
 
 const originalDescriptors = Object.getOwnPropertyDescriptors(Node.prototype)
 const originalChildrenGetter = originalDescriptors.children.get
@@ -11,17 +76,47 @@ const originalEndIndex = originalDescriptors.endIndex.get
 const originalEndPosition = originalDescriptors.endPosition.get
 const originalParent = originalDescriptors.parent.get
 const originalTextGetter = originalDescriptors.text.get
+const originalEquals = originalDescriptors.equals.value
 
-class HardNode {
+export class HardNode extends BaseNode {
+    /** @type {number} */
+    id
+    /** @type {number} */
+    startIndex
+    /** @type {Position} */
+    startPosition
+    /** @type {ExtendedTree} */
+    tree
+    /** @type {string} */
+    type
+    /** @type {Boolean} */
+    isExtra
+    /** @type {Boolean} */
+    isError
+    /** @type {Boolean} */
+    isMissing
+    /** @type {Boolean} */
+    hasChanges
+    /** @type {Boolean} */
+    hasError
+    /**
+     * @param {HardNode} other - 
+     * @returns {Boolean} output - 
+     */
+    equals = originalEquals
+    
+    /** @type {HardNode} */
     get parent() {
         const rawParent = originalParent.call(this)
         return _shadows[rawParent?.id] || rawParent
     }
-
+    
+    /** @type {string} */
     get text() {
         return originalTextGetter.call(_shadows[this.id] || this)
     }
-
+    
+    /** @type {Number} */
     get endIndex() {
         if (this.depth == 0) {
             return this.tree.codeString.length
@@ -29,6 +124,7 @@ class HardNode {
         return originalEndIndex.call(this)
     }
     
+    /** @type {Position} */
     get endPosition() {
         if (this.depth == 0) {
             const rowIndex = (this.tree.codeString.match(/\n/g)||[]).length
@@ -38,6 +134,7 @@ class HardNode {
         return originalEndPosition.call(this)
     }
     
+    /** @type {Array<HardNode|SoftNode>} */
     get children() {
         if (!this._children) {
             // will set this._children
@@ -54,6 +151,12 @@ class HardNode {
         this._children = value
     }
 
+    /**
+    * Yields each child 
+    *
+    * @generator
+    * @yields {HardNode} The current child or grandchild in the structure.
+    */
     *traverse(arg = { _parentNodes: [] }) {
         const { _parentNodes } = arg
         const parentNodes = [this, ..._parentNodes]
@@ -81,7 +184,7 @@ class HardNode {
     * @param {Function} opts.filter - A function to filter the flattened elements.
     * @param {Boolean} opts.includeSelf - 
     * @generator
-    * @yields {Node} The current child or grandchild in the structure.
+    * @yields {HardNode} The current child or grandchild in the structure.
     */
     *iterFlattened({filter, includeSelf=false}={}) {
         if (includeSelf) {
@@ -105,6 +208,8 @@ class HardNode {
             }
         }
     }
+
+    /** @internal */
     iterFlatten() {
         throw Error(`did you mean iterFlattened instead of iterFlatten?`)
     }
@@ -120,6 +225,7 @@ class HardNode {
     flattened({filter, includeSelf=false}={}) {
         return [...this.iterFlattened({filter, includeSelf})]
     }
+    /** @internal */
     flatten() {
         throw Error(`did you mean flattened instead of flatten?`)
     }
@@ -132,7 +238,7 @@ class HardNode {
     * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
-    * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+    * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
     *
     * tree.rootNode.query(`(identifier) @blahBlahBlah`, {matchLimit: 2})
     * // returns:
@@ -233,26 +339,22 @@ class HardNode {
     *
     * @example
     * ```js
-    * //import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
+    * import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/676ffa3b93768b8ac628fd5c61656f7dc41ba413/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
-    * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
-    *
-    * tree.rootNode.quickQuery(`(identifier)`, {matchLimit: 2})
-    * // returns:
-    * [
-    *   {
-    *      type: "identifier",
-    *      typeId: 1,
-    *      startPosition: { row: 0, column: 4 },
-    *      startIndex: 4,
-    *      endPosition: { row: 0, column: 5 },
-    *      endIndex: 5,
-    *      indent: undefined,
-    *      hasChildren: false,
-    *      children: []
-    *   }
-    * ]
+    * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+    * // ex1: no capture names
+    * const nodes = tree.rootNode.quickQuery(
+    *     `(identifier)`, {matchLimit: 2}
+    * )
+    * // ex2: with capture names
+    * const groups = tree.rootNode.quickQuery(
+    *     `'(binding (attrpath) @myKey (list_expression) @myList ("\\"")? @optionalThing )`
+    * )
+    * groups[0].myKey // node
+    * groups[0].myList // node
+    * groups[0].optionalThing // node or null
+    * groups[0][0] // node (the whole match)
     * ```
     *
     * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
@@ -260,8 +362,7 @@ class HardNode {
     * @param options.startPosition - {row: Number, column: number}
     * @param options.endPosition - {row: Number, column: number}
     * @param options.maxResultDepth - depth relative to the current node (1 = direct children, 2 = grandchildren, etc)
-    * @returns {[Object]} output
-    *
+    * @returns {Array<HardNode|Record<any, HardNode>>} nodesOrObjsOfNodes
     */
     quickQuery(queryString, options) {
         const possibleCaptureTargets = _getQueryCaptureTargets(queryString)
@@ -299,29 +400,25 @@ class HardNode {
     * // import { Parser, parserFromWasm } from "https://deno.land/x/deno_tree_sitter/main.js"
     * import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languages/raw/4d8a6d34d7f6263ff570f333cdcf5ded6be89e3d/main/javascript.js"
     * const parser = await parserFromWasm(javascript) // path or Uint8Array
-    * var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
+    * const tree = parser.parse('let a = 1;let b = 1;let c = 1;')
     *
-    * tree.rootNode.quickQueryFirst(`(identifier)`)
-    * // returns:
-    * ({
-    *      type: "identifier",
-    *      typeId: 1,
-    *      startPosition: { row: 0, column: 4 },
-    *      startIndex: 4,
-    *      endPosition: { row: 0, column: 5 },
-    *      endIndex: 5,
-    *      indent: undefined,
-    *      hasChildren: false,
-    *      children: []
-    * })
+    * // ex1: no capture names
+    * const node = tree.rootNode.quickQueryFirst(`(identifier)`)
+    * 
+    * // ex2: with capture names
+    * const { myKey, myList, optionalThing } = tree.rootNode.quickQueryFirst(
+    *     `'(binding (attrpath) @myKey (list_expression) @myList ("\\"")? @optionalThing )`
+    * )
+    * myKey // node
+    * myList // node
+    * optionalThing // node or null
     * ```
     *
     * @param {String} queryString - see https://tree-sitter.github.io/tree-sitter/using-parsers#query-syntax
     * @param options.startPosition - {row: Number, column: number}
     * @param options.endPosition - {row: Number, column: number}
     * @param options.maxResultDepth - depth relative to the current node (1 = direct children, 2 = grandchildren, etc)
-    * @returns {Object} output
-    *
+    * @returns {HardNode|Record<any,HardNode>|null} nodeOrObjOfNodes
     */
     quickQueryFirst(queryString, options) {
         return this.quickQuery(queryString, { ...options, matchLimit: 1 })[0]

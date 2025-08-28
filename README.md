@@ -5,7 +5,7 @@ This is a patched+enhanced version of the [web-tree-sitter](https://github.com/t
 # Usage: How do I __ ?
 
 1. Install / Import 
-2. Get an AST data structure
+2. Load + Parse Code
 3. Find a specific part of code (query the AST)
 4. Edit the tree (replace nodes, etc)
 
@@ -314,12 +314,20 @@ import javascript from "https://github.com/jeff-hykin/common_tree_sitter_languag
 
 const parser = await createParser(javascript)
 const tree = parser.parse('   let x = 1;')
-tree.rootNode.children[0] // whitespace node
+tree.rootNode.children[0] // whitespace node (soft node)
+tree.rootNode.hardChildren[0] // "let" node
 ```
 
+Note: you can't query a whitespace node because it's not actually part of the tree, it's just there to make processing easier. 
 
 
 ## 4. Edit the tree
+
+Editing is [normally a huge pain](https://github.com/tree-sitter/tree-sitter/discussions/2553#discussioncomment-9976343), but not anymore! Just use `.replaceInnards()` on a node to replace it with a string (example below). You can query, perform many edits, all of the .startIndex, .endIndex, .text, etc attributes will continue to be correct.
+
+However:
+1. **Calling .replaceInnards() will destroy the .children**! While that might be obvious to some, what is less obvious is, if you still have access to a child via a var, the .text of that (destroyed) child will be *wrong*. There currently is not a practical way to avoid this, the same thing happens with the normal tree-sitter library. If you need the text of a child you are about to replace, grab that child's .text before you replace it.
+2. `.replaceInnards()` does not trigger a re-parse. You can dump completely invalid syntax into the tree, all the non-child nodes will stay as-is. If you want to re-parse there is a fast way! Pass the old tree into the parse function (ex: `let newTree = parser.parse(oldTree.codeString, oldTree)`). Note: when a new tree is created there is ZERO OVERLAP between old nodes and new nodes. This is a tree sitter limitation.
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.0.0/main/main.js"
