@@ -260,7 +260,7 @@ export class Language {
         } else {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (globalThis.process?.versions.node) {
-                const fs = await import("fs/promises")
+                const fs = await import("node:fs/promises")
                 bytes = fs.readFile(input)
             } else {
                 bytes = fetch(input).then((response) =>
