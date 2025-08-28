@@ -88,10 +88,10 @@ export let MIN_COMPATIBLE_VERSION: number;
  */
 export class Parser {
   /** @internal */
-  private [0] = 0; // Internal handle for WASM
+  private [0] = 0; // Internal handle for Wasm
 
   /** @internal */
-  private [1] = 0; // Internal handle for WASM
+  private [1] = 0; // Internal handle for Wasm
 
   /** @internal */
   private logCallback: LogCallback | null = null;
@@ -102,10 +102,10 @@ export class Parser {
   /**
    * This must always be called before creating a Parser.
    *
-   * You can optionally pass in options to configure the WASM module, the most common
+   * You can optionally pass in options to configure the Wasm module, the most common
    * one being `locateFile` to help the module find the `.wasm` file.
    */
-  static async init(moduleOptions?: EmscriptenModule) {
+  static async init(moduleOptions?: Partial<EmscriptenModule>) {
     setModule(await initializeBinding(moduleOptions));
     TRANSFER_BUFFER = C._ts_init();
     LANGUAGE_VERSION = C.getValue(TRANSFER_BUFFER, 'i32');

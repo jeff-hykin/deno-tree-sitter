@@ -83,8 +83,8 @@ export const ZERO_POINT: Point = { row: 0, column: 0 };
 export type ParseCallback = (index: number, position: Point) => string | undefined;
 
 /**
-  * A callback that receives the parse state during parsing.
-  */
+ * A callback that receives the parse state during parsing.
+ */
 export type ProgressCallback = (progress: ParseState) => boolean;
 
 /**
@@ -118,7 +118,7 @@ export function isPoint(point?: Point): point is Point {
 /**
  * @internal
  *
- * Sets the Tree-sitter WASM module. This should only be called by the {@link Parser} class via {@link Parser.init}.
+ * Sets the Tree-sitter Wasm module. This should only be called by the {@link Parser} class via {@link Parser.init}.
  */
 export function setModule(module: MainModule) {
   C = module;
@@ -127,7 +127,7 @@ export function setModule(module: MainModule) {
 /**
  * @internal
  *
- * `C` is a convenient shorthand for the Tree-sitter WASM module,
+ * `C` is a convenient shorthand for the Tree-sitter Wasm module,
  * which allows us to call all of the exported functions.
  */
 export let C: MainModule;
