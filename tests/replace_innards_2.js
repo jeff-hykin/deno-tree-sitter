@@ -14,6 +14,5 @@ try {
     
 }
 
-// failing
 tree.rootNode.children[0].replaceInnards("\t\t\t\ta")
 console.debug(`tree.rootNode.text after is:`,tree.rootNode.text)

@@ -1,0 +1,135 @@
+tree.rootNode.text is: fn main() { }
+tree.rootNode.children[0].parent.text is: fn main() { }
+tree.rootNode.children[0] is: {
+  "": " ",
+  type: "whitespace",
+  typeId: -1,
+  fieldNames: [],
+  startPosition: { row: 0, column: 2 },
+  startIndex: 2,
+  endPosition: { row: 0, column: 3 },
+  endIndex: 3,
+  indent: "",
+  hasChildren: false,
+  children: []
+}
+tree.rootNode.children[0] is: {
+  "": " ",
+  type: "whitespace",
+  typeId: -1,
+  fieldNames: [],
+  startPosition: { row: 0, column: 2 },
+  startIndex: 2,
+  endPosition: { row: 0, column: 3 },
+  endIndex: 3,
+  indent: "",
+  hasChildren: false,
+  children: []
+}
+tree.rootNode.children[0].children[4] is: {
+  "": " ",
+  type: "whitespace",
+  typeId: -1,
+  fieldNames: [],
+  startPosition: { row: 0, column: 9 },
+  startIndex: 9,
+  endPosition: { row: 0, column: 10 },
+  endIndex: 10,
+  indent: "",
+  hasChildren: false,
+  children: []
+}
+tree.rootNode.children[0].fields.parameters is: {
+  "": "()",
+  type: "parameters",
+  typeId: 192,
+  fieldNames: [],
+  startPosition: { row: 0, column: 7 },
+  startIndex: 7,
+  endPosition: { row: 0, column: 9 },
+  endIndex: 9,
+  indent: "",
+  hasChildren: true,
+  children: [
+    {
+      "": "(",
+      type: "(",
+      typeId: 4,
+      fieldNames: [],
+      startPosition: { row: 0, column: 7 },
+      startIndex: 7,
+      endPosition: { row: 0, column: 8 },
+      endIndex: 8,
+      indent: "",
+      hasChildren: false,
+      children: []
+    },
+    {
+      "": ")",
+      type: ")",
+      typeId: 5,
+      fieldNames: [],
+      startPosition: { row: 0, column: 8 },
+      startIndex: 8,
+      endPosition: { row: 0, column: 9 },
+      endIndex: 9,
+      indent: "",
+      hasChildren: false,
+      children: []
+    }
+  ]
+}
+tree.rootNode.children[0].fields.parameters is: {
+  "": "(___)",
+  type: "parameters",
+  typeId: 192,
+  fieldNames: [],
+  startPosition: { row: 0, column: 7 },
+  startIndex: 7,
+  endPosition: { row: 0, column: 12 },
+  endIndex: 12,
+  indent: "",
+  hasChildren: true,
+  children: [
+    {
+      "": "(___)",
+      type: "(",
+      typeId: 4,
+      fieldNames: [],
+      startPosition: { row: 0, column: 7 },
+      startIndex: 7,
+      endPosition: { row: 0, column: 12 },
+      endIndex: 12,
+      indent: "",
+      hasChildren: false,
+      children: []
+    },
+    {
+      "": "",
+      type: ")",
+      typeId: 5,
+      fieldNames: [],
+      startPosition: { row: 0, column: 12 },
+      startIndex: 12,
+      endPosition: { row: 0, column: 12 },
+      endIndex: 12,
+      indent: "",
+      hasChildren: false,
+      children: []
+    }
+  ]
+}
+tree.rootNode.children[0].children[4] is: {
+  "": " ",
+  type: "whitespace",
+  typeId: -1,
+  fieldNames: [],
+  startPosition: { row: 0, column: 12 },
+  startIndex: 12,
+  endPosition: { row: 0, column: 13 },
+  endIndex: 13,
+  indent: "",
+  hasChildren: false,
+  children: []
+}
+tree.rootNode.text is: "fn main(___) { let a = 10; }"

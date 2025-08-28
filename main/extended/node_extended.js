@@ -426,8 +426,9 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         // preceding whitespace
         if (node.startIndex != firstChild.startIndex) {
             const gapText = string.slice(node.startIndex, firstChild.startIndex)
+            const thisNode = node
             // whitespace and non-whitespace chunks
-            handleGaps(gapText, ()=>({index: node.startIndex, position: node.startPosition}), node)
+            handleGaps(gapText, ()=>({index: thisNode.startIndex, position: thisNode.startPosition}), node)
         }
         // firstChild.indent = indent
         newChildren.push(firstChild)
@@ -436,7 +437,8 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         for (const eachSecondaryNode of childrenCopy) {
             if (prevChild.endIndex != eachSecondaryNode.startIndex) {
                 const gapText = string.slice(prevChild.endIndex, eachSecondaryNode.startIndex)
-                handleGaps(gapText, ()=>({index: prevChild.endIndex, position: prevChild.endPosition}), node)
+                const thisChild = prevChild
+                handleGaps(gapText, ()=>({index: thisChild.endIndex, position: thisChild.endPosition}), node)
             }
             // eachSecondaryNode.indent = indent
             newChildren.push(eachSecondaryNode)
@@ -446,7 +448,8 @@ export const _childrenWithSoftNodes = (node, children, string)=>{
         // gap between last child and parent
         if (prevChild.endIndex != node.endIndex) {
             const gapText = string.slice(prevChild.endIndex, node.endIndex)
-            handleGaps(gapText, ()=>({index: prevChild.endIndex, position: prevChild.endPosition}), node)
+            const thisChild = prevChild
+            handleGaps(gapText, ()=>({index: thisChild.endIndex, position: thisChild.endPosition}), node)
         }
         
         return newChildren

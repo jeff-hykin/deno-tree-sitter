@@ -73,12 +73,6 @@ tree.codeString is:
         let a = 10
     }
 
-originalStartIndex is: 5
-originalEndIndex is: 13
-originalStartIndex is: 50
-originalEndIndex is: 52
-originalStartIndex is: 48
-originalEndIndex is: 49
 after gutting: <program text="\n    async function thing(arg1) {\n        let a += 999\n    }\n" />
     <function_declaration text="async function thing(arg1) {\n        let a += 999\n    }" />
         <function text="async function" />

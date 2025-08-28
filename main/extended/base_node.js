@@ -156,8 +156,6 @@ export class BaseNode {
         } else {
             newEndCol = replacement.split("\n").slice(-1)[0].length
         }
-        console.debug(`originalStartIndex is:`,originalStartIndex)
-        console.debug(`originalEndIndex is:`,originalEndIndex)
         // updates all the indices of all the nodes
         tree.edit({
             startIndex: originalStartIndex,
