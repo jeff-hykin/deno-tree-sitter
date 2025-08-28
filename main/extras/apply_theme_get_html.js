@@ -44,7 +44,7 @@ var escapeHtml;
  *
  */
 export const applyThemeGetHtml = ({ themeRules, tree, string }) => {
-    const { rootNode } = addWhitespaceNodes({ string, tree });
+    const rootNode = tree.rootNode
     const spliceStarts = {};
     const spliceEnds = {};
     let priority = 0;
