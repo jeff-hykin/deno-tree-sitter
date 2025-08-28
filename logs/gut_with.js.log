@@ -1,3 +1,4 @@
+root.children[0].getQueryForSelf() (program (lexical_declaration (let)))
 should be "function" : function
 should be "10" : {
   "": "10",
@@ -73,6 +74,7 @@ tree.codeString is:
         let a = 10
     }
 
+tree.rootNode.children[0].children[5].children[2].children[2].getQueryForSelf() is: (program (function_declaration (statement_block (lexical_declaration (variable_declarator)))))
 after gutting: <program text="\n    async function thing(arg1) {\n        let a += 999\n    }\n" />
     <function_declaration text="async function thing(arg1) {\n        let a += 999\n    }" />
         <function text="async function" />
