@@ -4,7 +4,7 @@
     // there is no platform-dependant code in here
 
 const __name = (thing, name)=>thing
-const defaults = {
+export const defaults = {
         arguments: [],
         dynamicLibraries: [],
         thisProgram: "./this.program",
