@@ -13,13 +13,35 @@ const deno = Deno.execPath()
 // 
 // get latest version string
 // 
-let treeSitterCodeBundle = await $`${deno} run -A https://raw.githubusercontent.com/jeff-hykin/deno_bundle/a87f6f782c0f014aa288c12da57d32aae2359a90/main.js https://esm.sh/web-tree-sitter`.text("stdout")
-let versionMatch = treeSitterCodeBundle.match(/.+web-tree-sitter@(.+?)\/denonext/)
+let versionMatch = (await (await fetch(`https://esm.sh/web-tree-sitter`)).text()).match(/.+web-tree-sitter@(.+?)\/denonext/)
 let version = versionMatch[1]
 console.log(`Pulling tree sitter version:`,version)
 if (!versionMatch || !versionMatch[1]) {
     throw new Error(`\nI normally pull the version from first line of the downloaded tree-sitter code\n(esm.sh downloads the latest),\nbut I couldn't find the version on that line:\n${treeSitterCode.split("\n")[0]}\n\n`)
 }
+
+// 
+// get the wasm
+// 
+    // fetch(`https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`)
+    
+    let url = `https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/web-tree-sitter.wasm`
+    let data
+    try {
+        data = await (await fetch(url)).arrayBuffer()
+        if (new TextDecoder().decode(data).trim() == "Not Found") {
+            throw new Error(`I tried to download the wasm file for the tree sitter version ${version}, but it failed. Make sure the URL exists: ${url}`)
+        }
+    } catch (error) {
+        throw Error(`I tried to download the wasm file for the tree sitter version ${version}, but it failed. Make sure the URL exists: ${url}`)
+    }
+
+    // const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
+    const treeSitterWasmPath = `${FileSystem.thisFolder}/../main/tree_sitter_wasm.js`
+    FileSystem.write({
+        path: treeSitterWasmPath,
+        data: pureBinaryify(data),
+    })
 
 // 
 // get all the source files
@@ -144,27 +166,6 @@ for (const eachFileName of sourceFileNames) {
         }),
     })
 }
-
-
-// 
-// get the wasm
-// 
-    // fetch(`https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/tree-sitter.wasm`)
-    
-    let url = `https://github.com/tree-sitter/tree-sitter/releases/download/v${version}/web-tree-sitter.wasm`
-    let data
-    try {
-        data = await (await fetch(url)).arrayBuffer()
-    } catch (error) {
-        throw Error(`I tried to download the wasm file for the tree sitter version ${version}, but it failed. Make sure the URL exists: ${url}`)
-    }
-
-    // const treeSitterPath = `${FileSystem.thisFolder}/../tree_sitter.js`
-    const treeSitterWasmPath = `${FileSystem.thisFolder}/../main/tree_sitter_wasm.js`
-    FileSystem.write({
-        path: treeSitterWasmPath,
-        data: pureBinaryify(data),
-    })
 
 console.log(`NOTE: use VS Code's document formatter (force) on all the JS files`)
 // (this comment is part of deno-guillotine, dont remove) #>
