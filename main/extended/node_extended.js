@@ -347,6 +347,22 @@ class HardNode {
     get fieldNames() {
         return Object.keys(this.fields)
     }
+
+    getQueryForSelf() {
+        let current = this
+        let chunks = []
+        while (current) {
+            if (current.type) {
+                if (current.type.match(/^([a-zA-Z0-9.\-_\$]+)$/)) {
+                    chunks.push(current.type)
+                } else {
+                    chunks.push(JSON.stringify(current.type))
+                }
+            }
+            current = current.parent
+        }
+        return "(" + chunks.reverse().join(" (") + ")".repeat(chunks.length)
+    }
 }
 
 // patch Node with all HardNode properties
