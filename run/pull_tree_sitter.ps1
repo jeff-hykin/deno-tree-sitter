@@ -108,7 +108,7 @@ for (const eachFileName of sourceFileNames) {
     })
     // typescript version
     await FileSystem.write({
-        data: patchSourceCode(data),
+        data: data,
         path:`${srcParentPath}/${eachFileName}`,
     })
 }
