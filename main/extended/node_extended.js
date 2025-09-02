@@ -458,8 +458,12 @@ export class HardNode extends BaseNode {
         let chunks = []
         while (current) {
             if (current.type) {
-                if (current.type.match(/^([a-zA-Z0-9.\-_\$]+)$/)) {
-                    chunks.push(current.type)
+                if (current.isNamed) {
+                    if (current.type.match(/^([a-zA-Z0-9.\-_\$]+)$/)) {
+                        chunks.push(current.type)
+                    } else {
+                        chunks.push(JSON.stringify(current.type))
+                    }
                 } else {
                     chunks.push(JSON.stringify(current.type))
                 }
