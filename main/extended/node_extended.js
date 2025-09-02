@@ -465,6 +465,7 @@ export class HardNode extends BaseNode {
                         chunks.push(JSON.stringify(current.type))
                     }
                 } else {
+                    // TODO: this might not always be correct. Probably should be JSON.stringify(current.text) but theres a risk of .text being massive
                     chunks.push(JSON.stringify(current.type))
                 }
             }
