@@ -31,7 +31,7 @@ const Parser = require('web-tree-sitter');
 ### The New Way ✨
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript) // path or Uint8Array or URL
@@ -47,7 +47,7 @@ const tree = parser.parse('let x = 1;')
 
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascriptUint8Array from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 // ex: uint8array
@@ -89,7 +89,7 @@ import treeSitterQuery from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_lan
 #### The Tree Data Structure
 
 ```js
-import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import rust from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/rust.js"
 
 const parser = await createParser(rust)
@@ -138,7 +138,7 @@ If you want to use j-query like approach to an AST, you're in luck. There is a w
 // 
 // setup
 // 
-import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 var parser = await createParser(javascript) // path or Uint8Array
 var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
@@ -250,7 +250,7 @@ results == [
 It is surprisingly handy to be able to iterate over every node (at any depth) in order.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
 const tree = parser.parse(`
@@ -309,7 +309,7 @@ If you're making a formatter or a code refactoring tool, it would normally be a 
 Typically tree sitter languages don't have whitespace nodes at all (and sometimes they even skip normal code!). This means there's text that is stored outside of the nodes in the AST. This library solves that problem by auto injecting "soft nodes" back into the AST. Most of the time they are just whitespace nodes, but sometimes they can be other syntax depending on your grammar.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -330,7 +330,7 @@ However:
 2. `.replaceInnards()` does not trigger a re-parse. You can dump completely invalid syntax into the tree, all the non-child nodes will stay as-is. If you want to re-parse there is a fast way! Pass the old tree into the parse function (ex: `let newTree = parser.parse(oldTree.codeString, oldTree)`). Note: when a new tree is created there is ZERO OVERLAP between old nodes and new nodes. This is a tree sitter limitation.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -360,7 +360,7 @@ console.log(tree.rootNode.text)
 For quick analysis and debugging, its always nice to convert a parsed document to JSON.
 
 ```js
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -547,7 +547,7 @@ Sometimes you want to know what the tree looks like, but without the verbose str
 NOTE: It is NOT valid XML, just very XML-like
 
 ```js
-import { createParser, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { createParser, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
@@ -725,8 +725,8 @@ myVar.indent // "   "
 If you want to look at an AST in a human-readable format, try the `xmlStylePreview` function.
 
 ```js
-import { xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/extras/xml_style_preview.js"
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/extras/xml_style_preview.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript) // path or Uint8Array
@@ -778,8 +778,8 @@ console.log(xmlStylePreview(tree.rootNode, { alwaysShowTextAttr: false }))
 If you want to do some basic text-styling and colors, try the `applyThemeGetHtml` function.
 
 ```js
-import { applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/extras/apply_theme_get_html.js"
-import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
+import { applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/extras/apply_theme_get_html.js"
+import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.2/main/main.js"
 import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
 const sourceCode = `function thing(arg1, arg2) {
