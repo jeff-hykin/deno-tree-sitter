@@ -32,7 +32,7 @@ const Parser = require('web-tree-sitter');
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript) // path or Uint8Array or URL
 const tree = parser.parse('let x = 1;')
@@ -48,14 +48,14 @@ const tree = parser.parse('let x = 1;')
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascriptUint8Array from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascriptUint8Array from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 // ex: uint8array
 const parser1 = await createParser(javascriptUint8Array)
 // ex: file path
 const parser2 = await createParser('./path/to/javascript.wasm')
 // ex: url
-const parser3 = await createParser("https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.wasm")
+const parser3 = await createParser("https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.wasm")
 
 // parse a string
 const tree1 = parser1.parse('let x = 1;')
@@ -66,31 +66,31 @@ const tree1 = parser1.parse('let x = 1;')
 I aggregated some wasm parser [here](https://github.com/jeff-hykin/common_tree_sitter_languages) for quick usage.
 
 ```js
-import html from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/html.js"
-import c from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/c.js"
-import python from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/python.js"
-import bash from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/bash.js"
-import typescript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/typescript.js"
-import yaml from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/yaml.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
-import rust from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/rust.js"
-import css from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/css.js"
-import json from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/json.js"
-import wat from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/wat.js"
-import wast from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/wast.js"
-import tsx from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/tsx.js"
-import toml from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/toml.js"
-import nix from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/nix.js"
-import cpp from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/cpp.js"
-import gitignore from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/gitignore.js"
-import treeSitterQuery from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/tree-sitter-query.js"
+import html from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/html.js"
+import c from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/c.js"
+import python from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/python.js"
+import bash from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/bash.js"
+import typescript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/typescript.js"
+import yaml from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/yaml.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
+import rust from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/rust.js"
+import css from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/css.js"
+import json from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/json.js"
+import wat from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/wat.js"
+import wast from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/wast.js"
+import tsx from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/tsx.js"
+import toml from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/toml.js"
+import nix from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/nix.js"
+import cpp from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/cpp.js"
+import gitignore from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/gitignore.js"
+import treeSitterQuery from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/tree-sitter-query.js"
 ```
 
 #### The Tree Data Structure
 
 ```js
 import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import rust from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/rust.js"
+import rust from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/rust.js"
 
 const parser = await createParser(rust)
 const tree = parser.parse(' fn main() { }')
@@ -139,7 +139,7 @@ If you want to use j-query like approach to an AST, you're in luck. There is a w
 // setup
 // 
 import { Parser, createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 var parser = await createParser(javascript) // path or Uint8Array
 var tree = parser.parse('let a = 1;let b = 1;let c = 1;')
 var root = tree.rootNode
@@ -251,7 +251,7 @@ It is surprisingly handy to be able to iterate over every node (at any depth) in
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
 const tree = parser.parse(`
     function thing(arg1) {
@@ -310,7 +310,7 @@ Typically tree sitter languages don't have whitespace nodes at all (and sometime
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
 const tree = parser.parse('   let x = 1;')
@@ -331,7 +331,7 @@ However:
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
 const tree = parser.parse(`
@@ -361,7 +361,7 @@ For quick analysis and debugging, its always nice to convert a parsed document t
 
 ```js
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
 const tree = parser.parse('let x = 1;')
@@ -548,7 +548,7 @@ NOTE: It is NOT valid XML, just very XML-like
 
 ```js
 import { createParser, xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript)
 const tree = parser.parse('let x = 1;')
@@ -727,7 +727,7 @@ If you want to look at an AST in a human-readable format, try the `xmlStylePrevi
 ```js
 import { xmlStylePreview } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/extras/xml_style_preview.js"
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 
 const parser = await createParser(javascript) // path or Uint8Array
 const tree = parser.parse(`
@@ -780,7 +780,7 @@ If you want to do some basic text-styling and colors, try the `applyThemeGetHtml
 ```js
 import { applyThemeGetHtml } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/extras/apply_theme_get_html.js"
 import { createParser } from "https://deno.land/x/deno_tree_sitter@1.0.1.1/main/main.js"
-import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@c37fc96/main/javascript.js"
+import javascript from "https://esm.sh/gh/jeff-hykin/common_tree_sitter_languages@1.3.2.0/main/javascript.js"
 const parser = await createParser(javascript) // path or Uint8Array
 const sourceCode = `function thing(arg1, arg2) {
     let a = 10
