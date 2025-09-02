@@ -340,6 +340,9 @@ const tree = parser.parse(`
     }
 `)
 
+// the always-correct string of all nodes combined
+tree.codeString
+
 tree.rootNode.children[0].children[0].replaceInnards(`async function`)
 tree.rootNode.children[0].children[5].children[2].children[2].children[4].replaceInnards(`999`)
 tree.rootNode.children[0].children[5].children[2].children[2].children[2].replaceInnards(`+=`)
